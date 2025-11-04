@@ -35,13 +35,13 @@ function Particle({ position, delay }: { position: [number, number, number]; del
 
   return (
     <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[0.06, 24, 24]} />
+      <sphereGeometry args={[0.05, 20, 20]} />
       <meshStandardMaterial
-        color="#D8D8D8"
-        metalness={0.3}
-        roughness={0.7}
+        color="#E0E0E0"
+        metalness={0.1}
+        roughness={0.8}
         transparent
-        opacity={0.15}
+        opacity={0.08}
       />
     </mesh>
   )
@@ -113,35 +113,25 @@ function DNAHelix() {
 
   return (
     <group>
-      {/* Strand 1 - Cool silver-white */}
-      <mesh ref={strand1Ref} geometry={strand1Curve} castShadow receiveShadow>
-        <meshPhysicalMaterial
-          color="#C8C8C8"
-          metalness={0.25}
-          roughness={0.3}
-          transmission={0.15}
-          thickness={0.4}
-          envMapIntensity={1.2}
-          clearcoat={0.8}
-          clearcoatRoughness={0.15}
-          emissive="#A8A8A8"
-          emissiveIntensity={0.05}
+      {/* Strand 1 - Cool silver-white - very subtle */}
+      <mesh ref={strand1Ref} geometry={strand1Curve}>
+        <meshStandardMaterial
+          color="#DCDCDC"
+          metalness={0.1}
+          roughness={0.5}
+          transparent
+          opacity={0.25}
         />
       </mesh>
 
       {/* Strand 2 - Slightly lighter for depth */}
-      <mesh ref={strand2Ref} geometry={strand2Curve} castShadow receiveShadow>
-        <meshPhysicalMaterial
-          color="#D4D4D4"
-          metalness={0.2}
-          roughness={0.35}
-          transmission={0.12}
-          thickness={0.4}
-          envMapIntensity={1.1}
-          clearcoat={0.7}
-          clearcoatRoughness={0.2}
-          emissive="#B0B0B0"
-          emissiveIntensity={0.04}
+      <mesh ref={strand2Ref} geometry={strand2Curve}>
+        <meshStandardMaterial
+          color="#E4E4E4"
+          metalness={0.08}
+          roughness={0.55}
+          transparent
+          opacity={0.22}
         />
       </mesh>
 
@@ -158,19 +148,14 @@ function DNAHelix() {
           )
 
           return (
-            <mesh key={i} position={midpoint} quaternion={quaternion} castShadow receiveShadow>
-              <cylinderGeometry args={[0.035, 0.035, length, 12]} />
-              <meshPhysicalMaterial
-                color="#BEBEBE"
-                metalness={0.15}
-                roughness={0.4}
-                transmission={0.08}
-                thickness={0.3}
-                envMapIntensity={1}
-                clearcoat={0.6}
-                clearcoatRoughness={0.25}
+            <mesh key={i} position={midpoint} quaternion={quaternion}>
+              <cylinderGeometry args={[0.03, 0.03, length, 12]} />
+              <meshStandardMaterial
+                color="#D0D0D0"
+                metalness={0.08}
+                roughness={0.5}
                 transparent
-                opacity={0.8}
+                opacity={0.2}
               />
             </mesh>
           )
@@ -261,13 +246,13 @@ function Scene() {
       {/* Minimal post-processing */}
       <EffectComposer multisampling={8}>
         <Bloom
-          intensity={0.2}
-          luminanceThreshold={0.75}
-          luminanceSmoothing={0.9}
+          intensity={0.1}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={0.95}
           height={300}
           mipmapBlur
         />
-        <Vignette eskil={false} offset={0.3} darkness={0.35} />
+        <Vignette eskil={false} offset={0.35} darkness={0.25} />
       </EffectComposer>
     </>
   )
