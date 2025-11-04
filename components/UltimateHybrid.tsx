@@ -4,6 +4,8 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useRef, useMemo, Suspense, useEffect } from 'react'
 import * as THREE from 'three'
 import { PerspectiveCamera, Environment } from '@react-three/drei'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
 import { useScrollStore } from '@/stores/scrollStore'
 import { ArchitecturalDNA } from './ArchitecturalDNA'
 
@@ -106,6 +108,25 @@ function Scene() {
 
       {/* Architectural DNA Helix */}
       <ArchitecturalDNA />
+
+      {/* Post-processing Effects - Subtle and clean */}
+      <EffectComposer>
+        {/* Subtle bloom for glass DNA glow */}
+        <Bloom
+          intensity={0.3}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={0.9}
+          mipmapBlur
+        />
+
+        {/* Minimal vignette for focus */}
+        <Vignette
+          offset={0.3}
+          darkness={0.5}
+          eskil={false}
+          blendFunction={BlendFunction.NORMAL}
+        />
+      </EffectComposer>
     </>
   )
 }
