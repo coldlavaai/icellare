@@ -191,11 +191,11 @@ function ServiceCard({
               ))}
             </div>
 
-            <h3 className="font-serif text-3xl mb-4 text-charcoal group-hover:text-rose-gold transition-colors duration-500">
+            <h3 className="font-serif text-2xl mb-3 text-charcoal group-hover:text-rose-gold transition-colors duration-500">
               {title}
             </h3>
 
-            <p className="text-charcoal/70 leading-relaxed text-lg flex-grow">
+            <p className="text-charcoal/70 leading-relaxed text-base flex-grow">
               {description}
             </p>
 
@@ -248,10 +248,10 @@ function StatCounter({ end, suffix, label, delay }: { end: number; suffix: strin
       transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
       className="text-center"
     >
-      <div className="font-serif text-6xl md:text-7xl text-rose-gold mb-2">
+      <div className="font-serif text-4xl md:text-5xl text-rose-gold mb-2">
         {isInView ? count : 0}{suffix}
       </div>
-      <div className="text-charcoal/70 text-lg uppercase tracking-wider">{label}</div>
+      <div className="text-charcoal/70 text-base uppercase tracking-wider">{label}</div>
     </motion.div>
   )
 }
@@ -272,7 +272,7 @@ export default function Home() {
       <Navigation />
 
       {/* Premium Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-6 py-32" style={{ zIndex: 10 }}>
+      <section ref={heroRef} className="relative min-h-[85vh] flex items-center justify-center px-6 py-24" style={{ zIndex: 10 }}>
         <motion.div
           style={{ y: smoothHeroY, opacity: heroOpacity }}
           className="max-w-7xl mx-auto text-center"
@@ -331,7 +331,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 60 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-7xl md:text-8xl lg:text-9xl mb-8 text-charcoal leading-[0.95]"
+            className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6 text-charcoal leading-tight"
           >
             iCellaré
           </motion.h1>
@@ -340,12 +340,12 @@ export default function Home() {
             initial={{ opacity: 0, y: 60 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-6 mb-16"
+            className="space-y-4 mb-12"
           >
-            <p className="text-4xl md:text-5xl lg:text-6xl text-rose-gold font-serif italic">
+            <p className="text-2xl md:text-3xl lg:text-4xl text-rose-gold font-serif italic">
               Lifespan Center
             </p>
-            <p className="text-xl md:text-2xl text-charcoal/80 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-charcoal/80 max-w-4xl mx-auto leading-relaxed">
               State-of-the-art autologous stem cell technology, cutting-edge rejuvenation innovation,
               and personalized care in the heart of Bangkok
             </p>
@@ -358,7 +358,7 @@ export default function Home() {
             className="flex flex-col sm:flex-row gap-6 justify-center items-center"
           >
             <motion.button
-              className="group relative bg-gradient-to-r from-rose-gold to-bronze text-white px-14 py-6 rounded-full text-lg font-semibold shadow-2xl overflow-hidden"
+              className="group relative bg-gradient-to-r from-rose-gold to-bronze text-white px-10 py-4 rounded-full text-base font-semibold shadow-2xl overflow-hidden"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -372,7 +372,7 @@ export default function Home() {
             </motion.button>
 
             <motion.button
-              className="backdrop-blur-xl bg-white/50 border-2 border-white/70 text-charcoal px-14 py-6 rounded-full text-lg font-semibold hover:border-rose-gold/60 hover:bg-white/70"
+              className="backdrop-blur-xl bg-white/50 border-2 border-white/70 text-charcoal px-10 py-4 rounded-full text-base font-semibold hover:border-rose-gold/60 hover:bg-white/70"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -408,7 +408,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section with EXTREME Glass */}
-      <section className="relative px-6 py-24" style={{ zIndex: 10 }}>
+      <section className="relative px-6 py-16" style={{ zIndex: 10 }}>
         <div className="max-w-7xl mx-auto relative">
           {/* Floating glass orbs */}
           {[0, 1, 2].map((i) => (
@@ -451,7 +451,7 @@ export default function Home() {
             </motion.div>
           ))}
 
-          <div className="relative backdrop-blur-3xl bg-white/50 border-2 border-white/80 rounded-[4rem] p-16 overflow-hidden">
+          <div className="relative backdrop-blur-3xl bg-white/50 border-2 border-white/80 rounded-[4rem] p-12 overflow-hidden">
             {/* Multiple glass layers */}
             <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/70 via-white/50 to-white/60 rounded-[4rem]" />
             <motion.div
@@ -480,7 +480,7 @@ export default function Home() {
       </section>
 
       {/* Philosophy Section with Parallax */}
-      <section className="relative px-6 py-32" style={{ zIndex: 10 }}>
+      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0 }}
@@ -566,21 +566,21 @@ export default function Home() {
                 </p>
               </div>
 
-              <h2 className="font-serif text-5xl lg:text-7xl text-charcoal leading-tight">
+              <h2 className="font-serif text-3xl lg:text-4xl text-charcoal leading-tight">
                 We Sell Hope
               </h2>
 
-              <div className="space-y-6">
-                <p className="text-charcoal/70 text-xl leading-relaxed">
+              <div className="space-y-4">
+                <p className="text-charcoal/70 text-base leading-relaxed">
                   Welcome to Icellare Lifespan Center, where we specialize in state-of-the-art autologous stem cell technology, rejuvenation innovation, in-depth genetics testing and personalized care.
                 </p>
-                <p className="text-charcoal/70 text-xl leading-relaxed">
+                <p className="text-charcoal/70 text-base leading-relaxed">
                   We believe in harnessing the power of your own cells, to allow you to become <span className="text-rose-gold font-semibold">Your Best Self</span>—the core of Icellaré or <span className="italic">'cell of I.'</span>
                 </p>
               </div>
 
               <motion.button
-                className="bg-gradient-to-r from-rose-gold to-bronze text-white px-12 py-5 rounded-full text-lg font-medium shadow-lg"
+                className="bg-gradient-to-r from-rose-gold to-bronze text-white px-8 py-3 rounded-full text-base font-medium shadow-lg"
                 whileHover={{ scale: 1.05, boxShadow: '0 25px 50px rgba(212, 175, 122, 0.4)' }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -592,7 +592,7 @@ export default function Home() {
       </section>
 
       {/* Services Grid with Cell-Inspired Design */}
-      <section className="relative px-6 py-32" style={{ zIndex: 10 }}>
+      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -604,10 +604,10 @@ export default function Home() {
             <p className="text-rose-gold uppercase tracking-wider font-semibold text-sm mb-4">
               Our Services
             </p>
-            <h2 className="font-serif text-6xl lg:text-7xl text-charcoal mb-6">
+            <h2 className="font-serif text-4xl lg:text-5xl text-charcoal mb-4">
               Cutting-Edge Solutions
             </h2>
-            <p className="text-xl text-charcoal/70 max-w-3xl mx-auto">
+            <p className="text-base text-charcoal/70 max-w-3xl mx-auto">
               Regenerative medicine tailored to your unique biology, powered by cellular intelligence
             </p>
           </motion.div>
@@ -663,7 +663,7 @@ export default function Home() {
       </section>
 
       {/* Quality Assurance with EXTREME Glass Design */}
-      <section className="relative px-6 py-32" style={{ zIndex: 10 }}>
+      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
@@ -718,13 +718,13 @@ export default function Home() {
               </svg>
             </div>
 
-            <h2 className="font-serif text-5xl md:text-6xl mb-8 text-charcoal relative z-10">
+            <h2 className="font-serif text-3xl md:text-4xl mb-6 text-charcoal relative z-10">
               Our Quality Assurance
             </h2>
-            <p className="text-4xl text-rose-gold mb-12 font-serif italic relative z-10">
+            <p className="text-2xl text-rose-gold mb-8 font-serif italic relative z-10">
               Only the highest standards
             </p>
-            <p className="text-xl text-charcoal/70 leading-relaxed max-w-3xl mx-auto mb-12 relative z-10">
+            <p className="text-base text-charcoal/70 leading-relaxed max-w-3xl mx-auto mb-8 relative z-10">
               We don't just offer hope; we craft a personalized wellness journey to bring out your best self,
               embracing you from day 0 through your entire lifespan.
             </p>
@@ -743,7 +743,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section with EXTREME Glass */}
-      <section className="relative px-6 py-32" style={{ zIndex: 10 }}>
+      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
@@ -774,10 +774,10 @@ export default function Home() {
             />
 
             <div className="relative">
-              <h2 className="font-serif text-5xl md:text-6xl mb-12 text-charcoal text-center">
+              <h2 className="font-serif text-3xl md:text-4xl mb-8 text-charcoal text-center">
                 Visit Us in Bangkok
               </h2>
-            <div className="grid md:grid-cols-2 gap-12 mb-12">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               <div className="space-y-4">
                 <h3 className="font-semibold text-rose-gold text-xl mb-4 flex items-center gap-2">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -786,9 +786,9 @@ export default function Home() {
                   </svg>
                   Location
                 </h3>
-                <p className="text-lg text-charcoal/80">102 Phutthamonthon Sai 1</p>
-                <p className="text-lg text-charcoal/80">Bang Bamad, Taling Chan</p>
-                <p className="text-lg text-charcoal/80">Bangkok 10170, Thailand</p>
+                <p className="text-base text-charcoal/80">102 Phutthamonthon Sai 1</p>
+                <p className="text-base text-charcoal/80">Bang Bamad, Taling Chan</p>
+                <p className="text-base text-charcoal/80">Bangkok 10170, Thailand</p>
               </div>
               <div className="space-y-4">
                 <h3 className="font-semibold text-rose-gold text-xl mb-4 flex items-center gap-2">
@@ -797,12 +797,12 @@ export default function Home() {
                   </svg>
                   Contact
                 </h3>
-                <p className="text-lg text-charcoal/80">Phone: (+66)80-856-5999</p>
-                <p className="text-lg text-charcoal/80">Email: info@icellare.com</p>
+                <p className="text-base text-charcoal/80">Phone: (+66)80-856-5999</p>
+                <p className="text-base text-charcoal/80">Email: info@icellare.com</p>
               </div>
             </div>
             <motion.button
-              className="w-full bg-gradient-to-r from-rose-gold to-bronze text-white px-10 py-5 rounded-full text-lg font-semibold shadow-lg"
+              className="w-full bg-gradient-to-r from-rose-gold to-bronze text-white px-8 py-4 rounded-full text-base font-semibold shadow-lg"
               whileHover={{ scale: 1.02, boxShadow: '0 25px 50px rgba(212, 175, 122, 0.4)' }}
               whileTap={{ scale: 0.98 }}
             >
