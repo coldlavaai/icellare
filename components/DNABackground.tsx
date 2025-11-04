@@ -7,12 +7,9 @@ import * as THREE from 'three'
 import {
   EffectComposer,
   Bloom,
-  DepthOfField,
-  ChromaticAberration,
   Vignette
 } from '@react-three/postprocessing'
 import { PerspectiveCamera, Environment } from '@react-three/drei'
-import { BlendFunction } from 'postprocessing'
 
 // Photorealistic Cell with subsurface scattering
 function Cell({ position, delay }: { position: [number, number, number]; delay: number }) {
@@ -287,23 +284,13 @@ function Scene() {
       {/* Cinematic Post-Processing */}
       <EffectComposer multisampling={8}>
         <Bloom
-          intensity={2.5}
-          luminanceThreshold={0.1}
-          luminanceSmoothing={0.95}
+          intensity={3}
+          luminanceThreshold={0.08}
+          luminanceSmoothing={0.98}
           height={300}
-          opacity={1}
+          mipmapBlur
         />
-        <DepthOfField
-          focusDistance={0.02}
-          focalLength={0.05}
-          bokehScale={4}
-          height={480}
-        />
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={new THREE.Vector2(0.0015, 0.0015)}
-        />
-        <Vignette eskil={false} offset={0.15} darkness={0.6} />
+        <Vignette eskil={false} offset={0.2} darkness={0.7} />
       </EffectComposer>
     </>
   )
