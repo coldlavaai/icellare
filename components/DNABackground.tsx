@@ -292,7 +292,6 @@ function Scene() {
           radius={0.1}
           intensity={50}
           luminanceInfluence={0.5}
-          color="black"
         />
         <Bloom
           intensity={2}
