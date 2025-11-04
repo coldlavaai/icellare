@@ -8,7 +8,7 @@ import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const DNABackground = dynamic(() => import('@/components/DNABackground'), { ssr: false })
+const CinematicDNA = dynamic(() => import('@/components/CinematicDNA'), { ssr: false })
 
 // Floating Cell Particle for Hero
 function FloatingCell({ index, delay }: { index: number; delay: number }) {
@@ -268,7 +268,7 @@ export default function Home() {
 
   return (
     <main className="relative overflow-hidden">
-      <DNABackground />
+      <CinematicDNA />
       <Navigation />
 
       {/* Premium Hero Section */}
