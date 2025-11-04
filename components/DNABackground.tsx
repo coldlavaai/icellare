@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useScroll, useMotionValue, useAnimationFrame, useVelocity } from 'framer-motion'
+import { motion, useScroll, useMotionValue, useAnimationFrame, useVelocity, useTransform } from 'framer-motion'
 import { useRef, useEffect, useState } from 'react'
 
 // Generate DNA helix SVG path with 3D-like appearance
@@ -69,6 +69,9 @@ export default function DNABackground() {
   const helixHeight = isMobile ? 1800 : 2400
   const helixRadius = isMobile ? 80 : 120
   const turns = isMobile ? 6 : 10
+
+  // Convert rotation MotionValue to transform string
+  const rotateY = useTransform(baseRotation, (value) => `rotateY(${value}deg)`)
 
   return (
     <motion.div
@@ -140,7 +143,7 @@ export default function DNABackground() {
         <motion.div
           className="relative"
           style={{
-            rotateY: baseRotation,
+            transform: rotateY,
             transformStyle: 'preserve-3d',
           }}
           initial={{ opacity: 0, scale: 0.8 }}
