@@ -116,8 +116,29 @@ function ServiceCard({
             }}
           />
 
+          {/* Multi-layered glass effect */}
+          <div className="absolute inset-0 backdrop-blur-3xl bg-white/30 rounded-[2.5rem]" />
+          <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/60 via-white/50 to-white/40 rounded-[2.5rem]" />
+
+          {/* Intense glow layers */}
+          <motion.div
+            className="absolute inset-0 rounded-[2.5rem]"
+            animate={{
+              boxShadow: [
+                '0 0 40px rgba(212, 175, 122, 0.3), 0 0 80px rgba(212, 175, 122, 0.1), inset 0 0 60px rgba(255, 255, 255, 0.3)',
+                '0 0 60px rgba(212, 175, 122, 0.5), 0 0 120px rgba(212, 175, 122, 0.2), inset 0 0 80px rgba(255, 255, 255, 0.4)',
+                '0 0 40px rgba(212, 175, 122, 0.3), 0 0 80px rgba(212, 175, 122, 0.1), inset 0 0 60px rgba(255, 255, 255, 0.3)',
+              ],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+          />
+
           {/* Content card */}
-          <div className="relative backdrop-blur-2xl bg-white/70 border border-white/70 p-10 h-full flex flex-col shadow-2xl hover:shadow-rose-gold/40 transition-all duration-700 group-hover:border-rose-gold/60 group-hover:bg-white/80">
+          <div className="relative backdrop-blur-2xl bg-white/80 border-2 border-white/90 p-10 h-full flex flex-col shadow-2xl hover:shadow-rose-gold/60 transition-all duration-700 group-hover:border-rose-gold/80 group-hover:bg-white/90 group-hover:shadow-[0_0_80px_rgba(212,175,122,0.6)]">
             {/* Image with cell membrane effect */}
             {image && (
               <motion.div
@@ -266,14 +287,14 @@ export default function Home() {
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Premium badge */}
+            {/* Premium badge with EXTREME glass */}
             <motion.div
-              className="inline-flex items-center gap-2 backdrop-blur-xl bg-white/40 border border-white/60 px-6 py-3 rounded-full mb-8"
+              className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full mb-8 overflow-hidden"
               animate={{
                 boxShadow: [
-                  '0 0 20px rgba(212, 175, 122, 0.2)',
-                  '0 0 40px rgba(212, 175, 122, 0.4)',
-                  '0 0 20px rgba(212, 175, 122, 0.2)',
+                  '0 0 40px rgba(212, 175, 122, 0.4), 0 0 80px rgba(212, 175, 122, 0.2), inset 0 0 40px rgba(255, 255, 255, 0.5)',
+                  '0 0 60px rgba(212, 175, 122, 0.6), 0 0 120px rgba(212, 175, 122, 0.4), inset 0 0 60px rgba(255, 255, 255, 0.7)',
+                  '0 0 40px rgba(212, 175, 122, 0.4), 0 0 80px rgba(212, 175, 122, 0.2), inset 0 0 40px rgba(255, 255, 255, 0.5)',
                 ],
               }}
               transition={{
@@ -282,7 +303,10 @@ export default function Home() {
                 ease: 'easeInOut',
               }}
             >
-              <div className="flex gap-1">
+              <div className="absolute inset-0 backdrop-blur-3xl bg-white/50 border-2 border-white/70 rounded-full" />
+              <div className="absolute inset-0 backdrop-blur-xl bg-gradient-to-r from-white/60 via-white/50 to-white/60 rounded-full" />
+              <div className="relative flex items-center gap-2">
+                <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
@@ -299,6 +323,7 @@ export default function Home() {
                 ))}
               </div>
               <span className="text-charcoal font-semibold tracking-wide">World-Class Regenerative Medicine</span>
+              </div>
             </motion.div>
           </motion.div>
 
@@ -382,11 +407,70 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section with EXTREME Glass */}
       <section className="relative px-6 py-24" style={{ zIndex: 10 }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="backdrop-blur-2xl bg-white/60 border border-white/70 rounded-[4rem] p-16 shadow-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+        <div className="max-w-7xl mx-auto relative">
+          {/* Floating glass orbs */}
+          {[0, 1, 2].map((i) => (
+            <motion.div
+              key={`glass-orb-${i}`}
+              className="absolute w-32 h-32 rounded-full pointer-events-none"
+              style={{
+                left: `${20 + i * 30}%`,
+                top: `${-10 + i * 5}%`,
+                background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(212, 175, 122, 0.3))',
+                backdropFilter: 'blur(20px)',
+              }}
+              animate={{
+                y: [0, -20, 0],
+                scale: [1, 1.1, 1],
+                rotate: [0, 180, 360],
+              }}
+              transition={{
+                duration: 8 + i * 2,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay: i * 0.5,
+              }}
+            >
+              <motion.div
+                className="absolute inset-0 rounded-full"
+                animate={{
+                  boxShadow: [
+                    '0 0 40px rgba(212, 175, 122, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.5)',
+                    '0 0 80px rgba(212, 175, 122, 0.6), inset 0 0 50px rgba(255, 255, 255, 0.7)',
+                    '0 0 40px rgba(212, 175, 122, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.5)',
+                  ],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            </motion.div>
+          ))}
+
+          <div className="relative backdrop-blur-3xl bg-white/50 border-2 border-white/80 rounded-[4rem] p-16 overflow-hidden">
+            {/* Multiple glass layers */}
+            <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/70 via-white/50 to-white/60 rounded-[4rem]" />
+            <motion.div
+              className="absolute inset-0 rounded-[4rem]"
+              animate={{
+                boxShadow: [
+                  '0 0 60px rgba(212, 175, 122, 0.4), 0 0 120px rgba(212, 175, 122, 0.2), inset 0 0 80px rgba(255, 255, 255, 0.4)',
+                  '0 0 100px rgba(212, 175, 122, 0.6), 0 0 200px rgba(212, 175, 122, 0.3), inset 0 0 120px rgba(255, 255, 255, 0.6)',
+                  '0 0 60px rgba(212, 175, 122, 0.4), 0 0 120px rgba(212, 175, 122, 0.2), inset 0 0 80px rgba(255, 255, 255, 0.4)',
+                ],
+              }}
+              transition={{
+                duration: 5,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+            />
+
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
               <StatCounter end={15} suffix="+" label="Years of Excellence" delay={0} />
               <StatCounter end={10000} suffix="+" label="Lives Transformed" delay={0.2} />
               <StatCounter end={98} suffix="%" label="Success Rate" delay={0.4} />
@@ -578,7 +662,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Quality Assurance with Premium Design */}
+      {/* Quality Assurance with EXTREME Glass Design */}
       <section className="relative px-6 py-32" style={{ zIndex: 10 }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -586,8 +670,28 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true, amount: 0.2 }}
-            className="backdrop-blur-2xl bg-white/60 border border-white/70 rounded-[4rem] p-16 md:p-24 shadow-2xl text-center relative overflow-hidden"
+            className="relative backdrop-blur-3xl bg-white/50 border-2 border-white/80 rounded-[4rem] p-16 md:p-24 text-center overflow-hidden"
           >
+            {/* Multi-layered glass panels */}
+            <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/70 via-white/50 to-white/60 rounded-[4rem]" />
+            <div className="absolute inset-0 backdrop-blur-xl bg-gradient-to-tl from-white/40 via-white/60 to-white/50 rounded-[4rem]" />
+
+            {/* Massive pulsing glow */}
+            <motion.div
+              className="absolute inset-0 rounded-[4rem]"
+              animate={{
+                boxShadow: [
+                  '0 0 80px rgba(212, 175, 122, 0.4), 0 0 160px rgba(212, 175, 122, 0.2), 0 0 240px rgba(212, 175, 122, 0.1), inset 0 0 100px rgba(255, 255, 255, 0.5)',
+                  '0 0 120px rgba(212, 175, 122, 0.6), 0 0 240px rgba(212, 175, 122, 0.4), 0 0 360px rgba(212, 175, 122, 0.2), inset 0 0 150px rgba(255, 255, 255, 0.7)',
+                  '0 0 80px rgba(212, 175, 122, 0.4), 0 0 160px rgba(212, 175, 122, 0.2), 0 0 240px rgba(212, 175, 122, 0.1), inset 0 0 100px rgba(255, 255, 255, 0.5)',
+                ],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+            />
             {/* Decorative cellular pattern */}
             <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
               <svg viewBox="0 0 200 200">
@@ -638,7 +742,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Contact Section with Organic Design */}
+      {/* Contact Section with EXTREME Glass */}
       <section className="relative px-6 py-32" style={{ zIndex: 10 }}>
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -646,11 +750,33 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true, amount: 0.2 }}
-            className="backdrop-blur-2xl bg-white/70 border border-white/80 rounded-[4rem] p-12 md:p-20 shadow-2xl"
+            className="relative backdrop-blur-3xl bg-white/60 border-2 border-white/90 rounded-[4rem] p-12 md:p-20 overflow-hidden"
           >
-            <h2 className="font-serif text-5xl md:text-6xl mb-12 text-charcoal text-center">
-              Visit Us in Bangkok
-            </h2>
+            {/* Triple glass layers */}
+            <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/80 via-white/60 to-white/70 rounded-[4rem]" />
+            <div className="absolute inset-0 backdrop-blur-xl bg-gradient-to-tl from-white/50 via-white/70 to-white/60 rounded-[4rem]" />
+
+            {/* Intense ambient glow */}
+            <motion.div
+              className="absolute inset-0 rounded-[4rem]"
+              animate={{
+                boxShadow: [
+                  '0 0 60px rgba(212, 175, 122, 0.5), 0 0 120px rgba(212, 175, 122, 0.3), inset 0 0 80px rgba(255, 255, 255, 0.6)',
+                  '0 0 100px rgba(212, 175, 122, 0.7), 0 0 200px rgba(212, 175, 122, 0.5), inset 0 0 120px rgba(255, 255, 255, 0.8)',
+                  '0 0 60px rgba(212, 175, 122, 0.5), 0 0 120px rgba(212, 175, 122, 0.3), inset 0 0 80px rgba(255, 255, 255, 0.6)',
+                ],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+            />
+
+            <div className="relative">
+              <h2 className="font-serif text-5xl md:text-6xl mb-12 text-charcoal text-center">
+                Visit Us in Bangkok
+              </h2>
             <div className="grid md:grid-cols-2 gap-12 mb-12">
               <div className="space-y-4">
                 <h3 className="font-semibold text-rose-gold text-xl mb-4 flex items-center gap-2">
