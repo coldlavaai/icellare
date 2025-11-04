@@ -2,54 +2,56 @@
 
 import { useEffect, useRef } from 'react'
 
-class Particle {
+interface ParticleType {
   x: number
   y: number
   size: number
   baseX: number
   baseY: number
   density: number
+}
 
-  constructor(x: number, y: number) {
-    this.x = x
-    this.y = y
-    this.size = Math.random() * 3 + 1
-    this.baseX = x
-    this.baseY = y
-    this.density = Math.random() * 30 + 1
+function createParticle(x: number, y: number): ParticleType {
+  return {
+    x,
+    y,
+    size: Math.random() * 3 + 1,
+    baseX: x,
+    baseY: y,
+    density: Math.random() * 30 + 1,
   }
+}
 
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = 'rgba(212, 175, 122, 0.3)' // Rose gold with opacity
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-    ctx.closePath()
-    ctx.fill()
-  }
+function drawParticle(ctx: CanvasRenderingContext2D, particle: ParticleType) {
+  ctx.fillStyle = 'rgba(212, 175, 122, 0.3)'
+  ctx.beginPath()
+  ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
+  ctx.closePath()
+  ctx.fill()
+}
 
-  update(mouseX: number, mouseY: number) {
-    const dx = mouseX - this.x
-    const dy = mouseY - this.y
-    const distance = Math.sqrt(dx * dx + dy * dy)
-    const forceDirectionX = dx / distance
-    const forceDirectionY = dy / distance
-    const maxDistance = 100
-    const force = (maxDistance - distance) / maxDistance
-    const directionX = forceDirectionX * force * this.density
-    const directionY = forceDirectionY * force * this.density
+function updateParticle(particle: ParticleType, mouseX: number, mouseY: number) {
+  const dx = mouseX - particle.x
+  const dy = mouseY - particle.y
+  const distance = Math.sqrt(dx * dx + dy * dy)
+  const forceDirectionX = dx / distance
+  const forceDirectionY = dy / distance
+  const maxDistance = 100
+  const force = (maxDistance - distance) / maxDistance
+  const directionX = forceDirectionX * force * particle.density
+  const directionY = forceDirectionY * force * particle.density
 
-    if (distance < maxDistance) {
-      this.x -= directionX
-      this.y -= directionY
-    } else {
-      if (this.x !== this.baseX) {
-        const dx = this.x - this.baseX
-        this.x -= dx / 10
-      }
-      if (this.y !== this.baseY) {
-        const dy = this.y - this.baseY
-        this.y -= dy / 10
-      }
+  if (distance < maxDistance) {
+    particle.x -= directionX
+    particle.y -= directionY
+  } else {
+    if (particle.x !== particle.baseX) {
+      const dx = particle.x - particle.baseX
+      particle.x -= dx / 10
+    }
+    if (particle.y !== particle.baseY) {
+      const dy = particle.y - particle.baseY
+      particle.y -= dy / 10
     }
   }
 }
@@ -57,36 +59,36 @@ class Particle {
 export default function AnimatedBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mousePosition = useRef({ x: 0, y: 0 })
-  const particles = useRef<Particle[]>([])
+  const particles = useRef<ParticleType[]>([])
 
-  useEffect(() {
+  useEffect(function setupCanvas() {
     const canvas = canvasRef.current
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const resizeCanvas = () => {
+    const resizeCanvas = function() {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
       initParticles()
     }
 
-    const initParticles = () => {
+    const initParticles = function() {
       particles.current = []
       const numberOfParticles = (canvas.width * canvas.height) / 9000
       for (let i = 0; i < numberOfParticles; i++) {
         const x = Math.random() * canvas.width
         const y = Math.random() * canvas.height
-        particles.current.push(new Particle(x, y))
+        particles.current.push(createParticle(x, y))
       }
     }
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = function(e: MouseEvent) {
       mousePosition.current = { x: e.x, y: e.y }
     }
 
-    const connect = () => {
+    const connect = function() {
       for (let a = 0; a < particles.current.length; a++) {
         for (let b = a; b < particles.current.length; b++) {
           const dx = particles.current[a].x - particles.current[b].x
@@ -105,12 +107,12 @@ export default function AnimatedBackground() {
       }
     }
 
-    const animate = () => {
+    const animate = function() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      particles.current.forEach(particle => {
-        particle.draw(ctx)
-        particle.update(mousePosition.current.x, mousePosition.current.y)
+      particles.current.forEach(function(particle) {
+        drawParticle(ctx, particle)
+        updateParticle(particle, mousePosition.current.x, mousePosition.current.y)
       })
 
       connect()
@@ -122,7 +124,7 @@ export default function AnimatedBackground() {
     window.addEventListener('mousemove', handleMouseMove)
     animate()
 
-    return () => {
+    return function cleanup() {
       window.removeEventListener('resize', resizeCanvas)
       window.removeEventListener('mousemove', handleMouseMove)
     }
