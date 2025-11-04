@@ -7,7 +7,7 @@ import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
 import Link from 'next/link'
 
-const DNABackground = dynamic(() => import('@/components/DNABackground'), { ssr: false })
+// const DNABackground = dynamic(() => import('@/components/DNABackground'), { ssr: false })
 
 // Animation variants
 const fadeInUp = {
@@ -173,7 +173,7 @@ export default function Home() {
 
   return (
     <main className="relative bg-cream overflow-hidden">
-      <DNABackground />
+      {/* <DNABackground /> */}
       <Navigation />
 
       {/* Hero Section */}
