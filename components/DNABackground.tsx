@@ -5,6 +5,7 @@ import { useRef, useMemo, Suspense } from 'react'
 import { useScroll } from 'framer-motion'
 import * as THREE from 'three'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import { PerspectiveCamera } from '@react-three/drei'
 
 // Floating Cell Sphere with physics
 function Cell({ position, delay }: { position: [number, number, number]; delay: number }) {
@@ -200,7 +201,7 @@ function Scene() {
   return (
     <>
       {/* Camera */}
-      <perspectiveCamera
+      <PerspectiveCamera
         ref={cameraRef}
         makeDefault
         position={[0, 0, 8]}
