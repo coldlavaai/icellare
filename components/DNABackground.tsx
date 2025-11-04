@@ -11,7 +11,7 @@ import {
 } from '@react-three/postprocessing'
 import { PerspectiveCamera, Environment } from '@react-three/drei'
 
-// Subtle organic particle (not glowing orb)
+// Ultra-subtle particle (barely visible)
 function Particle({ position, delay }: { position: [number, number, number]; delay: number }) {
   const meshRef = useRef<THREE.Mesh>(null)
   const { scrollYProgress } = useScroll()
@@ -22,42 +22,38 @@ function Particle({ position, delay }: { position: [number, number, number]; del
     const time = state.clock.elapsedTime + delay
     const scroll = scrollYProgress.get()
 
-    // Very gentle floating
-    meshRef.current.position.x = position[0] + Math.sin(time * 0.2) * 0.3
-    meshRef.current.position.y = position[1] + Math.cos(time * 0.25) * 0.2 - scroll * 10
-    meshRef.current.position.z = position[2] + Math.sin(time * 0.15) * 0.2
+    meshRef.current.position.x = position[0] + Math.sin(time * 0.15) * 0.2
+    meshRef.current.position.y = position[1] + Math.cos(time * 0.2) * 0.15 - scroll * 10
+    meshRef.current.position.z = position[2] + Math.sin(time * 0.1) * 0.15
 
-    // Minimal rotation
-    meshRef.current.rotation.x = time * 0.1
-    meshRef.current.rotation.y = time * 0.15
+    meshRef.current.rotation.x = time * 0.08
+    meshRef.current.rotation.y = time * 0.1
 
-    // Very subtle scale variation
-    const scale = 0.8 + Math.sin(time * 0.8) * 0.05
+    const scale = 0.6 + Math.sin(time * 0.6) * 0.03
     meshRef.current.scale.setScalar(scale)
   })
 
   return (
     <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[0.08, 32, 32]} />
+      <sphereGeometry args={[0.06, 24, 24]} />
       <meshStandardMaterial
-        color="#C9B896"
-        metalness={0.2}
-        roughness={0.6}
+        color="#D8D8D8"
+        metalness={0.3}
+        roughness={0.7}
         transparent
-        opacity={0.3}
+        opacity={0.15}
       />
     </mesh>
   )
 }
 
-// Photorealistic DNA Helix - biological/wet appearance
+// Sophisticated neutral DNA Helix
 function DNAHelix() {
   const { scrollYProgress } = useScroll()
   const strand1Ref = useRef<THREE.Mesh>(null)
   const strand2Ref = useRef<THREE.Mesh>(null)
   const rungsRef = useRef<THREE.Group>(null)
 
-  // Ultra-smooth helix curves
   const { strand1Curve, strand2Curve, rungs } = useMemo(() => {
     const turns = 8
     const height = 25
@@ -93,8 +89,8 @@ function DNAHelix() {
     const curve2 = new THREE.CatmullRomCurve3(points2)
 
     return {
-      strand1Curve: new THREE.TubeGeometry(curve1, segments, 0.12, 32, false),
-      strand2Curve: new THREE.TubeGeometry(curve2, segments, 0.12, 32, false),
+      strand1Curve: new THREE.TubeGeometry(curve1, segments, 0.11, 32, false),
+      strand2Curve: new THREE.TubeGeometry(curve2, segments, 0.11, 32, false),
       rungs: rungPositions,
     }
   }, [])
@@ -117,39 +113,39 @@ function DNAHelix() {
 
   return (
     <group>
-      {/* Strand 1 - Biological material with subtle sheen */}
+      {/* Strand 1 - Cool silver-white */}
       <mesh ref={strand1Ref} geometry={strand1Curve} castShadow receiveShadow>
         <meshPhysicalMaterial
-          color="#B8A080"
-          metalness={0.15}
-          roughness={0.35}
-          transmission={0.1}
+          color="#C8C8C8"
+          metalness={0.25}
+          roughness={0.3}
+          transmission={0.15}
           thickness={0.4}
-          envMapIntensity={0.8}
-          clearcoat={0.6}
-          clearcoatRoughness={0.2}
-          emissive="#8B7355"
-          emissiveIntensity={0.08}
+          envMapIntensity={1.2}
+          clearcoat={0.8}
+          clearcoatRoughness={0.15}
+          emissive="#A8A8A8"
+          emissiveIntensity={0.05}
         />
       </mesh>
 
-      {/* Strand 2 - Slightly different tone for depth */}
+      {/* Strand 2 - Slightly lighter for depth */}
       <mesh ref={strand2Ref} geometry={strand2Curve} castShadow receiveShadow>
         <meshPhysicalMaterial
-          color="#A89674"
-          metalness={0.12}
-          roughness={0.4}
-          transmission={0.08}
+          color="#D4D4D4"
+          metalness={0.2}
+          roughness={0.35}
+          transmission={0.12}
           thickness={0.4}
-          envMapIntensity={0.75}
-          clearcoat={0.5}
-          clearcoatRoughness={0.25}
-          emissive="#7D6B4F"
-          emissiveIntensity={0.06}
+          envMapIntensity={1.1}
+          clearcoat={0.7}
+          clearcoatRoughness={0.2}
+          emissive="#B0B0B0"
+          emissiveIntensity={0.04}
         />
       </mesh>
 
-      {/* Connection Rungs - Subtle biological bridges */}
+      {/* Connection Rungs - Subtle neutral bridges */}
       <group ref={rungsRef}>
         {rungs.map((rung, i) => {
           const midpoint = new THREE.Vector3().lerpVectors(rung.pos1, rung.pos2, 0.5)
@@ -163,18 +159,18 @@ function DNAHelix() {
 
           return (
             <mesh key={i} position={midpoint} quaternion={quaternion} castShadow receiveShadow>
-              <cylinderGeometry args={[0.04, 0.04, length, 12]} />
+              <cylinderGeometry args={[0.035, 0.035, length, 12]} />
               <meshPhysicalMaterial
-                color="#9D8B6E"
-                metalness={0.1}
-                roughness={0.45}
-                transmission={0.05}
+                color="#BEBEBE"
+                metalness={0.15}
+                roughness={0.4}
+                transmission={0.08}
                 thickness={0.3}
-                envMapIntensity={0.6}
-                clearcoat={0.4}
-                clearcoatRoughness={0.3}
+                envMapIntensity={1}
+                clearcoat={0.6}
+                clearcoatRoughness={0.25}
                 transparent
-                opacity={0.85}
+                opacity={0.8}
               />
             </mesh>
           )
@@ -184,21 +180,20 @@ function DNAHelix() {
   )
 }
 
-// Scientific atmospheric scene
+// Clean sophisticated scene
 function Scene() {
   const { scrollYProgress } = useScroll()
   const cameraRef = useRef<THREE.PerspectiveCamera>(null)
-  const fogRef = useRef<THREE.Fog>(null)
 
-  // Sparse, subtle particles
+  // Very sparse particles
   const particles = useMemo(() => {
     const positions: Array<[number, number, number]> = []
-    for (let i = 0; i < 40; i++) {
-      const angle = (i / 40) * Math.PI * 14
-      const radius = 3.5 + Math.random() * 2
-      const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 1.5
-      const y = (i / 40) * 25 - 12 + (Math.random() - 0.5) * 2
-      const z = Math.sin(angle) * radius + (Math.random() - 0.5) * 1.5
+    for (let i = 0; i < 25; i++) {
+      const angle = (i / 25) * Math.PI * 12
+      const radius = 3.8 + Math.random() * 1.8
+      const x = Math.cos(angle) * radius + (Math.random() - 0.5) * 1.2
+      const y = (i / 25) * 25 - 12 + (Math.random() - 0.5) * 2
+      const z = Math.sin(angle) * radius + (Math.random() - 0.5) * 1.2
       positions.push([x, y, z])
     }
     return positions
@@ -216,10 +211,9 @@ function Scene() {
 
   return (
     <>
-      {/* Fog for depth and atmosphere */}
-      <fog ref={fogRef} attach="fog" args={['#1a1612', 5, 20]} />
+      {/* Subtle atmospheric fog */}
+      <fog attach="fog" args={['#E8E8E8', 8, 22]} />
 
-      {/* Scientific Camera */}
       <PerspectiveCamera
         ref={cameraRef}
         makeDefault
@@ -229,52 +223,51 @@ function Scene() {
         far={100}
       />
 
-      {/* HDR Environment - natural lighting */}
-      <Environment preset="dawn" />
+      {/* Neutral environment */}
+      <Environment preset="apartment" />
 
-      {/* Clinical Lighting Setup */}
-      <ambientLight intensity={0.3} color="#E8DCC8" />
+      {/* Soft clinical lighting */}
+      <ambientLight intensity={0.4} color="#FFFFFF" />
       <directionalLight
-        position={[8, 8, 6]}
-        intensity={0.8}
-        color="#F5E6D3"
+        position={[6, 8, 5]}
+        intensity={0.6}
+        color="#F8F8F8"
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
       <directionalLight
-        position={[-6, -4, -4]}
-        intensity={0.4}
-        color="#D4C4A8"
+        position={[-5, -3, -4]}
+        intensity={0.3}
+        color="#F0F0F0"
       />
-      <pointLight position={[0, 6, 4]} intensity={0.6} color="#E8D4B8" distance={12} decay={2} />
+      <pointLight position={[0, 5, 4]} intensity={0.4} color="#FFFFFF" distance={12} decay={2} />
       <spotLight
-        position={[4, 8, 6]}
-        angle={0.35}
+        position={[3, 7, 5]}
+        angle={0.4}
         penumbra={1}
-        intensity={0.7}
-        color="#F0E6D8"
+        intensity={0.5}
+        color="#FFFFFF"
         castShadow
       />
 
-      {/* DNA Helix */}
       <DNAHelix />
 
-      {/* Subtle atmospheric particles */}
+      {/* Ultra-subtle particles */}
       {particles.map((pos, i) => (
-        <Particle key={i} position={pos} delay={i * 0.1} />
+        <Particle key={i} position={pos} delay={i * 0.12} />
       ))}
 
-      {/* Subtle post-processing */}
+      {/* Minimal post-processing */}
       <EffectComposer multisampling={8}>
         <Bloom
-          intensity={0.4}
-          luminanceThreshold={0.6}
+          intensity={0.2}
+          luminanceThreshold={0.75}
           luminanceSmoothing={0.9}
           height={300}
           mipmapBlur
         />
-        <Vignette eskil={false} offset={0.25} darkness={0.5} />
+        <Vignette eskil={false} offset={0.3} darkness={0.35} />
       </EffectComposer>
     </>
   )
@@ -282,7 +275,7 @@ function Scene() {
 
 export default function DNABackground() {
   return (
-    <div className="fixed inset-0 -z-10 bg-gradient-to-br from-[#2a2218] via-[#3d3024] to-[#4a3a2a]">
+    <div className="fixed inset-0 -z-10 bg-gradient-to-br from-[#E8E8E8] via-[#F0F0F0] to-[#F8F8F8]">
       <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
         <Suspense fallback={null}>
           <Scene />
