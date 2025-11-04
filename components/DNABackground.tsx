@@ -71,7 +71,7 @@ export default function DNABackground() {
   const turns = isMobile ? 6 : 10
 
   // Convert rotation MotionValue to transform string
-  const rotateY = useTransform(baseRotation, (value) => `rotateY(${value}deg)`)
+  const rotateY = useTransform(baseRotation, (value) => "rotateY(" + value + "deg)")
 
   return (
     <motion.div
