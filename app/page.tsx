@@ -41,12 +41,14 @@ function ServiceCard({
   title,
   description,
   image,
-  index
+  index,
+  link
 }: {
   title: string
   description: string
   image?: string
   index: number
+  link: string
 }) {
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -54,14 +56,15 @@ function ServiceCard({
   })
 
   return (
-    <motion.div
-      ref={ref}
-      initial="hidden"
-      animate={inView ? "visible" : "hidden"}
-      variants={fadeInUp}
-      transition={{ delay: index * 0.1 }}
-      className="group relative overflow-hidden rounded-[2rem] h-full"
-    >
+    <Link href={link}>
+      <motion.div
+        ref={ref}
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={fadeInUp}
+        transition={{ delay: index * 0.1 }}
+        className="group relative overflow-hidden rounded-[2rem] h-full cursor-pointer"
+      >
       <div className="absolute inset-0 bg-gradient-to-br from-rose-gold/20 via-champagne/10 to-bronze/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
       <div className="relative backdrop-blur-2xl bg-white/60 border border-white/60 p-10 h-full flex flex-col shadow-2xl hover:shadow-rose-gold/30 transition-all duration-700 group-hover:border-rose-gold/50">
@@ -89,7 +92,7 @@ function ServiceCard({
         </p>
 
         <motion.div
-          className="mt-6 inline-flex items-center text-rose-gold font-semibold cursor-pointer"
+          className="mt-6 inline-flex items-center text-rose-gold font-semibold"
           whileHover={{ x: 10 }}
           transition={{ duration: 0.3 }}
         >
@@ -97,6 +100,7 @@ function ServiceCard({
         </motion.div>
       </div>
     </motion.div>
+    </Link>
   )
 }
 
@@ -258,33 +262,39 @@ export default function Home() {
               title="Stem Cell Banking"
               description="Secure your regenerative health for the future by exploring MSC Stem Cell Banking. Your cells, preserved at their peak, ready when you need them."
               index={0}
+              link="/stem-cell-banking"
             />
             <ServiceCard
               title="Stem Cell Technology"
               description="MSC Stem cells derived from your own body—either Bone Marrow or Adipose tissue—ensure a safe and effective approach to treatment and recovery."
               index={1}
+              link="/stem-cell-technology"
             />
             <ServiceCard
               title="Genetic Testing"
               description="Advanced Gene testing and health check-ups pave the way for future prevention with Next Generation Sequencing (NGS) technique."
               index={2}
+              link="/genetic-testing"
             />
             <ServiceCard
               title="Vitamin IV Therapy"
               description="Tailored Nutrient Delivery based on genetic testing and blood work to address your specific deficiencies or health goals."
               image="/images/vitamin-drip.png"
               index={3}
+              link="/vitamin-therapy"
             />
             <ServiceCard
               title="Aesthetics"
               description="Non-invasive, painless methods that require no downtime, including personal cellular injectables to enhance your natural beauty."
               image="/images/rejuvenation.png"
               index={4}
+              link="/aesthetics"
             />
             <ServiceCard
               title="Wellness & Spa"
               description="Physiotherapy through physical rehabilitation, injury prevention, and health and fitness to support your recovery journey."
               index={5}
+              link="/wellness-spa"
             />
           </div>
         </div>
