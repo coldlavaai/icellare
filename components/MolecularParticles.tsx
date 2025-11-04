@@ -14,7 +14,7 @@ interface MolecularParticle {
   velocity: THREE.Vector3
   rotation: THREE.Euler
   rotationSpeed: THREE.Vector3
-  type: 'peptide' | 'platelet' | 'antibody' | 'collagen' | 'growth-factor' | 'hormone' | 'vitamin' | 'stem-cell' | 'sperm' | 'egg'
+  type: 'peptide' | 'platelet' | 'antibody' | 'collagen' | 'growth-factor' | 'hormone' | 'vitamin' | 'stem-cell' | 'sperm' | 'egg' | 'logo-icon'
   color: THREE.Color
   scale: number
 }
@@ -294,6 +294,49 @@ function createEggGeometry() {
   return group
 }
 
+// Logo icon - stylized circular brand mark
+function createLogoIconGeometry() {
+  const group = new THREE.Group()
+
+  // Outer ring
+  const outerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.1, 0.015, 8, 16)
+  )
+  group.add(outerRing)
+
+  // Inner geometric pattern (4-pointed star/cross)
+  for (let i = 0; i < 4; i++) {
+    const angle = (i / 4) * Math.PI * 2
+    const line = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.008, 0.12, 6)
+    )
+    line.position.x = Math.cos(angle + Math.PI / 4) * 0.04
+    line.position.z = Math.sin(angle + Math.PI / 4) * 0.04
+    line.rotation.z = angle
+    line.rotation.x = Math.PI / 2
+    group.add(line)
+  }
+
+  // Center sphere
+  const center = new THREE.Mesh(
+    new THREE.SphereGeometry(0.025, 8, 8)
+  )
+  group.add(center)
+
+  // Four small accent spheres
+  for (let i = 0; i < 4; i++) {
+    const angle = (i / 4) * Math.PI * 2
+    const accent = new THREE.Mesh(
+      new THREE.SphereGeometry(0.015, 6, 6)
+    )
+    accent.position.x = Math.cos(angle) * 0.08
+    accent.position.z = Math.sin(angle) * 0.08
+    group.add(accent)
+  }
+
+  return group
+}
+
 export function MolecularParticles() {
   const particlesGroup = useRef<THREE.Group>(null)
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
@@ -311,7 +354,8 @@ export function MolecularParticles() {
       'hormone',
       'vitamin', 'vitamin',
       'stem-cell', 'stem-cell', 'stem-cell',
-      'sperm', 'egg'
+      'sperm', 'egg',
+      'logo-icon', 'logo-icon', 'logo-icon', 'logo-icon', 'logo-icon'
     ]
 
     for (let i = 0; i < count; i++) {
@@ -328,6 +372,8 @@ export function MolecularParticles() {
         color = BLUE_ACCENT.clone()
       } else if (type === 'growth-factor' || type === 'hormone') {
         color = GOLD_LIGHT.clone()
+      } else if (type === 'logo-icon') {
+        color = GOLD.clone() // Brand color for logo icons
       } else {
         color = WHITE.clone()
       }
@@ -421,6 +467,9 @@ export function MolecularParticles() {
           break
         case 'egg':
           geometry = createEggGeometry()
+          break
+        case 'logo-icon':
+          geometry = createLogoIconGeometry()
           break
         default:
           geometry = createStemCellGeometry()
