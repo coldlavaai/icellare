@@ -1,6 +1,6 @@
 'use client'
 
-import DNAHelix3D from '@/components/DNAHelix3D'
+// import DNAHelix3D from '@/components/DNAHelix3D'
 import Navigation from '@/components/Navigation'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
@@ -64,7 +64,7 @@ export default function AestheticsPage() {
 
   return (
     <main className="relative bg-cream overflow-hidden">
-      <DNAHelix3D />
+      {/* <DNAHelix3D /> */}
       <Navigation />
 
       {/* Hero Section */}
