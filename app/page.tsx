@@ -286,45 +286,49 @@ export default function Home() {
             <FloatingCell key={i} index={i} delay={i * 0.8} />
           ))}
 
-          {/* Central glass card with logo and text */}
+          {/* Central hero content - floating over DNA */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={heroInView ? { opacity: 1, scale: 1 } : {}}
+            initial={{ opacity: 0, y: 40 }}
+            animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto max-w-2xl"
+            className="relative mx-auto max-w-2xl space-y-8"
           >
-            {/* Glass card */}
-            <div className="relative backdrop-blur-3xl bg-white/40 border-2 border-white/60 rounded-3xl px-12 py-16 shadow-2xl overflow-hidden">
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/30 to-white/50 rounded-3xl" />
+            {/* Logo with fade on scroll */}
+            <motion.div
+              style={{ opacity: heroOpacity }}
+              className="flex justify-center"
+            >
+              <Image
+                src="/logo.png"
+                alt="iCellaré Logo"
+                width={120}
+                height={120}
+                className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl"
+                style={{
+                  filter: 'drop-shadow(0 0 40px rgba(133, 113, 77, 0.4)) drop-shadow(0 0 80px rgba(133, 113, 77, 0.2))'
+                }}
+              />
+            </motion.div>
 
-              {/* Content */}
-              <div className="relative space-y-8">
-                {/* Logo with fade on scroll */}
-                <motion.div
-                  style={{ opacity: heroOpacity }}
-                  className="flex justify-center"
-                >
-                  <Image
-                    src="/logo.png"
-                    alt="iCellaré Logo"
-                    width={120}
-                    height={120}
-                    className="w-24 h-24 md:w-32 md:h-32"
-                  />
-                </motion.div>
+            {/* iCellaré title */}
+            <h1
+              className="font-serif text-6xl md:text-7xl lg:text-8xl text-charcoal leading-tight"
+              style={{
+                textShadow: '0 4px 20px rgba(255, 255, 255, 0.8), 0 0 60px rgba(133, 113, 77, 0.3)'
+              }}
+            >
+              iCellaré
+            </h1>
 
-                {/* iCellaré title */}
-                <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-charcoal leading-tight">
-                  iCellaré
-                </h1>
-
-                {/* Lifespan Center subtitle */}
-                <p className="text-2xl md:text-3xl lg:text-4xl text-rose-gold font-serif italic">
-                  Lifespan Center
-                </p>
-              </div>
-            </div>
+            {/* Lifespan Center subtitle */}
+            <p
+              className="text-3xl md:text-4xl lg:text-5xl text-rose-gold font-serif italic"
+              style={{
+                textShadow: '0 4px 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(212, 175, 122, 0.4)'
+              }}
+            >
+              Lifespan Center
+            </p>
           </motion.div>
 
           {/* Scroll indicator */}
