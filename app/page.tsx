@@ -2,6 +2,7 @@
 
 import DNAHelix3D from '@/components/DNAHelix3D'
 import Navigation from '@/components/Navigation'
+import PageWithLoading from '@/components/PageWithLoading'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
@@ -166,9 +167,10 @@ export default function Home() {
   const [heroRef, heroInView] = useInView({ triggerOnce: true, threshold: 0.1 })
 
   return (
-    <main className="relative bg-cream overflow-hidden">
-      <DNAHelix3D />
-      <Navigation />
+    <PageWithLoading>
+      <main className="relative bg-cream overflow-hidden">
+        <DNAHelix3D />
+        <Navigation />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center px-6 py-32" style={{ zIndex: 10 }}>
@@ -398,5 +400,6 @@ export default function Home() {
         </div>
       </footer>
     </main>
+    </PageWithLoading>
   )
 }
