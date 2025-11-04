@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
+import Footer from '@/components/Footer'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
@@ -263,38 +264,42 @@ export default function Home() {
             <ServiceCard
               title="Stem Cell Banking"
               description="Secure your regenerative health for the future by exploring MSC Stem Cell Banking. Your cells, preserved at their peak, ready when you need them."
+              image="https://static.wixstatic.com/media/abb1e6_20f08c48277b40c587abca600014fe22~mv2.jpg"
               index={0}
               link="/stem-cell-banking"
             />
             <ServiceCard
               title="Stem Cell Technology"
               description="MSC Stem cells derived from your own body—either Bone Marrow or Adipose tissue—ensure a safe and effective approach to treatment and recovery."
+              image="https://static.wixstatic.com/media/abb1e6_20f08c48277b40c587abca600014fe22~mv2.jpg"
               index={1}
               link="/stem-cell-technology"
             />
             <ServiceCard
               title="Genetic Testing"
               description="Advanced Gene testing and health check-ups pave the way for future prevention with Next Generation Sequencing (NGS) technique."
+              image="https://static.wixstatic.com/media/aa834f_e345df4a6ace4e1faaf9eea60816430a~mv2.jpg"
               index={2}
               link="/genetic-testing"
             />
             <ServiceCard
               title="Vitamin IV Therapy"
               description="Tailored Nutrient Delivery based on genetic testing and blood work to address your specific deficiencies or health goals."
-              image="/images/vitamin-drip.png"
+              image="https://static.wixstatic.com/media/aa834f_138764b1ca23465899fa7c624a8cbc84~mv2.png"
               index={3}
               link="/vitamin-therapy"
             />
             <ServiceCard
               title="Aesthetics"
               description="Non-invasive, painless methods that require no downtime, including personal cellular injectables to enhance your natural beauty."
-              image="/images/rejuvenation.png"
+              image="https://static.wixstatic.com/media/aa834f_e0f66b6a82c84592b5de1e82b22eb172~mv2.png"
               index={4}
               link="/aesthetics"
             />
             <ServiceCard
               title="Wellness & Spa"
               description="Physiotherapy through physical rehabilitation, injury prevention, and health and fitness to support your recovery journey."
+              image="https://static.wixstatic.com/media/aa834f_c9ce10a5b2f34263a17440f2a23e657a~mv2.png"
               index={5}
               link="/wellness-spa"
             />
@@ -323,12 +328,13 @@ export default function Home() {
               embracing you from day 0 through your entire lifespan.
             </p>
 
-            <div className="relative w-full h-64 rounded-3xl overflow-hidden mt-12">
+            <div className="relative w-full h-auto mt-12">
               <Image
-                src="/images/certificates.png"
-                alt="Certifications"
-                fill
-                className="object-contain"
+                src="https://static.wixstatic.com/media/aa834f_bafd0de1f6bb4648a0e4dd93297ae2e5~mv2.png"
+                alt="iCellaré Certifications - ISO, PICS/GMP, ISCT Standards"
+                width={1320}
+                height={493}
+                className="w-full h-auto"
               />
             </div>
           </motion.div>
@@ -373,42 +379,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="relative bg-charcoal text-cream py-20 px-6" style={{ zIndex: 10 }}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-16">
-          <div>
-            <h3 className="font-serif text-3xl mb-6 text-rose-gold">Contact</h3>
-            <p className="mb-2 text-cream/80">102 Phutthamonthon Sai 1</p>
-            <p className="mb-2 text-cream/80">Bang Ramad, Taling Chan</p>
-            <p className="mb-2 text-cream/80">Bangkok 10170, Thailand</p>
-            <p className="mb-2 mt-6 text-cream/80">Phone: (+66)80-856-5999</p>
-            <p className="text-cream/80">Email: info@icellare.com</p>
-          </div>
-
-          <div>
-            <h3 className="font-serif text-3xl mb-6 text-rose-gold">Services</h3>
-            <ul className="space-y-3 text-cream/80">
-              <li className="hover:text-rose-gold transition-colors cursor-pointer">Stem Cell Banking</li>
-              <li className="hover:text-rose-gold transition-colors cursor-pointer">Stem Cell Technology</li>
-              <li className="hover:text-rose-gold transition-colors cursor-pointer">Genetic Testing</li>
-              <li className="hover:text-rose-gold transition-colors cursor-pointer">Vitamin IV Therapy</li>
-              <li className="hover:text-rose-gold transition-colors cursor-pointer">Aesthetics</li>
-              <li className="hover:text-rose-gold transition-colors cursor-pointer">Wellness & Spa</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-serif text-3xl mb-6 text-rose-gold">About</h3>
-            <p className="leading-relaxed text-cream/80">
-              State-of-the-art autologous stem cell technology, rejuvenation innovation,
-              and personalized care in the heart of Bangkok.
-            </p>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto mt-16 pt-10 border-t border-rose-gold/20 text-center text-cream/60">
-          <p>&copy; {new Date().getFullYear()} iCellaré Lifespan Center. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </main>
   )
 }
