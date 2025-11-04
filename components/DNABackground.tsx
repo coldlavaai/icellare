@@ -1,16 +1,16 @@
 'use client'
 
-import { motion, useScroll, useMotionValue, useAnimationFrame, useVelocity, useTransform } from 'framer-motion'
-import { useRef, useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { useState, useEffect } from 'react'
 
-// Generate DNA helix SVG path with 3D-like appearance
-function generateDNAHelixPath(width: number, height: number, turns: number, radius: number, offset: number = 0, phase: number = 0) {
+// Generate DNA helix SVG path
+function generateDNAHelixPath(width: number, height: number, turns: number, radius: number, offset: number = 0) {
   const points: string[] = []
   const segments = 200
 
   for (let i = 0; i <= segments; i++) {
     const t = i / segments
-    const angle = (t * Math.PI * 2 * turns) + offset + phase
+    const angle = (t * Math.PI * 2 * turns) + offset
     const x = width / 2 + Math.sin(angle) * radius
     const y = t * height
 
@@ -25,14 +25,7 @@ function generateDNAHelixPath(width: number, height: number, turns: number, radi
 }
 
 export default function DNABackground() {
-  const { scrollYProgress } = useScroll()
-  const scrollVelocity = useVelocity(scrollYProgress)
-  const baseRotation = useMotionValue(0)
   const [isMobile, setIsMobile] = useState(false)
-
-  // Track previous scroll for direction
-  const prevScroll = useRef(0)
-  const rotationSpeed = useRef(0)
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
@@ -41,45 +34,14 @@ export default function DNABackground() {
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // 3D Corkscrew rotation based on scroll direction and velocity
-  useAnimationFrame((t, delta) => {
-    if (isMobile) return
-
-    const currentScroll = scrollYProgress.get()
-    const currentVelocity = scrollVelocity.get()
-
-    // Determine scroll direction
-    const scrollDirection = currentScroll > prevScroll.current ? 1 : -1
-    prevScroll.current = currentScroll
-
-    // Base slow rotation
-    const baseSpeed = 0.3 // degrees per frame
-
-    // Add velocity-based rotation (much more dramatic)
-    const velocityBoost = Math.abs(currentVelocity) * 500
-
-    // Total rotation speed with direction
-    rotationSpeed.current = (baseSpeed + velocityBoost) * scrollDirection
-
-    // Apply rotation
-    baseRotation.set(baseRotation.get() + rotationSpeed.current)
-  })
-
-  // DNA helix configuration - ONE simple helix
   const helixHeight = isMobile ? 1800 : 2400
   const helixRadius = isMobile ? 80 : 120
   const turns = isMobile ? 6 : 10
 
-  // Convert rotation MotionValue to transform string
-  const rotateY = useTransform(baseRotation, (value) => "rotateY(" + value + "deg)")
-
   return (
-    <motion.div
-      className="fixed inset-0 -z-10 overflow-hidden"
-      style={{
-        background: 'linear-gradient(135deg, #F8F6F3 0%, #F2E5D0 50%, #E8DBC8 100%)',
-      }}
-    >
+    <div className="fixed inset-0 -z-10 overflow-hidden" style={{
+      background: 'linear-gradient(135deg, #F8F6F3 0%, #F2E5D0 50%, #E8DBC8 100%)',
+    }}>
       {/* Subtle animated grid */}
       <motion.div
         className="absolute inset-0 opacity-10"
@@ -133,24 +95,22 @@ export default function DNABackground() {
         )
       })}
 
-      {/* ONE DNA HELIX with 3D CORKSCREW rotation */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{
-          perspective: '2000px',
-        }}
-      >
+      {/* DNA HELIX with simple 3D rotation */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{
+        perspective: '2000px',
+      }}>
         <motion.div
           className="relative"
-          style={{
-            transform: rotateY,
-            transformStyle: 'preserve-3d',
+          animate={{
+            rotateY: [0, 360],
           }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
           transition={{
-            duration: 2,
-            ease: [0.25, 0.1, 0.0, 1.0],
+            duration: 60,
+            repeat: Infinity,
+            ease: 'linear',
+          }}
+          style={{
+            transformStyle: 'preserve-3d',
           }}
         >
           {/* Massive central glow */}
@@ -171,7 +131,7 @@ export default function DNABackground() {
             }}
           />
 
-          {/* DNA Helix SVG - ONE beautiful double helix */}
+          {/* DNA Helix SVG */}
           <svg
             width={isMobile ? "400" : "600"}
             height={helixHeight}
@@ -267,7 +227,7 @@ export default function DNABackground() {
                 />
               )
             })}
-          </motion.svg>
+          </svg>
         </motion.div>
       </div>
 
@@ -305,6 +265,6 @@ export default function DNABackground() {
           />
         )
       })}
-    </motion.div>
+    </div>
   )
 }
