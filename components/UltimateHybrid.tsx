@@ -9,6 +9,7 @@ import { BlendFunction } from 'postprocessing'
 import { useScrollStore } from '@/stores/scrollStore'
 import { ArchitecturalDNA } from './ArchitecturalDNA'
 import { FloatingParticles } from './FloatingParticles'
+import { DynamicLighting } from './DynamicLighting'
 
 // Cinematic Camera System - responds to scroll
 function CinematicCamera() {
@@ -95,11 +96,11 @@ function Scene() {
         far={1000}
       />
 
-      {/* Clean professional lighting */}
+      {/* Ambient base light */}
       <ambientLight intensity={0.6} color="#FFFFFF" />
-      <directionalLight position={[10, 10, 5]} intensity={1.2} color="#F8F8F8" castShadow />
-      <directionalLight position={[-5, -3, -4]} intensity={0.5} color="#F0F0F0" />
-      <pointLight position={[0, 5, 8]} intensity={0.8} color="#FFFFFF" distance={20} decay={2} />
+
+      {/* Dynamic scroll-responsive lighting */}
+      <DynamicLighting />
 
       {/* Bright environment */}
       <Environment preset="apartment" />
