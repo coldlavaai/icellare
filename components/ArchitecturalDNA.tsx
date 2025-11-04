@@ -60,12 +60,12 @@ function generateDNAHelix() {
   return { strand1, strand2, basePairs }
 }
 
-// Base pair colors (scientifically accurate)
+// Base pair colors (matching site color scheme)
 const basePairColors = {
-  A: 0xff6b6b, // Adenine - red
-  T: 0x4ecdc4, // Thymine - cyan
-  G: 0xffe66d, // Guanine - yellow
-  C: 0x95e1d3  // Cytosine - green
+  A: 0x85714d, // Adenine - gold
+  T: 0xc7d9ed, // Thymine - soft blue
+  G: 0xa89968, // Guanine - light gold
+  C: 0xb3c9e0  // Cytosine - lighter blue
 }
 
 export function ArchitecturalDNA() {
@@ -106,40 +106,40 @@ export function ArchitecturalDNA() {
 
   return (
     <group ref={dnaRef} position={[0, 0, 0]}>
-      {/* Strand 1 - Glass-like chrome */}
+      {/* Strand 1 - Shimmering gold glass */}
       <mesh geometry={strand1Geometry}>
         <meshPhysicalMaterial
-          color="#ffffff"
-          metalness={0.8}
+          color="#85714d"
+          metalness={0.9}
           roughness={0.1}
           transparent
-          opacity={0.9}
-          transmission={0.5}
+          opacity={0.95}
+          transmission={0.3}
           thickness={0.5}
           ior={1.5}
           clearcoat={1}
-          clearcoatRoughness={0.1}
-          envMapIntensity={1.5}
-          emissive="#64c8ff"
-          emissiveIntensity={0.3}
+          clearcoatRoughness={0.05}
+          envMapIntensity={2}
+          emissive="#a89968"
+          emissiveIntensity={0.4}
         />
       </mesh>
 
-      {/* Strand 2 - Glass-like chrome */}
+      {/* Strand 2 - Soft blue glass */}
       <mesh geometry={strand2Geometry}>
         <meshPhysicalMaterial
-          color="#ffffff"
+          color="#c7d9ed"
           metalness={0.8}
           roughness={0.1}
           transparent
-          opacity={0.9}
-          transmission={0.5}
+          opacity={0.95}
+          transmission={0.3}
           thickness={0.5}
           ior={1.5}
           clearcoat={1}
-          clearcoatRoughness={0.1}
-          envMapIntensity={1.5}
-          emissive="#ff6b9d"
+          clearcoatRoughness={0.05}
+          envMapIntensity={2}
+          emissive="#b3c9e0"
           emissiveIntensity={0.3}
         />
       </mesh>
