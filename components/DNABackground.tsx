@@ -27,6 +27,7 @@ function generateDNAHelixPath(width: number, height: number, turns: number, radi
 export default function DNABackground() {
   const { scrollYProgress } = useScroll()
   const baseRotation = useMotionValue(0)
+  const combinedRotation = useMotionValue(0)
   const timeRef = useRef(0)
   const [animationsReady, setAnimationsReady] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -51,17 +52,11 @@ export default function DNABackground() {
   useAnimationFrame((t) => {
     if (!animationsReady || isMobile) return
     timeRef.current = t
-    baseRotation.set((t / 1000) * 3) // 3 degrees per second
+    const base = (t / 1000) * 3 // 3 degrees per second
+    const scroll = scrollYProgress.get() * 720 // 0-720 degrees based on scroll
+    baseRotation.set(base)
+    combinedRotation.set(base + scroll)
   })
-
-  // Scroll-based rotation boost - disabled on mobile for performance
-  const scrollRotation = useTransform(scrollYProgress, [0, 1], isMobile ? [0, 0] : [0, 720])
-
-  // Combine rotations
-  const combinedRotation = useTransform(
-    [baseRotation, scrollRotation],
-    ([base, scroll]: [number, number]) => base + scroll
-  )
 
   // Logo/DNA opacity - starts at 0, fades in
   const dnaOpacity = useMotionValue(0)
