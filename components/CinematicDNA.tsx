@@ -303,6 +303,10 @@ function Scene() {
           radius={0.1}
           intensity={50}
           luminanceInfluence={0.6}
+          worldDistanceThreshold={0.5}
+          worldDistanceFalloff={0.5}
+          worldProximityThreshold={0.5}
+          worldProximityFalloff={0.5}
         />
 
         {/* Chromatic Aberration - Lens distortion */}
