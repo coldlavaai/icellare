@@ -11,13 +11,16 @@
   "dependencies": {
     "@builder.io/react": "^4.0.0",
     "@builder.io/sdk": "^2.0.0",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.4.0",
     "framer-motion": "^11.0.0",
     "locomotive-scroll": "^4.1.4",
     "next": "14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
     "react-intersection-observer": "^9.10.0",
-    "sharp": "^0.33.0"
+    "sharp": "^0.33.0",
+    "three": "^0.181.0"
   },
   "devDependencies": {
     "@types/locomotive-scroll": "^4.1.3",

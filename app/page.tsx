@@ -1,8 +1,7 @@
 'use client'
 
-// import DNAHelix3D from '@/components/DNAHelix3D'
+import DNABackground from '@/components/DNABackground'
 import Navigation from '@/components/Navigation'
-// import PageWithLoading from '@/components/PageWithLoading'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
@@ -168,7 +167,7 @@ export default function Home() {
 
   return (
     <main className="relative bg-cream overflow-hidden">
-      {/* <DNAHelix3D /> */}
+      <DNABackground />
       <Navigation />
 
       {/* Hero Section */}
