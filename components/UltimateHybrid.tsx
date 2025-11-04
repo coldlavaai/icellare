@@ -5,6 +5,7 @@ import { useRef, useMemo, Suspense, useEffect } from 'react'
 import * as THREE from 'three'
 import { PerspectiveCamera, Environment } from '@react-three/drei'
 import { useScrollStore } from '@/stores/scrollStore'
+import { ArchitecturalDNA } from './ArchitecturalDNA'
 
 // Cinematic Camera System - responds to scroll
 function CinematicCamera() {
@@ -72,25 +73,15 @@ function CinematicCamera() {
   return null
 }
 
-// Temporary test cube to verify camera movement
-function TestCube() {
-  return (
-    <mesh position={[0, 0, 0]}>
-      <boxGeometry args={[2, 2, 2]} />
-      <meshStandardMaterial color="#64c8ff" emissive="#64c8ff" emissiveIntensity={0.5} />
-    </mesh>
-  )
-}
-
 // Main Scene
 function Scene() {
   return (
     <>
-      {/* Black space background */}
-      <color attach="background" args={['#000000']} />
+      {/* Light clean background */}
+      <color attach="background" args={['#F5F5F5']} />
 
-      {/* Fog for depth */}
-      <fog attach="fog" args={['#000000', 10, 50]} />
+      {/* Subtle fog for depth */}
+      <fog attach="fog" args={['#F0F0F0', 15, 45]} />
 
       {/* Camera */}
       <PerspectiveCamera
@@ -101,19 +92,20 @@ function Scene() {
         far={1000}
       />
 
-      {/* Basic lighting */}
-      <ambientLight intensity={0.2} />
-      <directionalLight position={[10, 10, 5]} intensity={0.8} />
-      <pointLight position={[0, 0, 10]} intensity={1} color="#64c8ff" />
+      {/* Clean professional lighting */}
+      <ambientLight intensity={0.6} color="#FFFFFF" />
+      <directionalLight position={[10, 10, 5]} intensity={1.2} color="#F8F8F8" castShadow />
+      <directionalLight position={[-5, -3, -4]} intensity={0.5} color="#F0F0F0" />
+      <pointLight position={[0, 5, 8]} intensity={0.8} color="#FFFFFF" distance={20} decay={2} />
 
-      {/* Environment */}
-      <Environment preset="night" />
+      {/* Bright environment */}
+      <Environment preset="apartment" />
 
       {/* Camera system */}
       <CinematicCamera />
 
-      {/* Test cube - will replace with actual content */}
-      <TestCube />
+      {/* Architectural DNA Helix */}
+      <ArchitecturalDNA />
     </>
   )
 }
@@ -122,6 +114,9 @@ function Scene() {
 export default function UltimateHybrid() {
   return (
     <div className="fixed inset-0 -z-10">
+      {/* Light gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#F8F8F8] via-[#F0F0F0] to-[#E8E8E8]" />
+
       <Canvas
         shadows
         dpr={[1, 2]}
