@@ -1,11 +1,13 @@
 'use client'
 
-import DNABackground from '@/components/DNABackground'
+import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
 import Link from 'next/link'
+
+const DNABackground = dynamic(() => import('@/components/DNABackground'), { ssr: false })
 
 // Animation variants
 const fadeInUp = {
