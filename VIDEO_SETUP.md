@@ -1,18 +1,26 @@
 # DNA Video Setup Instructions
 
-## Video File Location
+## Video File Status: ✅ COMPRESSED AND INCLUDED
 
-The DNA background video is **NOT included in git** due to its large size (414MB).
+The DNA background video has been **successfully compressed** and is now included in the repository!
 
-**Required:** Place the video file at `public/dna-bg.mov`
+### Compression Details:
+- **Original:** `~/Downloads/dna_20s.mov` (414MB, ProRes HQ)
+- **Compressed:** `public/dna-bg.mp4` (1.1MB, H.264)
+- **Compression ratio:** 99.7% reduction
+- **Resolution:** 1280x720 (from 1920x1080)
+- **Format:** MP4 with H.264 codec for maximum browser compatibility
 
-### Where to get the video:
-- Source: `~/Downloads/dna_20s.mov`
-- Copy command: `cp ~/Downloads/dna_20s.mov public/dna-bg.mov`
+The compressed video maintains excellent quality while being small enough for GitHub and fast to load on the web.
 
-### For Production Deployment:
+## Original Setup Options (NO LONGER NEEDED)
 
-The video is too large for GitHub/Vercel. Options:
+<details>
+<summary>Click to see original compression options (for reference only)</summary>
+
+### For Production Deployment (if compression was needed):
+
+The original video was too large for GitHub/Vercel. Options:
 
 1. **Compress the video** (recommended):
    ```bash
@@ -38,6 +46,8 @@ The video is too large for GitHub/Vercel. Options:
    npm install @vercel/blob
    ```
    Upload video and use blob URL
+
+</details>
 
 ## Current Implementation
 

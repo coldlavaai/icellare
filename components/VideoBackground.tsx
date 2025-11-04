@@ -70,10 +70,10 @@ export default function VideoBackground() {
           <video
             ref={videoRef}
             className="h-full w-auto object-contain"
-            src="/dna-bg.mov"
+            src="/dna-bg.mp4"
             muted
             playsInline
-            preload="metadata"
+            preload="auto"
             style={{
               filter: 'blur(0.5px) brightness(0.85) contrast(1.1)',
               minHeight: '100%',
