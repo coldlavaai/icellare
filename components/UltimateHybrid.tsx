@@ -77,15 +77,66 @@ function CinematicCamera() {
   return null
 }
 
+// Dynamic Background - responds to scroll
+function DynamicBackground() {
+  const scrollProgress = useScrollStore((state) => state.scrollProgress)
+
+  useFrame(({ scene }) => {
+    // Background color keyframes for each section
+    const backgroundKeyframes = [
+      new THREE.Color(0xF8F8F8), // Hero - clean white
+      new THREE.Color(0xFFF5F2), // Stem Cells - warm pink tint
+      new THREE.Color(0xF2F8FF), // Genetics - cool blue tint
+      new THREE.Color(0xFFFCF2), // Vitamins - golden tint
+      new THREE.Color(0xFFF2F8), // Aesthetics - pink tint
+      new THREE.Color(0xFFFFFF)  // Contact - pure white
+    ]
+
+    const fogKeyframes = [
+      new THREE.Color(0xF0F0F0), // Hero
+      new THREE.Color(0xFFE8E0), // Stem Cells
+      new THREE.Color(0xE8F4FF), // Genetics
+      new THREE.Color(0xFFF8E8), // Vitamins
+      new THREE.Color(0xFFE8F4), // Aesthetics
+      new THREE.Color(0xFFFFFF)  // Contact
+    ]
+
+    // Interpolate between keyframes
+    const totalKeyframes = backgroundKeyframes.length
+    const keyframeProgress = scrollProgress * (totalKeyframes - 1)
+    const currentIndex = Math.floor(keyframeProgress)
+    const nextIndex = Math.min(currentIndex + 1, totalKeyframes - 1)
+    const t = keyframeProgress - currentIndex
+
+    // Smooth easing
+    const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+
+    // Update background color
+    const bgColor = backgroundKeyframes[currentIndex].clone().lerp(backgroundKeyframes[nextIndex], eased)
+    scene.background = bgColor
+
+    // Update fog color
+    if (scene.fog && scene.fog instanceof THREE.Fog) {
+      const fogColor = fogKeyframes[currentIndex].clone().lerp(fogKeyframes[nextIndex], eased)
+      scene.fog.color = fogColor
+    }
+  })
+
+  return null
+}
+
 // Main Scene
 function Scene() {
   return (
     <>
-      {/* Light clean background */}
-      <color attach="background" args={['#F5F5F5']} />
+      {/* Dynamic background - controlled by DynamicBackground component */}
+      <color attach="background" args={['#F8F8F8']} />
 
-      {/* Subtle fog for depth */}
+      {/* Fog for depth */}
       <fog attach="fog" args={['#F0F0F0', 15, 45]} />
+
+      {/* Dynamic background controller */}
+      <DynamicBackground />
 
       {/* Camera */}
       <PerspectiveCamera
@@ -138,10 +189,35 @@ function Scene() {
 
 // Main export
 export default function UltimateHybrid() {
+  const scrollProgress = useScrollStore((state) => state.scrollProgress)
+
+  // Calculate background gradient based on scroll
+  const getBackgroundStyle = () => {
+    const gradients = [
+      'linear-gradient(135deg, #F8F8F8 0%, #F0F0F0 50%, #E8E8E8 100%)', // Hero
+      'linear-gradient(135deg, #FFF5F2 0%, #FFE8E0 50%, #FFD4CC 100%)', // Stem Cells
+      'linear-gradient(135deg, #F2F8FF 0%, #E8F4FF 50%, #D4E8FF 100%)', // Genetics
+      'linear-gradient(135deg, #FFFCF2 0%, #FFF8E8 50%, #FFECD4 100%)', // Vitamins
+      'linear-gradient(135deg, #FFF2F8 0%, #FFE8F4 50%, #FFD4E8 100%)', // Aesthetics
+      'linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 50%, #F0F0F0 100%)'  // Contact
+    ]
+
+    const totalGradients = gradients.length
+    const progress = scrollProgress * (totalGradients - 1)
+    const currentIndex = Math.floor(progress)
+    const nextIndex = Math.min(currentIndex + 1, totalGradients - 1)
+
+    // Return current gradient (CSS can't interpolate gradients smoothly)
+    return gradients[Math.round(progress)]
+  }
+
   return (
     <div className="fixed inset-0 -z-10">
-      {/* Light gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#F8F8F8] via-[#F0F0F0] to-[#E8E8E8]" />
+      {/* Dynamic gradient background */}
+      <div
+        className="absolute inset-0 transition-all duration-1000 ease-in-out"
+        style={{ background: getBackgroundStyle() }}
+      />
 
       <Canvas
         shadows
