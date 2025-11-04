@@ -8,7 +8,7 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useScrollStore } from '@/stores/scrollStore'
 import { ArchitecturalDNA } from './ArchitecturalDNA'
-import { BiologicalParticles } from './BiologicalParticles'
+import { MolecularParticles } from './MolecularParticles'
 import { DynamicLighting } from './DynamicLighting'
 
 // Cinematic Camera System - responds to scroll
@@ -159,8 +159,8 @@ function Scene() {
       {/* Camera system */}
       <CinematicCamera />
 
-      {/* Biological particles - stem cells, DNA, sperm, eggs */}
-      <BiologicalParticles />
+      {/* Molecular particles - detailed biological structures */}
+      <MolecularParticles />
 
       {/* Architectural DNA Helix */}
       <ArchitecturalDNA />
