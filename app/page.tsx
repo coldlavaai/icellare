@@ -7,8 +7,9 @@ import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-mo
 import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useScrollIntegration } from '@/hooks/useScrollIntegration'
 
-const DNABackground = dynamic(() => import('@/components/DNABackground'), { ssr: false })
+const UltimateHybrid = dynamic(() => import('@/components/UltimateHybrid'), { ssr: false })
 
 // Floating Cell Particle for Hero
 function FloatingCell({ index, delay }: { index: number; delay: number }) {
@@ -257,6 +258,9 @@ function StatCounter({ end, suffix, label, delay }: { end: number; suffix: strin
 }
 
 export default function Home() {
+  // Initialize Lenis scroll integration
+  useScrollIntegration()
+
   const heroRef = useRef(null)
   const heroInView = useInView(heroRef, { once: true, amount: 0.2 })
 
@@ -268,7 +272,7 @@ export default function Home() {
 
   return (
     <main className="relative overflow-hidden">
-      <DNABackground />
+      <UltimateHybrid />
       <Navigation />
 
       {/* Premium Hero Section */}
