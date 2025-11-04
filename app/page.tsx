@@ -276,9 +276,9 @@ export default function Home() {
       <Navigation />
 
       {/* Premium Hero Section */}
-      <section ref={heroRef} className="relative min-h-[85vh] flex items-center justify-center px-6 py-24" style={{ zIndex: 10 }}>
+      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-6 py-24" style={{ zIndex: 10 }}>
         <motion.div
-          style={{ y: smoothHeroY, opacity: heroOpacity }}
+          style={{ y: smoothHeroY }}
           className="max-w-7xl mx-auto text-center"
         >
           {/* Floating cells in hero */}
@@ -286,102 +286,45 @@ export default function Home() {
             <FloatingCell key={i} index={i} delay={i * 0.8} />
           ))}
 
+          {/* Central glass card with logo and text */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={heroInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="relative mx-auto max-w-2xl"
           >
-            {/* Premium badge with EXTREME glass */}
-            <motion.div
-              className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full mb-8 overflow-hidden"
-              animate={{
-                boxShadow: [
-                  '0 0 40px rgba(212, 175, 122, 0.4), 0 0 80px rgba(212, 175, 122, 0.2), inset 0 0 40px rgba(255, 255, 255, 0.5)',
-                  '0 0 60px rgba(212, 175, 122, 0.6), 0 0 120px rgba(212, 175, 122, 0.4), inset 0 0 60px rgba(255, 255, 255, 0.7)',
-                  '0 0 40px rgba(212, 175, 122, 0.4), 0 0 80px rgba(212, 175, 122, 0.2), inset 0 0 40px rgba(255, 255, 255, 0.5)',
-                ],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            >
-              <div className="absolute inset-0 backdrop-blur-3xl bg-white/50 border-2 border-white/70 rounded-full" />
-              <div className="absolute inset-0 backdrop-blur-xl bg-gradient-to-r from-white/60 via-white/50 to-white/60 rounded-full" />
-              <div className="relative flex items-center gap-2">
-                <div className="flex gap-1">
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-2 h-2 rounded-full bg-rose-gold"
-                    animate={{
-                      scale: [1, 1.3, 1],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: i * 0.2,
-                    }}
+            {/* Glass card */}
+            <div className="relative backdrop-blur-3xl bg-white/40 border-2 border-white/60 rounded-3xl px-12 py-16 shadow-2xl overflow-hidden">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/30 to-white/50 rounded-3xl" />
+
+              {/* Content */}
+              <div className="relative space-y-8">
+                {/* Logo with fade on scroll */}
+                <motion.div
+                  style={{ opacity: heroOpacity }}
+                  className="flex justify-center"
+                >
+                  <Image
+                    src="/logo.png"
+                    alt="iCellaré Logo"
+                    width={120}
+                    height={120}
+                    className="w-24 h-24 md:w-32 md:h-32"
                   />
-                ))}
+                </motion.div>
+
+                {/* iCellaré title */}
+                <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-charcoal leading-tight">
+                  iCellaré
+                </h1>
+
+                {/* Lifespan Center subtitle */}
+                <p className="text-2xl md:text-3xl lg:text-4xl text-rose-gold font-serif italic">
+                  Lifespan Center
+                </p>
               </div>
-              <span className="text-charcoal font-semibold tracking-wide">World-Class Regenerative Medicine</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 60 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6 text-charcoal leading-tight"
-          >
-            iCellaré
-          </motion.h1>
-
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1.2, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-4 mb-12"
-          >
-            <p className="text-2xl md:text-3xl lg:text-4xl text-rose-gold font-serif italic">
-              Lifespan Center
-            </p>
-            <p className="text-lg md:text-xl text-charcoal/80 max-w-4xl mx-auto leading-relaxed">
-              State-of-the-art autologous stem cell technology, cutting-edge rejuvenation innovation,
-              and personalized care in the heart of Bangkok
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1.2, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
-          >
-            <motion.button
-              className="group relative bg-gradient-to-r from-rose-gold to-bronze text-white px-10 py-4 rounded-full text-base font-semibold shadow-2xl overflow-hidden"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <span className="relative z-10">Book Consultation</span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-bronze to-rose-gold"
-                initial={{ x: '100%' }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.4 }}
-              />
-            </motion.button>
-
-            <motion.button
-              className="backdrop-blur-xl bg-white/50 border-2 border-white/70 text-charcoal px-10 py-4 rounded-full text-base font-semibold hover:border-rose-gold/60 hover:bg-white/70"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Explore Services
-            </motion.button>
+            </div>
           </motion.div>
 
           {/* Scroll indicator */}
