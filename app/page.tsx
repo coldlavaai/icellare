@@ -1,6 +1,6 @@
 'use client'
 
-import DNAHelix3D from '@/components/DNAHelix3D'
+// import DNAHelix3D from '@/components/DNAHelix3D'
 import Navigation from '@/components/Navigation'
 // import PageWithLoading from '@/components/PageWithLoading'
 import { motion } from 'framer-motion'
@@ -168,7 +168,7 @@ export default function Home() {
 
   return (
     <main className="relative bg-cream overflow-hidden">
-      <DNAHelix3D />
+      {/* <DNAHelix3D /> */}
       <Navigation />
 
       {/* Hero Section */}
