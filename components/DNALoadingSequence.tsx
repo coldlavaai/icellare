@@ -76,7 +76,7 @@ function FloatingStrand({
         />
       </mesh>
 
-      <mesh position={[0.3, 0, 0]}>
+      <mesh position={[0.3, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.1, 0.1, 0.6, 8]} />
         <meshStandardMaterial
           color="#B89968"
