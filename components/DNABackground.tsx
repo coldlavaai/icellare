@@ -95,7 +95,7 @@ export default function DNABackground() {
         )
       })}
 
-      {/* DNA HELIX with simple 3D rotation */}
+      {/* DNA HELIX with simple 3D rotation - MUCH MORE VISIBLE */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{
         perspective: '2000px',
       }}>
@@ -113,12 +113,12 @@ export default function DNABackground() {
             transformStyle: 'preserve-3d',
           }}
         >
-          {/* Massive central glow */}
+          {/* Massive central glow - MORE INTENSE */}
           <motion.div
             className="absolute inset-0"
             animate={{
-              opacity: [0.4, 0.7, 0.4],
-              scale: [1, 1.3, 1],
+              opacity: [0.6, 0.9, 0.6],
+              scale: [1.2, 1.5, 1.2],
             }}
             transition={{
               duration: 6,
@@ -126,22 +126,22 @@ export default function DNABackground() {
               ease: 'easeInOut',
             }}
             style={{
-              filter: 'blur(100px)',
-              background: 'radial-gradient(circle, rgba(212, 175, 122, 0.4) 0%, transparent 70%)',
+              filter: 'blur(120px)',
+              background: 'radial-gradient(circle, rgba(212, 175, 122, 0.6) 0%, transparent 70%)',
             }}
           />
 
-          {/* DNA Helix SVG */}
+          {/* DNA Helix SVG - ENHANCED GLOW */}
           <svg
             width={isMobile ? "400" : "600"}
             height={helixHeight}
             viewBox={`0 0 600 ${helixHeight}`}
             className="relative z-10"
             style={{
-              filter: 'drop-shadow(0 0 30px rgba(212, 175, 122, 0.6))',
+              filter: 'drop-shadow(0 0 50px rgba(212, 175, 122, 0.9)) drop-shadow(0 0 100px rgba(212, 175, 122, 0.5))',
             }}
           >
-            {/* Connection rungs */}
+            {/* Connection rungs - MORE VISIBLE */}
             {[...Array(isMobile ? 30 : 50)].map((_, i) => {
               const t = i / (isMobile ? 29 : 49)
               const y = t * helixHeight
@@ -159,11 +159,11 @@ export default function DNABackground() {
                   x2={x2}
                   y2={y}
                   stroke="#D4AF7A"
-                  strokeWidth="3"
+                  strokeWidth="4"
                   strokeLinecap="round"
-                  opacity="0.5"
+                  opacity="0.7"
                   animate={{
-                    opacity: [0.3, 0.7, 0.3],
+                    opacity: [0.5, 0.9, 0.5],
                   }}
                   transition={{
                     duration: 3,
@@ -175,26 +175,26 @@ export default function DNABackground() {
               )
             })}
 
-            {/* Strand 1 - Gold */}
+            {/* Strand 1 - Gold - THICKER & MORE VISIBLE */}
             <motion.path
               d={generateDNAHelixPath(600, helixHeight, turns, helixRadius, 0)}
               fill="none"
               stroke="#D4AF7A"
-              strokeWidth="10"
+              strokeWidth="14"
               strokeLinecap="round"
               strokeLinejoin="round"
-              opacity="0.9"
+              opacity="1"
             />
 
-            {/* Strand 2 - Bronze */}
+            {/* Strand 2 - Bronze - THICKER & MORE VISIBLE */}
             <motion.path
               d={generateDNAHelixPath(600, helixHeight, turns, helixRadius, Math.PI)}
               fill="none"
               stroke="#9C7D5C"
-              strokeWidth="10"
+              strokeWidth="14"
               strokeLinecap="round"
               strokeLinejoin="round"
-              opacity="0.9"
+              opacity="1"
             />
 
             {/* Base pair nodes */}
