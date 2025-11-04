@@ -303,7 +303,6 @@ function Scene() {
           radius={0.1}
           intensity={50}
           luminanceInfluence={0.6}
-          color="black"
         />
 
         {/* Chromatic Aberration - Lens distortion */}
