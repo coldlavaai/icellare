@@ -267,7 +267,7 @@ export default function Home() {
   const smoothHeroY = useSpring(heroY, { stiffness: 100, damping: 30 })
 
   return (
-    <main className="relative bg-cream overflow-hidden">
+    <main className="relative overflow-hidden">
       <DNABackground />
       <Navigation />
 
