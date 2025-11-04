@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -219,7 +219,7 @@ function StatCounter({ end, suffix, label, delay }: { end: number; suffix: strin
   const isInView = useInView(ref, { once: true, amount: 0.5 })
   const [count, setCount] = useState(0)
 
-  useState(() => {
+  useEffect(() => {
     if (isInView) {
       const duration = 2000
       const steps = 60
@@ -238,7 +238,7 @@ function StatCounter({ end, suffix, label, delay }: { end: number; suffix: strin
 
       return () => clearInterval(timer)
     }
-  })
+  }, [isInView, end])
 
   return (
     <motion.div
@@ -808,6 +808,7 @@ export default function Home() {
             >
               Schedule Consultation
             </motion.button>
+            </div>
           </motion.div>
         </div>
       </section>
