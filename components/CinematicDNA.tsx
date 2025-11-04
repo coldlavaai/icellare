@@ -7,13 +7,9 @@ import * as THREE from 'three'
 import {
   EffectComposer,
   Bloom,
-  Vignette,
-  DepthOfField,
-  SSAO,
-  ChromaticAberration
+  Vignette
 } from '@react-three/postprocessing'
 import { PerspectiveCamera, Environment } from '@react-three/drei'
-import { BlendFunction, KernelSize } from 'postprocessing'
 
 // PHASE 1: Parametric DNA Helix with Proper Geometry
 function createDNAStrand(t: number, radius: number, pitch: number, offset: number = 0) {
@@ -107,53 +103,27 @@ function DNAHelix() {
     }
   })
 
-  // Base pair colors (scientifically accurate)
-  const getBasePairColor = (type: 'A' | 'T' | 'G' | 'C') => {
-    switch (type) {
-      case 'A': return 0xff6b6b // Adenine - red
-      case 'T': return 0x4ecdc4 // Thymine - cyan
-      case 'G': return 0xffe66d // Guanine - yellow
-      case 'C': return 0x95e1d3 // Cytosine - green
-    }
-  }
-
   return (
     <group ref={helixRef}>
-      {/* Strand 1 - Photorealistic glass-like material */}
+      {/* Strand 1 - Subtle neutral */}
       <mesh ref={strand1Ref} geometry={strand1Geometry}>
-        <meshPhysicalMaterial
-          color={0x64c8ff}
-          metalness={0.3}
-          roughness={0.2}
+        <meshStandardMaterial
+          color="#DCDCDC"
+          metalness={0.1}
+          roughness={0.5}
           transparent
-          opacity={0.9}
-          transmission={0.5}
-          thickness={0.5}
-          ior={1.5}
-          clearcoat={1.0}
-          clearcoatRoughness={0.1}
-          envMapIntensity={1.5}
-          emissive={0x2a4f6f}
-          emissiveIntensity={0.3}
+          opacity={0.25}
         />
       </mesh>
 
-      {/* Strand 2 - Slightly different for depth */}
+      {/* Strand 2 - Slightly lighter */}
       <mesh ref={strand2Ref} geometry={strand2Geometry}>
-        <meshPhysicalMaterial
-          color={0x88ddff}
-          metalness={0.3}
-          roughness={0.2}
+        <meshStandardMaterial
+          color="#E4E4E4"
+          metalness={0.08}
+          roughness={0.55}
           transparent
-          opacity={0.85}
-          transmission={0.5}
-          thickness={0.5}
-          ior={1.5}
-          clearcoat={1.0}
-          clearcoatRoughness={0.1}
-          envMapIntensity={1.5}
-          emissive={0x3a5f8f}
-          emissiveIntensity={0.25}
+          opacity={0.22}
         />
       </mesh>
 
@@ -169,19 +139,15 @@ function DNAHelix() {
             direction.clone().normalize()
           )
 
-          const color = getBasePairColor(pair.type)
-
           return (
             <mesh key={i} position={midpoint} quaternion={quaternion}>
-              <cylinderGeometry args={[0.04, 0.04, length, 8]} />
+              <cylinderGeometry args={[0.03, 0.03, length, 8]} />
               <meshStandardMaterial
-                color={color}
-                emissive={color}
-                emissiveIntensity={0.5}
-                metalness={0.8}
-                roughness={0.2}
+                color="#D0D0D0"
+                metalness={0.08}
+                roughness={0.5}
                 transparent
-                opacity={0.9}
+                opacity={0.2}
               />
             </mesh>
           )
@@ -191,40 +157,32 @@ function DNAHelix() {
   )
 }
 
-// PHASE 2: Cinematic Three-Point Lighting System
-function CinematicLighting() {
+// Subtle, clean lighting
+function CleanLighting() {
   return (
     <>
-      {/* 1. KEY LIGHT (Main light source) */}
+      {/* Soft ambient */}
+      <ambientLight intensity={0.4} color="#FFFFFF" />
+
+      {/* Main directional light */}
       <directionalLight
-        position={[5, 10, 5]}
-        intensity={1.5}
-        color={0xffffff}
+        position={[6, 8, 5]}
+        intensity={0.6}
+        color="#F8F8F8"
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
       />
 
-      {/* 2. FILL LIGHT (Soften shadows) */}
+      {/* Fill light */}
       <directionalLight
-        position={[-5, 0, -5]}
-        intensity={0.5}
-        color={0x64c8ff}
+        position={[-5, -3, -4]}
+        intensity={0.3}
+        color="#F0F0F0"
       />
 
-      {/* 3. RIM LIGHT (Edge highlighting - CRITICAL for depth) */}
-      <directionalLight
-        position={[0, 5, -10]}
-        intensity={0.8}
-        color={0xff88ff}
-      />
-
-      {/* 4. AMBIENT (Subtle base illumination) */}
-      <ambientLight intensity={0.3} color={0x222244} />
-
-      {/* 5. POINT LIGHTS (DNA internal glow) */}
-      <pointLight position={[0, 2, 0]} intensity={2} distance={5} color={0x64c8ff} />
-      <pointLight position={[0, -2, 0]} intensity={2} distance={5} color={0xff6b9d} />
+      {/* Subtle top light */}
+      <pointLight position={[0, 5, 4]} intensity={0.4} color="#FFFFFF" distance={12} decay={2} />
     </>
   )
 }
@@ -255,74 +213,41 @@ function Scene() {
 
   return (
     <>
-      {/* Volumetric fog for atmospheric depth */}
-      <fogExp2 attach="fog" args={[0x000511, 0.03]} />
+      {/* Subtle fog */}
+      <fog attach="fog" args={['#E8E8E8', 8, 22]} />
 
-      {/* Camera with cinematic FOV */}
+      {/* Camera */}
       <PerspectiveCamera
         ref={cameraRef}
         makeDefault
         position={[0, 0, 12]}
-        fov={50}
+        fov={60}
         near={0.1}
         far={100}
       />
 
-      {/* HDRI Environment for realistic reflections */}
-      <Environment preset="night" />
+      {/* Neutral environment */}
+      <Environment preset="apartment" />
 
-      {/* Cinematic Lighting */}
-      <CinematicLighting />
+      {/* Clean Lighting */}
+      <CleanLighting />
 
       {/* The DNA Helix */}
       <DNAHelix />
 
-      {/* PHASE 4: Post-Processing Effects */}
+      {/* Minimal post-processing */}
       <EffectComposer multisampling={8}>
-        {/* Bloom - Glowing highlights */}
+        {/* Very subtle bloom */}
         <Bloom
-          intensity={1.5}
-          luminanceThreshold={0.2}
-          luminanceSmoothing={0.9}
-          kernelSize={KernelSize.LARGE}
+          intensity={0.12}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={0.95}
+          height={300}
           mipmapBlur
         />
 
-        {/* Depth of Field - Cinematic focus */}
-        <DepthOfField
-          focusDistance={0.01}
-          focalLength={0.05}
-          bokehScale={3}
-          height={480}
-        />
-
-        {/* SSAO - Realistic shadows */}
-        <SSAO
-          blendFunction={BlendFunction.MULTIPLY}
-          samples={31}
-          radius={0.1}
-          intensity={50}
-          luminanceInfluence={0.6}
-          worldDistanceThreshold={0.5}
-          worldDistanceFalloff={0.5}
-          worldProximityThreshold={0.5}
-          worldProximityFalloff={0.5}
-        />
-
-        {/* Chromatic Aberration - Lens distortion */}
-        <ChromaticAberration
-          offset={new THREE.Vector2(0.0005, 0.0005)}
-          radialModulation
-          modulationOffset={0.3}
-        />
-
-        {/* Vignette - Frame darkening */}
-        <Vignette
-          offset={0.3}
-          darkness={0.5}
-          eskil={false}
-          blendFunction={BlendFunction.NORMAL}
-        />
+        {/* Minimal vignette */}
+        <Vignette eskil={false} offset={0.35} darkness={0.25} />
       </EffectComposer>
     </>
   )
@@ -332,8 +257,8 @@ function Scene() {
 export default function CinematicDNA() {
   return (
     <div className="fixed inset-0 -z-10">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#000511] via-[#0a0a1a] to-[#000000]" />
+      {/* Light gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#E8E8E8] via-[#F0F0F0] to-[#F8F8F8]" />
 
       {/* 3D Canvas */}
       <Canvas
