@@ -28,11 +28,13 @@ export default function Navigation() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <motion.div
-          className="flex items-center space-x-3"
+        <motion.a
+          href="/"
+          className="flex items-center space-x-3 cursor-pointer"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.6 }}
+          whileHover={{ scale: 1.02 }}
         >
           <div className="relative w-12 h-12">
             <Image
@@ -43,19 +45,25 @@ export default function Navigation() {
             />
           </div>
           <span className="font-serif text-2xl text-charcoal">iCellaré</span>
-        </motion.div>
+        </motion.a>
 
         {/* Navigation Links */}
         <motion.div
-          className="hidden md:flex items-center space-x-8"
+          className="hidden md:flex items-center space-x-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          {['Services', 'Our Team', 'Lab', 'Facilities', 'Contact'].map((item, index) => (
+          {[
+            { label: 'Team', href: '/team' },
+            { label: 'Services', href: '/#services' },
+            { label: 'Lab', href: '/lab' },
+            { label: 'Facilities', href: '/facilities' },
+            { label: 'Contact', href: '/contact' }
+          ].map((item, index) => (
             <motion.a
-              key={item}
-              href={`#${item.toLowerCase().replace(' ', '-')}`}
+              key={item.label}
+              href={item.href}
               className="text-charcoal/70 hover:text-rose-gold transition-colors duration-300 font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -63,7 +71,7 @@ export default function Navigation() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
             >
-              {item}
+              {item.label}
             </motion.a>
           ))}
         </motion.div>
