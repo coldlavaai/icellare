@@ -90,57 +90,57 @@ export function ArchitecturalDNA() {
   useFrame((state) => {
     if (!dnaRef.current) return
 
-    // Rotation tied to scroll
-    dnaRef.current.rotation.y = scrollProgress * Math.PI * 4 // 2 full rotations
+    // Gentle rotation tied to scroll
+    dnaRef.current.rotation.y = scrollProgress * Math.PI * 2 // 1 full rotation
 
-    // Slow continuous rotation
-    dnaRef.current.rotation.y += state.clock.elapsedTime * 0.05
+    // Very slow continuous rotation
+    dnaRef.current.rotation.y += state.clock.elapsedTime * 0.02
 
-    // Vertical position based on scroll
-    dnaRef.current.position.y = (scrollProgress - 0.5) * 10
+    // Minimal vertical movement
+    dnaRef.current.position.y = (scrollProgress - 0.5) * 3
 
-    // Subtle pulsing scale
-    const pulse = 1 + Math.sin(state.clock.elapsedTime * 0.8) * 0.02
+    // Very subtle pulsing scale
+    const pulse = 1 + Math.sin(state.clock.elapsedTime * 0.5) * 0.008
     dnaRef.current.scale.set(pulse, pulse, pulse)
   })
 
   return (
     <group ref={dnaRef} position={[0, 0, 0]}>
-      {/* Strand 1 - Shimmering gold glass */}
+      {/* Strand 1 - Subtle gold glass */}
       <mesh geometry={strand1Geometry}>
         <meshPhysicalMaterial
           color="#85714d"
-          metalness={0.9}
-          roughness={0.1}
+          metalness={0.7}
+          roughness={0.2}
           transparent
-          opacity={0.95}
-          transmission={0.3}
+          opacity={0.9}
+          transmission={0.4}
           thickness={0.5}
           ior={1.5}
-          clearcoat={1}
-          clearcoatRoughness={0.05}
-          envMapIntensity={2}
-          emissive="#a89968"
-          emissiveIntensity={0.4}
+          clearcoat={0.8}
+          clearcoatRoughness={0.1}
+          envMapIntensity={1.5}
+          emissive="#85714d"
+          emissiveIntensity={0.15}
         />
       </mesh>
 
-      {/* Strand 2 - Soft blue glass */}
+      {/* Strand 2 - Subtle blue glass */}
       <mesh geometry={strand2Geometry}>
         <meshPhysicalMaterial
           color="#c7d9ed"
-          metalness={0.8}
-          roughness={0.1}
+          metalness={0.7}
+          roughness={0.2}
           transparent
-          opacity={0.95}
-          transmission={0.3}
+          opacity={0.9}
+          transmission={0.4}
           thickness={0.5}
           ior={1.5}
-          clearcoat={1}
-          clearcoatRoughness={0.05}
-          envMapIntensity={2}
-          emissive="#b3c9e0"
-          emissiveIntensity={0.3}
+          clearcoat={0.8}
+          clearcoatRoughness={0.1}
+          envMapIntensity={1.5}
+          emissive="#c7d9ed"
+          emissiveIntensity={0.12}
         />
       </mesh>
 
@@ -166,9 +166,9 @@ export function ArchitecturalDNA() {
                 <meshStandardMaterial
                   color={color}
                   emissive={color}
-                  emissiveIntensity={1.5}
-                  metalness={0.8}
-                  roughness={0.2}
+                  emissiveIntensity={0.3}
+                  metalness={0.7}
+                  roughness={0.3}
                 />
               </mesh>
 
@@ -178,9 +178,9 @@ export function ArchitecturalDNA() {
                 <meshStandardMaterial
                   color={color}
                   emissive={color}
-                  emissiveIntensity={1.5}
-                  metalness={0.8}
-                  roughness={0.2}
+                  emissiveIntensity={0.3}
+                  metalness={0.7}
+                  roughness={0.3}
                 />
               </mesh>
             </group>
