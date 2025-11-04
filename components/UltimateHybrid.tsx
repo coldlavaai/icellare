@@ -8,6 +8,7 @@ import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
 import { useScrollStore } from '@/stores/scrollStore'
 import { ArchitecturalDNA } from './ArchitecturalDNA'
+import { FloatingParticles } from './FloatingParticles'
 
 // Cinematic Camera System - responds to scroll
 function CinematicCamera() {
@@ -105,6 +106,9 @@ function Scene() {
 
       {/* Camera system */}
       <CinematicCamera />
+
+      {/* Floating particles for depth and atmosphere */}
+      <FloatingParticles />
 
       {/* Architectural DNA Helix */}
       <ArchitecturalDNA />
