@@ -62,12 +62,12 @@ export function ArchitecturalDNA({
     const curve2 = new THREE.CatmullRomCurve3(strand2Path)
     const tube2Geo = new THREE.TubeGeometry(curve2, strand2Path.length, 0.1, 20, false)
 
-    // STEP 3: Create base pairs - SPACE THEME (Cyan & Pink/Purple)
+    // STEP 3: Create base pairs - distinct pastel colors
     const basePairColors = {
-      A: 0x00BFFF, // Deep Sky Blue / Cyan
-      T: 0xFF1493, // Deep Pink
-      G: 0x9370DB, // Medium Purple
-      C: 0x00CED1, // Dark Turquoise / Cyan
+      A: 0xCBA565, // Yellower gold
+      T: 0x7BAED9, // Lighter pastel blue
+      G: 0x8B7355, // Darker brown (more contrast)
+      C: 0xC8C8C8, // Lighter pastel grey
     }
 
     const basePairTypes = ['A', 'G'] as const // Only need to pick A or G, complement is determined
@@ -86,8 +86,9 @@ export function ArchitecturalDNA({
       const point1 = strand1Path[i]
       const point2 = strand2Path[i]
 
-      // Pick a random base for strand 1
-      const type1 = basePairTypes[Math.floor(Math.random() * 2)]
+      // Pick a random base for strand 1 - balanced to show all colors
+      // 45% A (yellower gold pairs with blue T), 55% G (dark brown pairs with grey C)
+      const type1 = Math.random() < 0.45 ? 'A' : 'G'
 
       // Determine complement for strand 2 (A pairs with T, G pairs with C)
       const type2 = type1 === 'A' ? 'T' : 'C'
@@ -112,19 +113,19 @@ export function ArchitecturalDNA({
     }
   }, [])
 
-  // Backbone material - NEON CYAN glow
+  // Backbone material - white/grey outer strands
   const backboneMaterial = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
-        color: 0x00BFFF,
-        transmission: 0.2,
-        thickness: 0.8,
-        roughness: 0.2,
-        metalness: 0.5,
-        clearcoat: 0.7,
-        ior: 1.5,
-        emissive: 0x00BFFF,
-        emissiveIntensity: 0.5,
+        color: 0xE8E8E8,
+        transmission: 0.1,
+        thickness: 0.5,
+        roughness: 0.3,
+        metalness: 0.2,
+        clearcoat: 0.5,
+        ior: 1.4,
+        emissive: 0xE8E8E8,
+        emissiveIntensity: 0.05,
         flatShading: false,
       }),
     []
@@ -186,49 +187,60 @@ export function ArchitecturalDNA({
           direction.normalize()
         )
 
-        // Material for sphere 1 - NEON glow
+        // Material for sphere 1 - matte pastel
         const material1 = new THREE.MeshPhysicalMaterial({
           color: pair.color1,
-          transmission: 0.1,
-          thickness: 0.5,
-          roughness: 0.1,
-          metalness: 0.2,
-          clearcoat: 0.8,
+          transmission: 0,
+          opacity: 1,
+          roughness: 0.5,
+          metalness: 0,
+          clearcoat: 0.2,
+          clearcoatRoughness: 0.3,
           ior: 1.5,
           emissive: pair.color1,
-          emissiveIntensity: 0.6,
+          emissiveIntensity: 0.15,
           flatShading: false,
         })
 
-        // Material for sphere 2 - NEON glow
+        // Material for sphere 2 - matte pastel
         const material2 = new THREE.MeshPhysicalMaterial({
           color: pair.color2,
-          transmission: 0.1,
-          thickness: 0.5,
-          roughness: 0.1,
-          metalness: 0.2,
-          clearcoat: 0.8,
+          transmission: 0,
+          opacity: 1,
+          roughness: 0.5,
+          metalness: 0,
+          clearcoat: 0.2,
+          clearcoatRoughness: 0.3,
           ior: 1.5,
           emissive: pair.color2,
-          emissiveIntensity: 0.6,
+          emissiveIntensity: 0.15,
           flatShading: false,
         })
 
-        // Cylinder material (blend of both colors) - NEON glow
+        // Cylinder material (blend of both colors) - matte pastel
+        // Occasionally add blue tint (about 20% of the time)
         const blendedColor = new THREE.Color(pair.color1).lerp(
           new THREE.Color(pair.color2),
           0.5
         )
+
+        // Add blue tint to some cylinders
+        const addBlueTint = Math.random() < 0.2
+        if (addBlueTint) {
+          blendedColor.lerp(new THREE.Color(0x7BAED9), 0.4) // Mix in some blue
+        }
+
         const cylinderMaterial = new THREE.MeshPhysicalMaterial({
           color: blendedColor,
-          transmission: 0.1,
-          thickness: 0.5,
-          roughness: 0.1,
-          metalness: 0.2,
-          clearcoat: 0.8,
+          transmission: 0,
+          opacity: 1,
+          roughness: 0.5,
+          metalness: 0,
+          clearcoat: 0.2,
+          clearcoatRoughness: 0.3,
           ior: 1.5,
           emissive: blendedColor,
-          emissiveIntensity: 0.6,
+          emissiveIntensity: 0.15,
           flatShading: false,
         })
 

@@ -26,13 +26,13 @@ export function SimpleParticles() {
         ] as [number, number, number],
         // Random size
         size: isCell ? (Math.random() * 0.15 + 0.15) : (Math.random() * 0.08 + 0.02), // Cells are bigger: 0.15-0.3, particles: 0.02-0.1
-        // Random color - mostly white/grey/light blue with occasional pink
+        // Random color - soft pastels
         color: (() => {
           const rand = Math.random()
-          if (rand < 0.4) return 0xFFFFFF  // 40% white
-          if (rand < 0.7) return 0xC0C0C0  // 30% grey
-          if (rand < 0.9) return 0xADD8E6  // 20% light blue
-          return 0xFFB6C1                   // 10% light pink
+          if (rand < 0.25) return 0xF5E6C8  // Soft pastel gold/cream
+          if (rand < 0.50) return 0xD4E5F7  // Soft pastel blue
+          if (rand < 0.75) return 0xE8D8C8  // Soft pastel tan
+          return 0xF8F8F8                    // Soft white
         })(),
         // Random speed multipliers
         speedX: Math.random() * 0.3 + 0.1,
@@ -109,18 +109,18 @@ function Particle({ position, size, color, speedX, speedY, speedZ, offset, isCel
   if (isCell) {
     return (
       <group ref={groupRef} position={position}>
-        {/* Outer cell membrane - very transparent */}
+        {/* Outer cell membrane - semi-transparent */}
         <mesh>
           <sphereGeometry args={[size, 24, 24]} />
           <meshPhysicalMaterial
             color={color}
             roughness={0.2}
             metalness={0.1}
-            transmission={0.9}
-            opacity={0.1}
+            transmission={0.6}
+            opacity={0.3}
             transparent
             emissive={color}
-            emissiveIntensity={0.15}
+            emissiveIntensity={0.3}
           />
         </mesh>
 
@@ -130,12 +130,12 @@ function Particle({ position, size, color, speedX, speedY, speedZ, offset, isCel
           <meshPhysicalMaterial
             color={color}
             roughness={0.1}
-            metalness={0.3}
-            transmission={0.5}
-            opacity={0.4}
+            metalness={0.2}
+            transmission={0.3}
+            opacity={0.7}
             transparent
             emissive={color}
-            emissiveIntensity={0.4}
+            emissiveIntensity={0.6}
           />
         </mesh>
       </group>
@@ -148,13 +148,13 @@ function Particle({ position, size, color, speedX, speedY, speedZ, offset, isCel
       <sphereGeometry args={[size, 16, 16]} />
       <meshPhysicalMaterial
         color={color}
-        roughness={0.3}
-        metalness={0}
-        transmission={0.6}
-        opacity={0.25}
+        roughness={0.2}
+        metalness={0.1}
+        transmission={0.3}
+        opacity={0.6}
         transparent
         emissive={color}
-        emissiveIntensity={0.2}
+        emissiveIntensity={0.5}
       />
     </mesh>
   )

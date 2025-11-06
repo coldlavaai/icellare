@@ -15,9 +15,6 @@ import { motion } from 'framer-motion'
 function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: { growthProgress: number; enableGrowth: boolean; showParticles: boolean; scrollProgress: number }) {
   return (
     <>
-      {/* No solid background - use transparent canvas - CYBERPUNK VERSION */}
-      <fog attach="fog" args={['#0a0412', 20, 50]} />
-
       {/* Camera - centered on DNA, slightly elevated */}
       <PerspectiveCamera
         makeDefault
@@ -27,37 +24,25 @@ function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: 
         far={1000}
       />
 
-      {/* STEP 4: Lighting setup */}
+      {/* Clean neutral lighting for light theme */}
+      <ambientLight color={0xffffff} intensity={0.8} />
 
-      {/* Ambient light */}
-      <ambientLight color={0x404060} intensity={0.2} />
-
-      {/* Hemisphere light */}
-      <hemisphereLight
-        color={0x0066ff}
-        groundColor={0x001133}
-        intensity={0.4}
-      />
-
-      {/* Key light */}
       <directionalLight
         position={[10, 15, 10]}
         color={0xffffff}
-        intensity={1.2}
+        intensity={0.8}
       />
 
-      {/* Fill light */}
       <directionalLight
         position={[-10, 5, -10]}
-        color={0x6699ff}
-        intensity={0.3}
+        color={0xffffff}
+        intensity={0.4}
       />
 
-      {/* Rim light */}
       <directionalLight
         position={[0, 5, -15]}
-        color={0x88ccff}
-        intensity={0.8}
+        color={0xffffff}
+        intensity={0.5}
       />
 
       {/* Environment for reflections */}
@@ -72,25 +57,6 @@ function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: 
 
       {/* Simple particles */}
       {showParticles && <SimpleParticles />}
-
-      {/* Post-processing */}
-      <EffectComposer>
-        {/* Bloom - subtle glow on highlights */}
-        <Bloom
-          intensity={0.3}
-          luminanceThreshold={0.9}
-          luminanceSmoothing={0.9}
-          mipmapBlur
-        />
-
-        {/* Vignette - darker edges */}
-        <Vignette
-          offset={0.3}
-          darkness={0.5}
-          eskil={false}
-          blendFunction={BlendFunction.NORMAL}
-        />
-      </EffectComposer>
     </>
   )
 }
@@ -278,12 +244,12 @@ export default function LoadingTest() {
         .rainbow-text {
           background: linear-gradient(
             90deg,
-            #00BFFF 0%,
-            #9370DB 20%,
-            #FF1493 40%,
-            #9370DB 60%,
-            #00BFFF 80%,
-            #9370DB 100%
+            #B8860B 0%,
+            #C9A342 20%,
+            #D4B84E 40%,
+            #C9A342 60%,
+            #B8860B 80%,
+            #C9A342 100%
           );
           background-size: 300% 100%;
           animation: rainbow-shift 8s linear infinite;
@@ -293,10 +259,10 @@ export default function LoadingTest() {
         }
       `}</style>
 
-      {/* Loading Screen - CYBERPUNK SPACE VERSION */}
+      {/* Loading Screen */}
       {!isLoadingComplete && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{
-          background: 'radial-gradient(ellipse at 50% 20%, #1a0a2e 0%, #0f0624 25%, #0a0412 50%, #050208 75%, #000000 100%)'
+          background: 'radial-gradient(ellipse 60% 120% at 50% 50%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
         }}>
           <div className="text-center">
             <div className="relative w-96 h-32 mb-8">
@@ -304,148 +270,28 @@ export default function LoadingTest() {
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ"
                 fill
-                className="object-contain brightness-0 invert"
+                className="object-contain"
                 priority
               />
             </div>
             <div className="flex items-center justify-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ animationDelay: '0ms', backgroundColor: '#EDD5A8', boxShadow: '0 0 8px rgba(237, 213, 168, 0.5)' }} />
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ animationDelay: '150ms', backgroundColor: '#C8DCF0', boxShadow: '0 0 8px rgba(200, 220, 240, 0.5)' }} />
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ animationDelay: '300ms', backgroundColor: '#E8E5E0', boxShadow: '0 0 8px rgba(232, 229, 224, 0.5)' }} />
             </div>
           </div>
         </div>
       )}
 
-      {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
+      {/* LAYER 1: Light Blue Background - darker edges, lighter middle */}
       <div className="fixed inset-0 pointer-events-none" style={{
         zIndex: 0,
-        background: (() => {
-          // Define color stops for smooth transitions - SPACEY with pink towards bottom
-          const colorStops = [
-            { progress: 0.0, color: '#1a0a2e' },   // Deep purple
-            { progress: 0.2, color: '#0a2050' },   // Deep blue
-            { progress: 0.4, color: '#1e1050' },   // Deep indigo/purple
-            { progress: 0.6, color: '#2d1b69' },   // Deep violet/purple
-            { progress: 0.8, color: '#3a1545' },   // Purple with pink tint
-            { progress: 1.0, color: '#451a50' },   // Deep purple/pink
-          ]
-
-          // Find the two closest color stops
-          let lowerStop = colorStops[0]
-          let upperStop = colorStops[colorStops.length - 1]
-
-          for (let i = 0; i < colorStops.length - 1; i++) {
-            if (scrollProgress >= colorStops[i].progress && scrollProgress <= colorStops[i + 1].progress) {
-              lowerStop = colorStops[i]
-              upperStop = colorStops[i + 1]
-              break
-            }
-          }
-
-          // Calculate interpolation factor
-          const range = upperStop.progress - lowerStop.progress
-          const localProgress = range > 0 ? (scrollProgress - lowerStop.progress) / range : 0
-
-          // Interpolate between colors
-          const r1 = parseInt(lowerStop.color.slice(1, 3), 16)
-          const g1 = parseInt(lowerStop.color.slice(3, 5), 16)
-          const b1 = parseInt(lowerStop.color.slice(5, 7), 16)
-
-          const r2 = parseInt(upperStop.color.slice(1, 3), 16)
-          const g2 = parseInt(upperStop.color.slice(3, 5), 16)
-          const b2 = parseInt(upperStop.color.slice(5, 7), 16)
-
-          const r = Math.round(r1 + (r2 - r1) * localProgress)
-          const g = Math.round(g1 + (g2 - g1) * localProgress)
-          const b = Math.round(b1 + (b2 - b1) * localProgress)
-
-          // Northern Lights effect - aurora-like flowing colors on dark blue background
-
-          const time = scrollProgress * Math.PI * 2
-
-          // Define aurora color palettes that transition with scroll
-          // Start: cyan/blue -> Mid: purple/pink -> End: deep purple/blue
-          const auroraColors = [
-            { r: 0, g: 191, b: 255 },     // Cyan
-            { r: 147, g: 51, b: 234 },    // Purple
-            { r: 236, g: 72, b: 153 },    // Pink
-            { r: 59, g: 130, b: 246 },    // Blue
-            { r: 0, g: 191, b: 255 },     // Back to cyan
-          ]
-
-          // Interpolate colors based on scroll
-          const getAuroraColor = (baseIndex: number, offset: number, opacity: number) => {
-            const colorProgress = (scrollProgress + offset) % 1
-            const colorIndex = colorProgress * (auroraColors.length - 1)
-            const lowerIndex = Math.floor(colorIndex)
-            const upperIndex = Math.ceil(colorIndex)
-            const factor = colorIndex - lowerIndex
-
-            const lower = auroraColors[lowerIndex]
-            const upper = auroraColors[upperIndex]
-
-            const r = Math.round(lower.r + (upper.r - lower.r) * factor)
-            const g = Math.round(lower.g + (upper.g - lower.g) * factor)
-            const b = Math.round(lower.b + (upper.b - lower.b) * factor)
-
-            return `rgba(${r}, ${g}, ${b}, ${opacity})`
-          }
-
-          // Aurora band 1: Top left - flowing cyan to purple
-          const aurora1X = 18 + Math.sin(time * 0.5) * 8
-          const aurora1Y = 15 + Math.cos(time * 0.7) * 6
-          const aurora1Size = 600 + Math.sin(time * 0.8) * 100
-          const aurora1Opacity = 0.18 + Math.sin(time * 1.2) * 0.06
-          const aurora1Color = getAuroraColor(0, 0, aurora1Opacity)
-
-          // Aurora band 2: Left edge - flowing blue to pink
-          const aurora2X = 8 + Math.cos(time * 0.6) * 5
-          const aurora2Y = 55 + Math.sin(time * 0.5) * 10
-          const aurora2Size = 550 + Math.cos(time * 0.9) * 90
-          const aurora2Opacity = 0.15 + Math.cos(time * 1.1) * 0.05
-          const aurora2Color = getAuroraColor(1, 0.25, aurora2Opacity)
-
-          // Aurora band 3: Bottom right - flowing purple to cyan
-          const aurora3X = 85 + Math.sin(time * 0.4) * 7
-          const aurora3Y = 80 + Math.cos(time * 0.6) * 8
-          const aurora3Size = 620 + Math.sin(time * 1.0) * 95
-          const aurora3Opacity = 0.20 + Math.sin(time * 0.9) * 0.06
-          const aurora3Color = getAuroraColor(2, 0.5, aurora3Opacity)
-
-          // Aurora band 4: Top right - flowing deep blue
-          const aurora4X = 90 + Math.cos(time * 0.7) * 5
-          const aurora4Y = 25 + Math.sin(time * 0.8) * 7
-          const aurora4Size = 500 + Math.cos(time * 1.1) * 80
-          const aurora4Opacity = 0.14 + Math.cos(time * 1.3) * 0.05
-          const aurora4Color = getAuroraColor(3, 0.75, aurora4Opacity)
-
-          // Aurora band 5: Bottom left - flowing cyan/pink
-          const aurora5X = 12 + Math.sin(time * 0.9) * 6
-          const aurora5Y = 88 + Math.cos(time * 0.4) * 5
-          const aurora5Size = 480 + Math.sin(time * 1.2) * 70
-          const aurora5Opacity = 0.12 + Math.sin(time * 1.5) * 0.04
-          const aurora5Color = getAuroraColor(4, 0.1, aurora5Opacity)
-
-          return `
-            radial-gradient(ellipse ${aurora1Size}px ${aurora1Size * 0.7}px at ${aurora1X}% ${aurora1Y}%, ${aurora1Color} 0%, transparent 70%),
-            radial-gradient(ellipse ${aurora2Size}px ${aurora2Size * 0.8}px at ${aurora2X}% ${aurora2Y}%, ${aurora2Color} 0%, transparent 65%),
-            radial-gradient(ellipse ${aurora3Size}px ${aurora3Size * 0.6}px at ${aurora3X}% ${aurora3Y}%, ${aurora3Color} 0%, transparent 68%),
-            radial-gradient(ellipse ${aurora4Size}px ${aurora4Size * 0.9}px at ${aurora4X}% ${aurora4Y}%, ${aurora4Color} 0%, transparent 62%),
-            radial-gradient(ellipse ${aurora5Size}px ${aurora5Size * 0.75}px at ${aurora5X}% ${aurora5Y}%, ${aurora5Color} 0%, transparent 60%),
-            radial-gradient(ellipse at 50% 50%, rgb(${Math.round(10 + scrollProgress * 25)}, ${Math.round(15 + scrollProgress * 20)}, ${Math.round(35 + scrollProgress * 35)}) 0%, rgb(5, 8, 20) 70%)
-          `
-        })()
+        background: 'radial-gradient(ellipse 60% 120% at 50% 50%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
       }} />
 
-      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER */}
+      {/* LAYER 2: DNA Canvas - MIDDLE LAYER */}
       <div className="fixed inset-0 pointer-events-none" style={{
-        zIndex: 10,
-        background: `
-          radial-gradient(ellipse 1000px 800px at 50% 45%, rgba(255, 255, 255, 0.03) 0%, rgba(100, 150, 200, 0.02) 30%, transparent 60%),
-          radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-          radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 50%)
-        `
+        zIndex: 10
       }}>
         {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS */}
         <div className="absolute inset-0 pointer-events-none">
@@ -481,9 +327,9 @@ export default function LoadingTest() {
         <motion.div
           className="fixed top-0 left-0 right-0 h-[2px] z-[60] origin-left"
           style={{
-            background: 'linear-gradient(90deg, #00BFFF 0%, #9370DB 50%, #FF1493 100%)',
+            background: 'linear-gradient(90deg, #B8860B 0%, #C9A342 50%, #D4B84E 100%)',
             scaleX: scrollProgress,
-            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -493,9 +339,9 @@ export default function LoadingTest() {
         <motion.div
           className="fixed top-0 right-0 bottom-0 w-[2px] z-[60] origin-top"
           style={{
-            background: 'linear-gradient(180deg, #00BFFF 0%, #9370DB 50%, #FF1493 100%)',
+            background: 'linear-gradient(180deg, #B8860B 0%, #C9A342 50%, #D4B84E 100%)',
             scaleY: scrollProgress,
-            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -505,9 +351,9 @@ export default function LoadingTest() {
         <motion.div
           className="fixed bottom-0 left-0 right-0 h-[2px] z-[60] origin-right"
           style={{
-            background: 'linear-gradient(90deg, #FF1493 0%, #9370DB 50%, #00BFFF 100%)',
+            background: 'linear-gradient(90deg, #D4B84E 0%, #C9A342 50%, #B8860B 100%)',
             scaleX: scrollProgress,
-            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -517,9 +363,9 @@ export default function LoadingTest() {
         <motion.div
           className="fixed top-0 left-0 bottom-0 w-[2px] z-[60] origin-bottom"
           style={{
-            background: 'linear-gradient(180deg, #FF1493 0%, #9370DB 50%, #00BFFF 100%)',
+            background: 'linear-gradient(180deg, #D4B84E 0%, #C9A342 50%, #B8860B 100%)',
             scaleY: scrollProgress,
-            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -537,14 +383,14 @@ export default function LoadingTest() {
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase().replace(' ', '-')}`}
-                className="text-[13px] font-sans tracking-wider text-white/50 hover:text-white transition-all duration-300 relative group pointer-events-auto"
+                className="text-[13px] font-sans tracking-wider text-black/50 hover:text-black transition-all duration-300 relative group pointer-events-auto"
                 initial={{ opacity: 0, y: -10 }}
                 animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
               >
                 <span className="relative z-10">{item}</span>
                 {/* Glow effect on hover */}
-                <span className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/30 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
+                <span className="absolute inset-0 bg-gradient-to-r from-[#B8860B]/0 via-[#B8860B]/30 to-[#B8860B]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
                 {/* Underline */}
                 <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
               </motion.a>
@@ -562,12 +408,12 @@ export default function LoadingTest() {
             transition={{ duration: 0.8, delay: 0.5 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
+            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105">
               <Image
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ Lifespan Center"
                 fill
-                className="object-contain brightness-0 invert"
+                className="object-contain"
                 priority
               />
             </div>
@@ -580,12 +426,12 @@ export default function LoadingTest() {
             transition={{ duration: 0 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="relative w-48 h-16 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
+            <div className="relative w-48 h-16 transition-all duration-300 group-hover:scale-105">
               <Image
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ"
                 fill
-                className="object-contain brightness-0 invert"
+                className="object-contain"
                 priority
               />
             </div>
@@ -620,7 +466,7 @@ export default function LoadingTest() {
           }
           transition={{ duration: 0 }}
         >
-          <h1 className="text-2xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+          <h1 className="text-2xl font-sans font-light text-black mb-1 tracking-wide">
             Regenerative Medicine
           </h1>
           <p className="text-xl md:text-2xl font-sans font-light rainbow-text">
@@ -642,15 +488,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-blue-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-blue-500/70 group-hover:shadow-[0_0_30px_rgba(10,32,80,0.9),0_0_60px_rgba(59,130,246,0.6)] group-hover:bg-blue-900/20">
+                <div className="text-[15px] font-mono text-black text-left transition-all duration-300 px-3 py-2 rounded-lg backdrop-blur-lg bg-white/30 border border-white/40 group-hover:border-[#B8860B] group-hover:shadow-[0_0_20px_rgba(184,134,11,0.6)] group-hover:bg-white/50 group-hover:scale-105">
                   <div className="font-semibold">STEM CELL BANKING</div>
-                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                  <div className="text-xs mt-0.5 text-[#B8860B] transition-all">
                     Preservation & Storage
                   </div>
                 </div>
                 <svg width="60" height="2" className="relative transition-all duration-300">
-                  <line x1="0" y1="1" x2="60" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#3B82F6]" />
-                  <circle cx="60" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#3B82F6]" />
+                  <line x1="0" y1="1" x2="60" y2="1" stroke="#000000" strokeWidth="2" opacity="0.4" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#B8860B]" />
+                  <circle cx="60" cy="1" r="3" fill="#000000" opacity="0.4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#B8860B]" />
                 </svg>
               </div>
             </motion.div>
@@ -665,15 +511,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/70 group-hover:shadow-[0_0_30px_rgba(100,30,80,0.9),0_0_60px_rgba(236,72,153,0.6)] group-hover:bg-pink-900/20">
+                <div className="text-[15px] font-mono text-black text-left transition-all duration-300 px-3 py-2 rounded-lg backdrop-blur-lg bg-white/30 border border-white/40 group-hover:border-[#B8860B] group-hover:shadow-[0_0_20px_rgba(184,134,11,0.6)] group-hover:bg-white/50 group-hover:scale-105">
                   <div className="font-semibold">GENETIC TESTING</div>
-                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                  <div className="text-xs mt-0.5 text-[#B8860B] transition-all">
                     DNA Analysis
                   </div>
                 </div>
                 <svg width="110" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="110" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#EC4899]" />
-                  <circle cx="110" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#EC4899]" />
+                  <line x1="0" y1="1" x2="110" y2="1" stroke="#000000" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#B8860B]" />
+                  <circle cx="110" cy="1" r="3" fill="#000000" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#B8860B]" />
                 </svg>
               </div>
             </motion.div>
@@ -689,15 +535,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-purple-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-purple-500/70 group-hover:shadow-[0_0_30px_rgba(90,10,80,0.9),0_0_60px_rgba(168,85,247,0.6)] group-hover:bg-purple-900/20">
+                <div className="text-[15px] font-mono text-black text-left transition-all duration-300 px-3 py-2 rounded-lg backdrop-blur-lg bg-white/30 border border-white/40 group-hover:border-[#B8860B] group-hover:shadow-[0_0_20px_rgba(184,134,11,0.6)] group-hover:bg-white/50 group-hover:scale-105">
                   <div className="font-semibold">AESTHETICS</div>
-                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                  <div className="text-xs mt-0.5 text-[#B8860B] transition-all">
                     Beauty Treatments
                   </div>
                 </div>
                 <svg width="95" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="95" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#A855F7]" />
-                  <circle cx="95" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#A855F7]" />
+                  <line x1="0" y1="1" x2="95" y2="1" stroke="#000000" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#B8860B]" />
+                  <circle cx="95" cy="1" r="3" fill="#000000" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#B8860B]" />
                 </svg>
               </div>
             </motion.div>
@@ -713,15 +559,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-cyan-200 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-cyan-400/70 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.9),0_0_60px_rgba(34,211,238,0.6)] group-hover:bg-cyan-900/20">
+                <div className="text-[15px] font-mono text-black text-right transition-all duration-300 px-3 py-2 rounded-lg backdrop-blur-lg bg-white/30 border border-white/40 group-hover:border-[#B8860B] group-hover:shadow-[0_0_20px_rgba(184,134,11,0.6)] group-hover:bg-white/50 group-hover:scale-105">
                   <div className="font-semibold">STEM CELL TECHNOLOGY</div>
-                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                  <div className="text-xs mt-0.5 text-[#B8860B] transition-all">
                     Advanced Therapies
                   </div>
                 </div>
                 <svg width="55" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="55" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#22D3EE]" />
-                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#22D3EE]" />
+                  <line x1="0" y1="1" x2="55" y2="1" stroke="#000000" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#B8860B]" />
+                  <circle cx="0" cy="1" r="3" fill="#000000" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#B8860B]" />
                 </svg>
               </div>
             </motion.div>
@@ -737,15 +583,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-red-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-red-500/70 group-hover:shadow-[0_0_30px_rgba(138,20,48,0.9),0_0_60px_rgba(239,68,68,0.6)] group-hover:bg-red-900/20">
+                <div className="text-[15px] font-mono text-black text-right transition-all duration-300 px-3 py-2 rounded-lg backdrop-blur-lg bg-white/30 border border-white/40 group-hover:border-[#B8860B] group-hover:shadow-[0_0_20px_rgba(184,134,11,0.6)] group-hover:bg-white/50 group-hover:scale-105">
                   <div className="font-semibold">VITAMIN IV THERAPY</div>
-                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                  <div className="text-xs mt-0.5 text-[#B8860B] transition-all">
                     Infusion Optimization
                   </div>
                 </div>
                 <svg width="100" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="100" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#EF4444]" />
-                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#EF4444]" />
+                  <line x1="0" y1="1" x2="100" y2="1" stroke="#000000" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#B8860B]" />
+                  <circle cx="0" cy="1" r="3" fill="#000000" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#B8860B]" />
                 </svg>
               </div>
             </motion.div>
@@ -761,15 +607,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-purple-200 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-purple-600/70 group-hover:shadow-[0_0_30px_rgba(60,10,90,0.9),0_0_60px_rgba(109,40,217,0.6)] group-hover:bg-purple-950/30">
+                <div className="text-[15px] font-mono text-black text-right transition-all duration-300 px-3 py-2 rounded-lg backdrop-blur-lg bg-white/30 border border-white/40 group-hover:border-[#B8860B] group-hover:shadow-[0_0_20px_rgba(184,134,11,0.6)] group-hover:bg-white/50 group-hover:scale-105">
                   <div className="font-semibold">WELLNESS & SPA</div>
-                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                  <div className="text-xs mt-0.5 text-[#B8860B] transition-all">
                     Holistic Care
                   </div>
                 </div>
                 <svg width="75" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="75" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#6D28D9]" />
-                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#6D28D9]" />
+                  <line x1="0" y1="1" x2="75" y2="1" stroke="#000000" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#B8860B]" />
+                  <circle cx="0" cy="1" r="3" fill="#000000" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#B8860B]" />
                 </svg>
               </div>
             </motion.div>
@@ -792,28 +638,28 @@ export default function LoadingTest() {
                     {/* Text on left - 40% width */}
                     <div className="w-[40%] h-full py-24 px-12 flex flex-col justify-end text-right">
                       {/* Section number */}
-                      <div className="text-8xl font-serif text-white/10 mb-4 text-right">
+                      <div className="text-8xl font-serif text-black/10 mb-4 text-right">
                         0{index + 1}
                       </div>
 
                       {/* Content */}
                       <div className="space-y-6">
-                        <h2 className="text-5xl md:text-6xl font-sans font-light text-white leading-tight tracking-wide drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        <h2 className="text-5xl md:text-6xl font-sans font-light text-black leading-tight tracking-wide">
                           {section.title}
                         </h2>
 
-                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B]">
                           {section.subtitle}
                         </p>
 
-                        <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 ml-auto shadow-[0_0_20px_rgba(0,191,255,0.6)]" />
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B] ml-auto shadow-[0_0_20px_rgba(184,134,11,0.6)]" />
 
-                        <p className="text-lg text-white/80 leading-relaxed max-w-lg ml-auto">
+                        <p className="text-lg text-black/80 leading-relaxed max-w-lg ml-auto">
                           {section.description}
                         </p>
 
-                        <button className="mt-8 px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-mono uppercase tracking-wider
-                          hover:bg-cyan-400 hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(0,191,255,0.5),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)]">
+                        <button className="mt-8 px-8 py-4 border-2 border-[#B8860B] text-[#B8860B] font-mono uppercase tracking-wider
+                          hover:bg-[#B8860B] hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(184,134,11,0.5),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)]">
                           Learn More
                         </button>
                       </div>
@@ -823,7 +669,7 @@ export default function LoadingTest() {
                     <div className="w-[40%] h-full flex items-center justify-start py-24 px-12">
                       <div className="relative w-full aspect-[4/3] rounded-xl overflow-visible transition-all duration-500 hover:scale-[1.03] group" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1)' }}>
                         {/* Glow effect border on hover - behind everything */}
-                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
+                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B] opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
                         {/* Image container */}
                         <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
                           <Image
@@ -838,21 +684,21 @@ export default function LoadingTest() {
                         {section.stats && (
                           <>
                             {/* First stat card - top left, overhanging - CYAN */}
-                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[0].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
                                 {section.stats[0].label}
                               </div>
                             </div>
 
                             {/* Second stat card - bottom right, overhanging - PINK */}
-                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[1].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
                                 {section.stats[1].label}
                               </div>
                             </div>
@@ -867,7 +713,7 @@ export default function LoadingTest() {
                     <div className="w-[40%] h-full flex items-center justify-end py-24 px-12">
                       <div className="relative w-full aspect-[4/3] rounded-xl overflow-visible transition-all duration-500 hover:scale-[1.03] group" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1)' }}>
                         {/* Glow effect border on hover - behind everything */}
-                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
+                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B] opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
                         {/* Image container */}
                         <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
                           <Image
@@ -882,21 +728,21 @@ export default function LoadingTest() {
                         {section.stats && (
                           <>
                             {/* First stat card - top left, overhanging - CYAN */}
-                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[0].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
                                 {section.stats[0].label}
                               </div>
                             </div>
 
                             {/* Second stat card - bottom right, overhanging - PINK */}
-                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[1].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
                                 {section.stats[1].label}
                               </div>
                             </div>
@@ -908,28 +754,28 @@ export default function LoadingTest() {
                     {/* Text on right - 40% width */}
                     <div className="w-[40%] h-full py-24 px-12 flex flex-col justify-start text-left">
                       {/* Section number */}
-                      <div className="text-8xl font-serif text-white/10 mb-4 text-left">
+                      <div className="text-8xl font-serif text-black/10 mb-4 text-left">
                         0{index + 1}
                       </div>
 
                       {/* Content */}
                       <div className="space-y-6">
-                        <h2 className="text-5xl md:text-6xl font-sans font-light text-white leading-tight tracking-wide drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        <h2 className="text-5xl md:text-6xl font-sans font-light text-black leading-tight tracking-wide">
                           {section.title}
                         </h2>
 
-                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B]">
                           {section.subtitle}
                         </p>
 
-                        <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 shadow-[0_0_20px_rgba(0,191,255,0.6)]" />
+                        <div className="w-24 h-1 bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B] shadow-[0_0_20px_rgba(184,134,11,0.6)]" />
 
-                        <p className="text-lg text-white/80 leading-relaxed max-w-lg">
+                        <p className="text-lg text-black/80 leading-relaxed max-w-lg">
                           {section.description}
                         </p>
 
-                        <button className="mt-8 px-8 py-4 border-2 border-pink-500 text-pink-500 font-mono uppercase tracking-wider
-                          hover:bg-pink-500 hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(255,20,147,0.5),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)]">
+                        <button className="mt-8 px-8 py-4 border-2 border-[#B8860B] text-[#B8860B] font-mono uppercase tracking-wider
+                          hover:bg-[#B8860B] hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(184,134,11,0.5),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)]">
                           Learn More
                         </button>
                       </div>
@@ -942,18 +788,18 @@ export default function LoadingTest() {
         </div>
 
         {/* Footer - SPACE NEON VERSION */}
-        <footer className="relative py-16 text-center border-t border-cyan-400/30" style={{
+        <footer className="relative py-16 text-center border-t border-[#B8860B]/30" style={{
           background: 'linear-gradient(to bottom, #0a0412 0%, #1a0a2e 50%, #0f0624 100%)'
         }}>
           <div className="max-w-6xl mx-auto px-8">
             <div className="flex justify-center items-center gap-8 mb-8">
-              <a href="#team" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Team</a>
-              <a href="#our-lab" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Our Lab</a>
-              <a href="#facilities" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Facilities</a>
-              <a href="#blog" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Blog</a>
-              <a href="#contact" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Contact</a>
+              <a href="#team" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Team</a>
+              <a href="#our-lab" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Our Lab</a>
+              <a href="#facilities" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Facilities</a>
+              <a href="#blog" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Blog</a>
+              <a href="#contact" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Contact</a>
             </div>
-            <p className="text-white/30 text-sm">
+            <p className="text-black/30 text-sm">
               © 2024 ICELLARÉ Lifespan Center. All rights reserved.
             </p>
           </div>
