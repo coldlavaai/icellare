@@ -103,15 +103,16 @@ export default function LoadingTest() {
   const [scrollVelocity, setScrollVelocity] = useState(0)
   const [showTopNav, setShowTopNav] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [activeSectionIndex, setActiveSectionIndex] = useState(-1) // -1 means hero, 0-5 are sections
 
   useEffect(() => {
     const timeline = [
       { delay: 0, progress: 0 },      // Start
-      { delay: 300, progress: 0.2 },  // Frame appears
-      { delay: 800, progress: 0.5 },  // DNA starts growing
-      { delay: 1800, progress: 0.7 }, // DNA fully grown
-      { delay: 2200, progress: 0.8 }, // Labels appear
-      { delay: 2800, progress: 1 },   // Branding appears
+      { delay: 150, progress: 0.2 },  // Frame appears
+      { delay: 400, progress: 0.5 },  // DNA starts growing
+      { delay: 900, progress: 0.7 },  // DNA fully grown
+      { delay: 1100, progress: 0.8 }, // Labels appear
+      { delay: 1400, progress: 1 },   // Branding appears
     ]
 
     timeline.forEach(({ delay, progress }) => {
@@ -124,7 +125,7 @@ export default function LoadingTest() {
     setTimeout(() => {
       setIsLoadingComplete(true)
       // Don't hide frame - it stays until user scrolls
-    }, 3500)
+    }, 1700)
   }, [])
 
   // Track scroll position, velocity, and direction
@@ -132,28 +133,40 @@ export default function LoadingTest() {
     let lastTime = Date.now()
 
     const handleScroll = () => {
-      const scrollY = window.scrollY
+      const currentScrollY = window.scrollY
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight
-      const progress = maxScroll > 0 ? scrollY / maxScroll : 0
+      const progress = maxScroll > 0 ? currentScrollY / maxScroll : 0
+
+      // Calculate which section is active
+      const viewportHeight = window.innerHeight
+      const heroHeight = viewportHeight
+
+      if (currentScrollY < heroHeight * 0.5) {
+        setActiveSectionIndex(-1) // Hero
+      } else {
+        // Calculate section index (0-5)
+        const sectionIndex = Math.floor((currentScrollY - heroHeight * 0.5) / viewportHeight)
+        setActiveSectionIndex(Math.min(sectionIndex, 5)) // Max 5 (6 sections)
+      }
 
       // Calculate velocity
       const now = Date.now()
       const deltaTime = now - lastTime
-      const deltaScroll = Math.abs(scrollY - lastScrollY)
+      const deltaScroll = Math.abs(currentScrollY - lastScrollY)
       const velocity = deltaTime > 0 ? deltaScroll / deltaTime : 0
 
       // Show/hide nav based on scroll direction
-      if (scrollY < 50) {
+      if (currentScrollY < 100) {
         setShowTopNav(true) // Always show at top
-      } else if (scrollY < lastScrollY) {
+      } else if (currentScrollY < lastScrollY) {
         setShowTopNav(true) // Scrolling up
-      } else if (scrollY > lastScrollY) {
+      } else if (currentScrollY > lastScrollY) {
         setShowTopNav(false) // Scrolling down
       }
 
       setScrollProgress(progress)
       setScrollVelocity(velocity)
-      setLastScrollY(scrollY)
+      setLastScrollY(currentScrollY)
 
       lastTime = now
     }
@@ -248,6 +261,30 @@ export default function LoadingTest() {
         html::-webkit-scrollbar {
           display: none; /* Chrome, Safari, Opera */
         }
+        @keyframes rainbow-shift {
+          0% {
+            background-position: 0% 50%;
+          }
+          100% {
+            background-position: 200% 50%;
+          }
+        }
+        .rainbow-text {
+          background: linear-gradient(
+            90deg,
+            #00BFFF 0%,
+            #9370DB 20%,
+            #FF1493 40%,
+            #9370DB 60%,
+            #00BFFF 80%,
+            #9370DB 100%
+          );
+          background-size: 300% 100%;
+          animation: rainbow-shift 8s linear infinite;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
       `}</style>
 
       {/* Loading Screen - CYBERPUNK SPACE VERSION */}
@@ -274,16 +311,138 @@ export default function LoadingTest() {
         </div>
       )}
 
-      {/* Fixed DNA Canvas Background - CYBERPUNK SPACE VERSION */}
+      {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
       <div className="fixed inset-0 pointer-events-none" style={{
+        zIndex: 0,
+        background: (() => {
+          // Define color stops for smooth transitions - SPACEY with pink towards bottom
+          const colorStops = [
+            { progress: 0.0, color: '#1a0a2e' },   // Deep purple
+            { progress: 0.2, color: '#0a2050' },   // Deep blue
+            { progress: 0.4, color: '#1e1050' },   // Deep indigo/purple
+            { progress: 0.6, color: '#2d1b69' },   // Deep violet/purple
+            { progress: 0.8, color: '#3a1545' },   // Purple with pink tint
+            { progress: 1.0, color: '#451a50' },   // Deep purple/pink
+          ]
+
+          // Find the two closest color stops
+          let lowerStop = colorStops[0]
+          let upperStop = colorStops[colorStops.length - 1]
+
+          for (let i = 0; i < colorStops.length - 1; i++) {
+            if (scrollProgress >= colorStops[i].progress && scrollProgress <= colorStops[i + 1].progress) {
+              lowerStop = colorStops[i]
+              upperStop = colorStops[i + 1]
+              break
+            }
+          }
+
+          // Calculate interpolation factor
+          const range = upperStop.progress - lowerStop.progress
+          const localProgress = range > 0 ? (scrollProgress - lowerStop.progress) / range : 0
+
+          // Interpolate between colors
+          const r1 = parseInt(lowerStop.color.slice(1, 3), 16)
+          const g1 = parseInt(lowerStop.color.slice(3, 5), 16)
+          const b1 = parseInt(lowerStop.color.slice(5, 7), 16)
+
+          const r2 = parseInt(upperStop.color.slice(1, 3), 16)
+          const g2 = parseInt(upperStop.color.slice(3, 5), 16)
+          const b2 = parseInt(upperStop.color.slice(5, 7), 16)
+
+          const r = Math.round(r1 + (r2 - r1) * localProgress)
+          const g = Math.round(g1 + (g2 - g1) * localProgress)
+          const b = Math.round(b1 + (b2 - b1) * localProgress)
+
+          // Northern Lights effect - aurora-like flowing colors on dark blue background
+
+          const time = scrollProgress * Math.PI * 2
+
+          // Define aurora color palettes that transition with scroll
+          // Start: cyan/blue -> Mid: purple/pink -> End: deep purple/blue
+          const auroraColors = [
+            { r: 0, g: 191, b: 255 },     // Cyan
+            { r: 147, g: 51, b: 234 },    // Purple
+            { r: 236, g: 72, b: 153 },    // Pink
+            { r: 59, g: 130, b: 246 },    // Blue
+            { r: 0, g: 191, b: 255 },     // Back to cyan
+          ]
+
+          // Interpolate colors based on scroll
+          const getAuroraColor = (baseIndex: number, offset: number, opacity: number) => {
+            const colorProgress = (scrollProgress + offset) % 1
+            const colorIndex = colorProgress * (auroraColors.length - 1)
+            const lowerIndex = Math.floor(colorIndex)
+            const upperIndex = Math.ceil(colorIndex)
+            const factor = colorIndex - lowerIndex
+
+            const lower = auroraColors[lowerIndex]
+            const upper = auroraColors[upperIndex]
+
+            const r = Math.round(lower.r + (upper.r - lower.r) * factor)
+            const g = Math.round(lower.g + (upper.g - lower.g) * factor)
+            const b = Math.round(lower.b + (upper.b - lower.b) * factor)
+
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`
+          }
+
+          // Aurora band 1: Top left - flowing cyan to purple
+          const aurora1X = 18 + Math.sin(time * 0.5) * 8
+          const aurora1Y = 15 + Math.cos(time * 0.7) * 6
+          const aurora1Size = 600 + Math.sin(time * 0.8) * 100
+          const aurora1Opacity = 0.18 + Math.sin(time * 1.2) * 0.06
+          const aurora1Color = getAuroraColor(0, 0, aurora1Opacity)
+
+          // Aurora band 2: Left edge - flowing blue to pink
+          const aurora2X = 8 + Math.cos(time * 0.6) * 5
+          const aurora2Y = 55 + Math.sin(time * 0.5) * 10
+          const aurora2Size = 550 + Math.cos(time * 0.9) * 90
+          const aurora2Opacity = 0.15 + Math.cos(time * 1.1) * 0.05
+          const aurora2Color = getAuroraColor(1, 0.25, aurora2Opacity)
+
+          // Aurora band 3: Bottom right - flowing purple to cyan
+          const aurora3X = 85 + Math.sin(time * 0.4) * 7
+          const aurora3Y = 80 + Math.cos(time * 0.6) * 8
+          const aurora3Size = 620 + Math.sin(time * 1.0) * 95
+          const aurora3Opacity = 0.20 + Math.sin(time * 0.9) * 0.06
+          const aurora3Color = getAuroraColor(2, 0.5, aurora3Opacity)
+
+          // Aurora band 4: Top right - flowing deep blue
+          const aurora4X = 90 + Math.cos(time * 0.7) * 5
+          const aurora4Y = 25 + Math.sin(time * 0.8) * 7
+          const aurora4Size = 500 + Math.cos(time * 1.1) * 80
+          const aurora4Opacity = 0.14 + Math.cos(time * 1.3) * 0.05
+          const aurora4Color = getAuroraColor(3, 0.75, aurora4Opacity)
+
+          // Aurora band 5: Bottom left - flowing cyan/pink
+          const aurora5X = 12 + Math.sin(time * 0.9) * 6
+          const aurora5Y = 88 + Math.cos(time * 0.4) * 5
+          const aurora5Size = 480 + Math.sin(time * 1.2) * 70
+          const aurora5Opacity = 0.12 + Math.sin(time * 1.5) * 0.04
+          const aurora5Color = getAuroraColor(4, 0.1, aurora5Opacity)
+
+          return `
+            radial-gradient(ellipse ${aurora1Size}px ${aurora1Size * 0.7}px at ${aurora1X}% ${aurora1Y}%, ${aurora1Color} 0%, transparent 70%),
+            radial-gradient(ellipse ${aurora2Size}px ${aurora2Size * 0.8}px at ${aurora2X}% ${aurora2Y}%, ${aurora2Color} 0%, transparent 65%),
+            radial-gradient(ellipse ${aurora3Size}px ${aurora3Size * 0.6}px at ${aurora3X}% ${aurora3Y}%, ${aurora3Color} 0%, transparent 68%),
+            radial-gradient(ellipse ${aurora4Size}px ${aurora4Size * 0.9}px at ${aurora4X}% ${aurora4Y}%, ${aurora4Color} 0%, transparent 62%),
+            radial-gradient(ellipse ${aurora5Size}px ${aurora5Size * 0.75}px at ${aurora5X}% ${aurora5Y}%, ${aurora5Color} 0%, transparent 60%),
+            radial-gradient(ellipse at 50% 50%, rgb(${Math.round(10 + scrollProgress * 25)}, ${Math.round(15 + scrollProgress * 20)}, ${Math.round(35 + scrollProgress * 35)}) 0%, rgb(5, 8, 20) 70%)
+          `
+        })()
+      }} />
+
+      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        zIndex: 10,
         background: `
-          radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
-          radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-          radial-gradient(ellipse at 50% 20%, #1a0a2e 0%, #0f0624 25%, #0a0412 50%, #050208 75%, #000000 100%)
+          radial-gradient(ellipse 1000px 800px at 50% 45%, rgba(255, 255, 255, 0.03) 0%, rgba(100, 150, 200, 0.02) 30%, transparent 60%),
+          radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 50%)
         `
       }}>
-        {/* 3D Canvas - transparent to show radial gradient */}
-        <div className="absolute inset-0">
+        {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS */}
+        <div className="absolute inset-0 pointer-events-none">
           <Canvas
             shadows
             dpr={[1, 2]}
@@ -292,7 +451,7 @@ export default function LoadingTest() {
               alpha: true,
               powerPreference: 'high-performance'
             }}
-            style={{ background: 'transparent' }}
+            style={{ background: 'transparent', pointerEvents: 'none' }}
           >
             <Suspense fallback={null}>
               <Scene
@@ -308,6 +467,9 @@ export default function LoadingTest() {
 
       {/* Scrollable Content Sections */}
       <div className="relative">
+        {/* Top spacer to ensure perfect layout at scrollY = 0 */}
+        <div style={{ height: '100px' }}></div>
+
         {/* Scroll Progress Bars - Full Border */}
         {/* Top */}
         <motion.div
@@ -384,9 +546,9 @@ export default function LoadingTest() {
           </div>
         </motion.nav>
 
-        {/* Hero section with logo and heading - FIXED */}
-        <div className="h-screen fixed inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
-          {/* Logo at top with lots of space - DARK VERSION */}
+        {/* Hero section with logo and heading - SCROLLS WITH PAGE */}
+        <div className="h-screen absolute inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
+          {/* Full logo - original, always present */}
           <motion.div
             className="relative z-10 mb-auto cursor-pointer pointer-events-auto group"
             initial={{ opacity: 0, y: -30 }}
@@ -394,11 +556,28 @@ export default function LoadingTest() {
             transition={{ duration: 0.8, delay: 0.5 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            {/* Logo - high resolution - WHITE */}
-            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_20px_rgba(0,191,255,0.6)]">
+            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
               <Image
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ Lifespan Center"
+                fill
+                className="object-contain brightness-0 invert"
+                priority
+              />
+            </div>
+          </motion.div>
+
+          {/* Top-right full logo - fade directly with scroll (no delay) */}
+          <motion.div
+            className="fixed top-5 right-5 cursor-pointer pointer-events-auto group z-50"
+            animate={{ opacity: Math.min(1, Math.max(0, (scrollProgress - 0.02) * 10)) }}
+            transition={{ duration: 0 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="relative w-48 h-16 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
+              <Image
+                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+                alt="ICELLARÉ"
                 fill
                 className="object-contain brightness-0 invert"
                 priority
@@ -419,26 +598,32 @@ export default function LoadingTest() {
               }}
             />
           </div>
-
-          {/* Heading at bottom with lots of space - DARK VERSION */}
-          <motion.div
-            className="relative z-10 text-center mt-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            style={{ marginBottom: '20px' }}
-          >
-            <h1 className="text-3xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
-              Regenerative Medicine
-            </h1>
-            <p className="text-lg font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 drop-shadow-[0_0_20px_rgba(0,191,255,0.8)]">
-              Lifespan Center
-            </p>
-          </motion.div>
         </div>
 
+        {/* Heading at bottom - FIXED POSITION, FADES OUT WITH SCROLL (no delay) */}
+        <motion.div
+          className="fixed bottom-5 left-0 right-0 z-30 text-center pointer-events-none"
+          initial={{ opacity: 0, y: 30 }}
+          animate={
+            isLoadingComplete
+              ? {
+                  opacity: Math.max(0, 1 - scrollProgress * 12),
+                  y: 0
+                }
+              : { opacity: 0, y: 30 }
+          }
+          transition={{ duration: 0 }}
+        >
+          <h1 className="text-2xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            Regenerative Medicine
+          </h1>
+          <p className="text-xl md:text-2xl font-sans font-light rainbow-text">
+            Lifespan Center
+          </p>
+        </motion.div>
+
         {/* Navigation labels around DNA - SCROLLS */}
-        <div className="h-screen relative pointer-events-none" style={{ marginTop: '60px' }}>
+        <div className="h-screen relative pointer-events-none" style={{ marginTop: '-40px' }}>
           <div className="absolute inset-0">
             {/* Navigation labels positioned around DNA */}
             <motion.div
@@ -451,15 +636,15 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-blue-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-blue-500/70 group-hover:shadow-[0_0_30px_rgba(10,32,80,0.9),0_0_60px_rgba(59,130,246,0.6)] group-hover:bg-blue-900/20">
                   <div className="font-semibold">STEM CELL BANKING</div>
-                  <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
                     Preservation & Storage
                   </div>
                 </div>
                 <svg width="60" height="2" className="relative transition-all duration-300">
-                  <line x1="0" y1="1" x2="60" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#FF1493]" />
-                  <circle cx="60" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#FF1493]" />
+                  <line x1="0" y1="1" x2="60" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#3B82F6]" />
+                  <circle cx="60" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#3B82F6]" />
                 </svg>
               </div>
             </motion.div>
@@ -474,19 +659,20 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/70 group-hover:shadow-[0_0_30px_rgba(100,30,80,0.9),0_0_60px_rgba(236,72,153,0.6)] group-hover:bg-pink-900/20">
                   <div className="font-semibold">GENETIC TESTING</div>
-                  <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
                     DNA Analysis
                   </div>
                 </div>
                 <svg width="110" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="110" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#FF1493]" />
-                  <circle cx="110" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#FF1493]" />
+                  <line x1="0" y1="1" x2="110" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#EC4899]" />
+                  <circle cx="110" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#EC4899]" />
                 </svg>
               </div>
             </motion.div>
 
+            {/* Left side label 3 */}
             <motion.div
               className="absolute left-[19%] bottom-[30%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
@@ -497,19 +683,20 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-purple-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-purple-500/70 group-hover:shadow-[0_0_30px_rgba(90,10,80,0.9),0_0_60px_rgba(168,85,247,0.6)] group-hover:bg-purple-900/20">
                   <div className="font-semibold">AESTHETICS</div>
-                  <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
                     Beauty Treatments
                   </div>
                 </div>
                 <svg width="95" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="95" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#FF1493]" />
-                  <circle cx="95" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#FF1493]" />
+                  <line x1="0" y1="1" x2="95" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#A855F7]" />
+                  <circle cx="95" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#A855F7]" />
                 </svg>
               </div>
             </motion.div>
 
+            {/* Right side label 1 */}
             <motion.div
               className="absolute right-[21%] top-[31%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
@@ -520,19 +707,20 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-cyan-200 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-cyan-400/70 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.9),0_0_60px_rgba(34,211,238,0.6)] group-hover:bg-cyan-900/20">
                   <div className="font-semibold">STEM CELL TECHNOLOGY</div>
-                  <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
                     Advanced Therapies
                   </div>
                 </div>
                 <svg width="55" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="55" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#FF1493]" />
-                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#FF1493]" />
+                  <line x1="0" y1="1" x2="55" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#22D3EE]" />
+                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#22D3EE]" />
                 </svg>
               </div>
             </motion.div>
 
+            {/* Right side label 2 */}
             <motion.div
               className="absolute right-[18%] top-[53%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
@@ -543,19 +731,20 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-red-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-red-500/70 group-hover:shadow-[0_0_30px_rgba(138,20,48,0.9),0_0_60px_rgba(239,68,68,0.6)] group-hover:bg-red-900/20">
                   <div className="font-semibold">VITAMIN IV THERAPY</div>
-                  <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
                     Infusion Optimization
                   </div>
                 </div>
                 <svg width="100" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="100" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#FF1493]" />
-                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#FF1493]" />
+                  <line x1="0" y1="1" x2="100" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#EF4444]" />
+                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#EF4444]" />
                 </svg>
               </div>
             </motion.div>
 
+            {/* Right side label 3 */}
             <motion.div
               className="absolute right-[23%] bottom-[24%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
@@ -566,33 +755,20 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/50 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-purple-200 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-purple-600/70 group-hover:shadow-[0_0_30px_rgba(60,10,90,0.9),0_0_60px_rgba(109,40,217,0.6)] group-hover:bg-purple-950/30">
                   <div className="font-semibold">WELLNESS & SPA</div>
-                  <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
                     Holistic Care
                   </div>
                 </div>
                 <svg width="75" height="2" className="transition-all duration-300">
-                  <line x1="0" y1="1" x2="75" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#FF1493]" />
-                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#FF1493]" />
+                  <line x1="0" y1="1" x2="75" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#6D28D9]" />
+                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#6D28D9]" />
                 </svg>
               </div>
             </motion.div>
           </div>
         </div>
-
-        {/* Smooth scroll-based color overlay - behind DNA - CYBERPUNK */}
-        <div
-          className="fixed inset-0 pointer-events-none transition-colors duration-1000 ease-out"
-          style={{
-            zIndex: 5,
-            background: `linear-gradient(to bottom,
-              rgba(26, 10, 46, ${Math.max(0, 0.2 - scrollProgress * 0.2)}) 0%,
-              rgba(6, 182, 212, ${scrollProgress * 0.05}) 30%,
-              rgba(236, 72, 153, ${scrollProgress * 0.03}) 70%,
-              rgba(0, 0, 0, ${scrollProgress * 0.2}) 100%)`
-          }}
-        />
 
         {/* Content sections that flow around DNA - balanced spacing from center */}
         <div className="relative">
@@ -642,7 +818,10 @@ export default function LoadingTest() {
                     {/* Image on right - 40% width */}
                     <div className="w-[40%] h-full flex items-center justify-start py-24 px-12">
                       <div className="relative w-full aspect-[4/3] rounded-xl overflow-visible transition-all duration-500 hover:scale-[1.03] group" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1)' }}>
-                        <div className="absolute inset-0 rounded-xl overflow-hidden">
+                        {/* Glow effect border on hover - behind everything */}
+                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
+                        {/* Image container */}
+                        <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
                           <Image
                             src={section.image}
                             alt={section.title}
@@ -655,7 +834,7 @@ export default function LoadingTest() {
                         {section.stats && (
                           <>
                             {/* First stat card - top left, overhanging - CYAN */}
-                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-10">
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-20">
                               <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
                                 {section.stats[0].value}
                               </div>
@@ -665,7 +844,7 @@ export default function LoadingTest() {
                             </div>
 
                             {/* Second stat card - bottom right, overhanging - PINK */}
-                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-10">
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-20">
                               <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
                                 {section.stats[1].value}
                               </div>
@@ -683,7 +862,10 @@ export default function LoadingTest() {
                     {/* Image on left - 40% width */}
                     <div className="w-[40%] h-full flex items-center justify-end py-24 px-12">
                       <div className="relative w-full aspect-[4/3] rounded-xl overflow-visible transition-all duration-500 hover:scale-[1.03] group" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1)' }}>
-                        <div className="absolute inset-0 rounded-xl overflow-hidden">
+                        {/* Glow effect border on hover - behind everything */}
+                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
+                        {/* Image container */}
+                        <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
                           <Image
                             src={section.image}
                             alt={section.title}
@@ -696,7 +878,7 @@ export default function LoadingTest() {
                         {section.stats && (
                           <>
                             {/* First stat card - top left, overhanging - CYAN */}
-                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-10">
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-20">
                               <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
                                 {section.stats[0].value}
                               </div>
@@ -706,7 +888,7 @@ export default function LoadingTest() {
                             </div>
 
                             {/* Second stat card - bottom right, overhanging - PINK */}
-                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-10">
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-20">
                               <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
                                 {section.stats[1].value}
                               </div>
