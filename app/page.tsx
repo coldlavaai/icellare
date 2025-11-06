@@ -1,770 +1,962 @@
 'use client'
 
-import dynamic from 'next/dynamic'
-import Navigation from '@/components/Navigation'
-import Footer from '@/components/Footer'
-import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Suspense, useState, useEffect, useRef } from 'react'
+import { PerspectiveCamera, Environment } from '@react-three/drei'
+import { EffectComposer, Bloom, Vignette, DepthOfField } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
+import { ArchitecturalDNA } from '@/components/ArchitecturalDNA'
+import { TechnicalFrame } from '@/components/TechnicalFrame'
+import { SimpleParticles } from '@/components/SimpleParticles'
+import * as THREE from 'three'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useScrollIntegration } from '@/hooks/useScrollIntegration'
+import { motion } from 'framer-motion'
 
-const UltimateHybrid = dynamic(() => import('@/components/UltimateHybrid'), { ssr: false })
-
-// Floating Cell Particle for Hero
-function FloatingCell({ index, delay }: { index: number; delay: number }) {
-  const positions = [
-    { x: '10%', y: '20%' },
-    { x: '85%', y: '15%' },
-    { x: '15%', y: '70%' },
-    { x: '80%', y: '65%' },
-    { x: '50%', y: '10%' },
-  ]
-
-  const pos = positions[index % positions.length]
-
+function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: { growthProgress: number; enableGrowth: boolean; showParticles: boolean; scrollProgress: number }) {
   return (
-    <motion.div
-      className="absolute pointer-events-none"
-      style={{ left: pos.x, top: pos.y }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{
-        opacity: [0, 0.6, 0],
-        scale: [0.5, 1, 0.5],
-        rotate: [0, 180, 360],
-      }}
-      transition={{
-        duration: 8,
-        repeat: Infinity,
-        delay,
-        ease: 'easeInOut',
-      }}
-    >
-      <svg width="80" height="80" viewBox="0 0 80 80">
-        <motion.circle
-          cx="40"
-          cy="40"
-          r="25"
-          fill="none"
-          stroke="rgba(212, 175, 122, 0.4)"
-          strokeWidth="2"
-          animate={{
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            delay: delay + 0.5,
-          }}
+    <>
+      {/* No solid background - use transparent canvas - CYBERPUNK VERSION */}
+      <fog attach="fog" args={['#0a0412', 20, 50]} />
+
+      {/* Camera - centered on DNA, slightly elevated */}
+      <PerspectiveCamera
+        makeDefault
+        position={[0, 1.5, 28]}
+        fov={50}
+        near={0.1}
+        far={1000}
+      />
+
+      {/* STEP 4: Lighting setup */}
+
+      {/* Ambient light */}
+      <ambientLight color={0x404060} intensity={0.2} />
+
+      {/* Hemisphere light */}
+      <hemisphereLight
+        color={0x0066ff}
+        groundColor={0x001133}
+        intensity={0.4}
+      />
+
+      {/* Key light */}
+      <directionalLight
+        position={[10, 15, 10]}
+        color={0xffffff}
+        intensity={1.2}
+      />
+
+      {/* Fill light */}
+      <directionalLight
+        position={[-10, 5, -10]}
+        color={0x6699ff}
+        intensity={0.3}
+      />
+
+      {/* Rim light */}
+      <directionalLight
+        position={[0, 5, -15]}
+        color={0x88ccff}
+        intensity={0.8}
+      />
+
+      {/* Environment for reflections */}
+      <Environment preset="apartment" />
+
+      {/* DNA with growth animation and scroll-based rotation */}
+      <ArchitecturalDNA
+        growthProgress={growthProgress}
+        enableGrowth={enableGrowth}
+        scrollProgress={scrollProgress}
+      />
+
+      {/* Simple particles */}
+      {showParticles && <SimpleParticles />}
+
+      {/* Post-processing */}
+      <EffectComposer>
+        {/* Bloom - subtle glow on highlights */}
+        <Bloom
+          intensity={0.3}
+          luminanceThreshold={0.9}
+          luminanceSmoothing={0.9}
+          mipmapBlur
         />
-        <motion.circle
-          cx="40"
-          cy="40"
-          r="15"
-          fill="rgba(212, 175, 122, 0.2)"
-          animate={{
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            delay,
-          }}
+
+        {/* Vignette - darker edges */}
+        <Vignette
+          offset={0.3}
+          darkness={0.5}
+          eskil={false}
+          blendFunction={BlendFunction.NORMAL}
         />
-      </svg>
-    </motion.div>
+      </EffectComposer>
+    </>
   )
 }
 
-// Service Card with Cell/Organic Design
-function ServiceCard({
-  title,
-  description,
-  image,
-  index,
-  link
-}: {
-  title: string
-  description: string
-  image?: string
-  index: number
-  link: string
-}) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.3 })
-
-  return (
-    <Link href={link}>
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 60 }}
-        animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
-        className="group relative h-full cursor-pointer"
-      >
-        {/* Hexagonal-inspired container */}
-        <div className="relative overflow-hidden rounded-[2.5rem] h-full">
-          {/* Animated gradient border */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-rose-gold via-champagne to-bronze opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-sm"
-            animate={{
-              rotate: [0, 360],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-
-          {/* Multi-layered glass effect */}
-          <div className="absolute inset-0 backdrop-blur-3xl bg-white/30 rounded-[2.5rem]" />
-          <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/60 via-white/50 to-white/40 rounded-[2.5rem]" />
-
-          {/* Intense glow layers */}
-          <motion.div
-            className="absolute inset-0 rounded-[2.5rem]"
-            animate={{
-              boxShadow: [
-                '0 0 40px rgba(212, 175, 122, 0.3), 0 0 80px rgba(212, 175, 122, 0.1), inset 0 0 60px rgba(255, 255, 255, 0.3)',
-                '0 0 60px rgba(212, 175, 122, 0.5), 0 0 120px rgba(212, 175, 122, 0.2), inset 0 0 80px rgba(255, 255, 255, 0.4)',
-                '0 0 40px rgba(212, 175, 122, 0.3), 0 0 80px rgba(212, 175, 122, 0.1), inset 0 0 60px rgba(255, 255, 255, 0.3)',
-              ],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-
-          {/* Content card */}
-          <div className="relative backdrop-blur-2xl bg-white/80 border-2 border-white/90 p-10 h-full flex flex-col shadow-2xl hover:shadow-rose-gold/60 transition-all duration-700 group-hover:border-rose-gold/80 group-hover:bg-white/90 group-hover:shadow-[0_0_80px_rgba(212,175,122,0.6)]">
-            {/* Image with cell membrane effect */}
-            {image && (
-              <motion.div
-                className="relative w-full h-52 mb-6 rounded-2xl overflow-hidden"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.4 }}
-              >
-                {/* Pulsing border effect */}
-                <motion.div
-                  className="absolute inset-0 rounded-2xl"
-                  animate={{
-                    boxShadow: [
-                      '0 0 0 0 rgba(212, 175, 122, 0)',
-                      '0 0 0 8px rgba(212, 175, 122, 0.2)',
-                      '0 0 0 0 rgba(212, 175, 122, 0)',
-                    ],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                />
-                <Image
-                  src={image}
-                  alt={title}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </motion.div>
-            )}
-
-            {/* Cellular connection dots */}
-            <div className="absolute top-4 right-4 flex gap-2">
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  className="w-2 h-2 rounded-full bg-rose-gold/40"
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.4, 1, 0.4],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.3,
-                  }}
-                />
-              ))}
-            </div>
-
-            <h3 className="font-serif text-2xl mb-3 text-charcoal group-hover:text-rose-gold transition-colors duration-500">
-              {title}
-            </h3>
-
-            <p className="text-charcoal/70 leading-relaxed text-base flex-grow">
-              {description}
-            </p>
-
-            <motion.div
-              className="mt-6 inline-flex items-center text-rose-gold font-semibold"
-              whileHover={{ x: 10 }}
-              transition={{ duration: 0.3 }}
-            >
-              Discover More <span className="ml-2 text-2xl">→</span>
-            </motion.div>
-          </div>
-        </div>
-      </motion.div>
-    </Link>
-  )
-}
-
-// Stats Counter Component
-function StatCounter({ end, suffix, label, delay }: { end: number; suffix: string; label: string; delay: number }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.5 })
-  const [count, setCount] = useState(0)
+export default function LoadingTest() {
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [isLoadingComplete, setIsLoadingComplete] = useState(false)
+  const [showFrame, setShowFrame] = useState(true)
+  const [scrollProgress, setScrollProgress] = useState(0)
+  const [scrollVelocity, setScrollVelocity] = useState(0)
+  const [showTopNav, setShowTopNav] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+  const [activeSectionIndex, setActiveSectionIndex] = useState(-1) // -1 means hero, 0-5 are sections
 
   useEffect(() => {
-    if (isInView) {
-      const duration = 2000
-      const steps = 60
-      const increment = end / steps
-      let current = 0
+    const timeline = [
+      { delay: 0, progress: 0 },      // Start
+      { delay: 150, progress: 0.2 },  // Frame appears
+      { delay: 400, progress: 0.5 },  // DNA starts growing
+      { delay: 900, progress: 0.7 },  // DNA fully grown
+      { delay: 1100, progress: 0.8 }, // Labels appear
+      { delay: 1400, progress: 1 },   // Branding appears
+    ]
 
-      const timer = setInterval(() => {
-        current += increment
-        if (current >= end) {
-          setCount(end)
-          clearInterval(timer)
-        } else {
-          setCount(Math.floor(current))
-        }
-      }, duration / steps)
+    timeline.forEach(({ delay, progress }) => {
+      setTimeout(() => {
+        setLoadingProgress(progress)
+      }, delay)
+    })
 
-      return () => clearInterval(timer)
+    // Mark loading as complete but keep frame visible
+    setTimeout(() => {
+      setIsLoadingComplete(true)
+      // Don't hide frame - it stays until user scrolls
+    }, 1700)
+  }, [])
+
+  // Track scroll position, velocity, and direction
+  useEffect(() => {
+    let lastTime = Date.now()
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight
+      const progress = maxScroll > 0 ? currentScrollY / maxScroll : 0
+
+      // Calculate which section is active
+      const viewportHeight = window.innerHeight
+      const heroHeight = viewportHeight
+
+      if (currentScrollY < heroHeight * 0.5) {
+        setActiveSectionIndex(-1) // Hero
+      } else {
+        // Calculate section index (0-5)
+        const sectionIndex = Math.floor((currentScrollY - heroHeight * 0.5) / viewportHeight)
+        setActiveSectionIndex(Math.min(sectionIndex, 5)) // Max 5 (6 sections)
+      }
+
+      // Calculate velocity
+      const now = Date.now()
+      const deltaTime = now - lastTime
+      const deltaScroll = Math.abs(currentScrollY - lastScrollY)
+      const velocity = deltaTime > 0 ? deltaScroll / deltaTime : 0
+
+      // Show/hide nav based on scroll direction
+      if (currentScrollY < 100) {
+        setShowTopNav(true) // Always show at top
+      } else if (currentScrollY < lastScrollY) {
+        setShowTopNav(true) // Scrolling up
+      } else if (currentScrollY > lastScrollY) {
+        setShowTopNav(false) // Scrolling down
+      }
+
+      setScrollProgress(progress)
+      setScrollVelocity(velocity)
+      setLastScrollY(currentScrollY)
+
+      lastTime = now
     }
-  }, [isInView, end])
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [lastScrollY])
+
+  // Map loadingProgress to DNA growthProgress
+  // DNA starts growing at loadingProgress 0.5
+  const dnaGrowthProgress = loadingProgress < 0.5
+    ? 0
+    : Math.min((loadingProgress - 0.5) / 0.2, 1) // Grows from 0.5 to 0.7
+
+  const sections = [
+    {
+      id: 'stem-cell-banking',
+      title: 'Stem Cell Banking',
+      subtitle: 'Preservation & Storage',
+      side: 'left',
+      image: 'https://static.wixstatic.com/media/aa834f_275473098f5246c88c3b49755c7acf67~mv2.jpg/v1/fill/w_1280,h_998,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_275473098f5246c88c3b49755c7acf67~mv2.jpg',
+      stats: [
+        { value: '25+ Years', label: 'Storage Guarantee' },
+        { value: '99.9%', label: 'Viability Rate' }
+      ]
+    },
+    {
+      id: 'stem-cell-technology',
+      title: 'Stem Cell Technology',
+      subtitle: 'Advanced Therapies',
+      side: 'right',
+      image: 'https://static.wixstatic.com/media/aa834f_2745f14ccb304791931b50aed31e023a~mv2.jpg/v1/fill/w_1280,h_1002,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_2745f14ccb304791931b50aed31e023a~mv2.jpg',
+      stats: [
+        { value: '10K+', label: 'Treatments' },
+        { value: '95%', label: 'Success Rate' }
+      ]
+    },
+    {
+      id: 'genetic-testing',
+      title: 'Genetic Testing',
+      subtitle: 'DNA Analysis',
+      side: 'left',
+      image: 'https://static.wixstatic.com/media/aa834f_4e07f9c203794fc4857a4a8df8715c2b~mv2.jpg/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_4e07f9c203794fc4857a4a8df8715c2b~mv2.jpg',
+      stats: [
+        { value: '500+', label: 'Genetic Markers' },
+        { value: '48hrs', label: 'Results Time' }
+      ]
+    },
+    {
+      id: 'vitamin-iv-therapy',
+      title: 'Vitamin IV Therapy',
+      subtitle: 'Infusion Optimization',
+      side: 'right',
+      image: 'https://static.wixstatic.com/media/abb1e6_2f56dd9c05f847bb97a307636ebe160a~mv2.jpg/v1/fill/w_1280,h_1002,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/abb1e6_2f56dd9c05f847bb97a307636ebe160a~mv2.jpg',
+      stats: [
+        { value: '20+', label: 'Custom Formulas' },
+        { value: '100%', label: 'Absorption' }
+      ]
+    },
+    {
+      id: 'aesthetics',
+      title: 'Aesthetics',
+      subtitle: 'Beauty Treatments',
+      side: 'left',
+      image: 'https://static.wixstatic.com/media/11062b_622da063db8f46d28924c887166916b4~mv2.jpg/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_622da063db8f46d28924c887166916b4~mv2.jpg',
+      stats: [
+        { value: '15+ Years', label: 'Experience' },
+        { value: '5000+', label: 'Happy Clients' }
+      ]
+    },
+    {
+      id: 'wellness-spa',
+      title: 'Wellness & Spa',
+      subtitle: 'Holistic Care',
+      side: 'right',
+      image: 'https://static.wixstatic.com/media/aa834f_8add081e2af5447d80d53370cb4b7c81~mv2.png/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_8add081e2af5447d80d53370cb4b7c81~mv2.png',
+      stats: [
+        { value: '30+', label: 'Treatments' },
+        { value: '98%', label: 'Satisfaction' }
+      ]
+    },
+  ]
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-      className="text-center"
-    >
-      <div className="font-serif text-4xl md:text-5xl text-rose-gold mb-2">
-        {isInView ? count : 0}{suffix}
+    <>
+      {/* Hide default scrollbar */}
+      <style jsx global>{`
+        html {
+          scrollbar-width: none; /* Firefox */
+          -ms-overflow-style: none; /* IE and Edge */
+        }
+        html::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera */
+        }
+        @keyframes rainbow-shift {
+          0% {
+            background-position: 0% 50%;
+          }
+          100% {
+            background-position: 200% 50%;
+          }
+        }
+        .rainbow-text {
+          background: linear-gradient(
+            90deg,
+            #00BFFF 0%,
+            #9370DB 20%,
+            #FF1493 40%,
+            #9370DB 60%,
+            #00BFFF 80%,
+            #9370DB 100%
+          );
+          background-size: 300% 100%;
+          animation: rainbow-shift 8s linear infinite;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+      `}</style>
+
+      {/* Loading Screen - CYBERPUNK SPACE VERSION */}
+      {!isLoadingComplete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{
+          background: 'radial-gradient(ellipse at 50% 20%, #1a0a2e 0%, #0f0624 25%, #0a0412 50%, #050208 75%, #000000 100%)'
+        }}>
+          <div className="text-center">
+            <div className="relative w-96 h-32 mb-8">
+              <Image
+                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+                alt="ICELLARÉ"
+                fill
+                className="object-contain brightness-0 invert"
+                priority
+              />
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
+              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
+              <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        zIndex: 0,
+        background: (() => {
+          // Define color stops for smooth transitions - SPACEY with pink towards bottom
+          const colorStops = [
+            { progress: 0.0, color: '#1a0a2e' },   // Deep purple
+            { progress: 0.2, color: '#0a2050' },   // Deep blue
+            { progress: 0.4, color: '#1e1050' },   // Deep indigo/purple
+            { progress: 0.6, color: '#2d1b69' },   // Deep violet/purple
+            { progress: 0.8, color: '#3a1545' },   // Purple with pink tint
+            { progress: 1.0, color: '#451a50' },   // Deep purple/pink
+          ]
+
+          // Find the two closest color stops
+          let lowerStop = colorStops[0]
+          let upperStop = colorStops[colorStops.length - 1]
+
+          for (let i = 0; i < colorStops.length - 1; i++) {
+            if (scrollProgress >= colorStops[i].progress && scrollProgress <= colorStops[i + 1].progress) {
+              lowerStop = colorStops[i]
+              upperStop = colorStops[i + 1]
+              break
+            }
+          }
+
+          // Calculate interpolation factor
+          const range = upperStop.progress - lowerStop.progress
+          const localProgress = range > 0 ? (scrollProgress - lowerStop.progress) / range : 0
+
+          // Interpolate between colors
+          const r1 = parseInt(lowerStop.color.slice(1, 3), 16)
+          const g1 = parseInt(lowerStop.color.slice(3, 5), 16)
+          const b1 = parseInt(lowerStop.color.slice(5, 7), 16)
+
+          const r2 = parseInt(upperStop.color.slice(1, 3), 16)
+          const g2 = parseInt(upperStop.color.slice(3, 5), 16)
+          const b2 = parseInt(upperStop.color.slice(5, 7), 16)
+
+          const r = Math.round(r1 + (r2 - r1) * localProgress)
+          const g = Math.round(g1 + (g2 - g1) * localProgress)
+          const b = Math.round(b1 + (b2 - b1) * localProgress)
+
+          // Northern Lights effect - aurora-like flowing colors on dark blue background
+
+          const time = scrollProgress * Math.PI * 2
+
+          // Define aurora color palettes that transition with scroll
+          // Start: cyan/blue -> Mid: purple/pink -> End: deep purple/blue
+          const auroraColors = [
+            { r: 0, g: 191, b: 255 },     // Cyan
+            { r: 147, g: 51, b: 234 },    // Purple
+            { r: 236, g: 72, b: 153 },    // Pink
+            { r: 59, g: 130, b: 246 },    // Blue
+            { r: 0, g: 191, b: 255 },     // Back to cyan
+          ]
+
+          // Interpolate colors based on scroll
+          const getAuroraColor = (baseIndex: number, offset: number, opacity: number) => {
+            const colorProgress = (scrollProgress + offset) % 1
+            const colorIndex = colorProgress * (auroraColors.length - 1)
+            const lowerIndex = Math.floor(colorIndex)
+            const upperIndex = Math.ceil(colorIndex)
+            const factor = colorIndex - lowerIndex
+
+            const lower = auroraColors[lowerIndex]
+            const upper = auroraColors[upperIndex]
+
+            const r = Math.round(lower.r + (upper.r - lower.r) * factor)
+            const g = Math.round(lower.g + (upper.g - lower.g) * factor)
+            const b = Math.round(lower.b + (upper.b - lower.b) * factor)
+
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`
+          }
+
+          // Aurora band 1: Top left - flowing cyan to purple
+          const aurora1X = 18 + Math.sin(time * 0.5) * 8
+          const aurora1Y = 15 + Math.cos(time * 0.7) * 6
+          const aurora1Size = 600 + Math.sin(time * 0.8) * 100
+          const aurora1Opacity = 0.18 + Math.sin(time * 1.2) * 0.06
+          const aurora1Color = getAuroraColor(0, 0, aurora1Opacity)
+
+          // Aurora band 2: Left edge - flowing blue to pink
+          const aurora2X = 8 + Math.cos(time * 0.6) * 5
+          const aurora2Y = 55 + Math.sin(time * 0.5) * 10
+          const aurora2Size = 550 + Math.cos(time * 0.9) * 90
+          const aurora2Opacity = 0.15 + Math.cos(time * 1.1) * 0.05
+          const aurora2Color = getAuroraColor(1, 0.25, aurora2Opacity)
+
+          // Aurora band 3: Bottom right - flowing purple to cyan
+          const aurora3X = 85 + Math.sin(time * 0.4) * 7
+          const aurora3Y = 80 + Math.cos(time * 0.6) * 8
+          const aurora3Size = 620 + Math.sin(time * 1.0) * 95
+          const aurora3Opacity = 0.20 + Math.sin(time * 0.9) * 0.06
+          const aurora3Color = getAuroraColor(2, 0.5, aurora3Opacity)
+
+          // Aurora band 4: Top right - flowing deep blue
+          const aurora4X = 90 + Math.cos(time * 0.7) * 5
+          const aurora4Y = 25 + Math.sin(time * 0.8) * 7
+          const aurora4Size = 500 + Math.cos(time * 1.1) * 80
+          const aurora4Opacity = 0.14 + Math.cos(time * 1.3) * 0.05
+          const aurora4Color = getAuroraColor(3, 0.75, aurora4Opacity)
+
+          // Aurora band 5: Bottom left - flowing cyan/pink
+          const aurora5X = 12 + Math.sin(time * 0.9) * 6
+          const aurora5Y = 88 + Math.cos(time * 0.4) * 5
+          const aurora5Size = 480 + Math.sin(time * 1.2) * 70
+          const aurora5Opacity = 0.12 + Math.sin(time * 1.5) * 0.04
+          const aurora5Color = getAuroraColor(4, 0.1, aurora5Opacity)
+
+          return `
+            radial-gradient(ellipse ${aurora1Size}px ${aurora1Size * 0.7}px at ${aurora1X}% ${aurora1Y}%, ${aurora1Color} 0%, transparent 70%),
+            radial-gradient(ellipse ${aurora2Size}px ${aurora2Size * 0.8}px at ${aurora2X}% ${aurora2Y}%, ${aurora2Color} 0%, transparent 65%),
+            radial-gradient(ellipse ${aurora3Size}px ${aurora3Size * 0.6}px at ${aurora3X}% ${aurora3Y}%, ${aurora3Color} 0%, transparent 68%),
+            radial-gradient(ellipse ${aurora4Size}px ${aurora4Size * 0.9}px at ${aurora4X}% ${aurora4Y}%, ${aurora4Color} 0%, transparent 62%),
+            radial-gradient(ellipse ${aurora5Size}px ${aurora5Size * 0.75}px at ${aurora5X}% ${aurora5Y}%, ${aurora5Color} 0%, transparent 60%),
+            radial-gradient(ellipse at 50% 50%, rgb(${Math.round(10 + scrollProgress * 25)}, ${Math.round(15 + scrollProgress * 20)}, ${Math.round(35 + scrollProgress * 35)}) 0%, rgb(5, 8, 20) 70%)
+          `
+        })()
+      }} />
+
+      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        zIndex: 10,
+        background: `
+          radial-gradient(ellipse 1000px 800px at 50% 45%, rgba(255, 255, 255, 0.03) 0%, rgba(100, 150, 200, 0.02) 30%, transparent 60%),
+          radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+          radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 50%)
+        `
+      }}>
+        {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS */}
+        <div className="absolute inset-0 pointer-events-none">
+          <Canvas
+            shadows
+            dpr={[1, 2]}
+            gl={{
+              antialias: true,
+              alpha: true,
+              powerPreference: 'high-performance'
+            }}
+            style={{ background: 'transparent', pointerEvents: 'none' }}
+          >
+            <Suspense fallback={null}>
+              <Scene
+                growthProgress={dnaGrowthProgress}
+                enableGrowth={!isLoadingComplete}
+                showParticles={isLoadingComplete}
+                scrollProgress={scrollProgress}
+              />
+            </Suspense>
+          </Canvas>
+        </div>
       </div>
-      <div className="text-charcoal/70 text-base uppercase tracking-wider">{label}</div>
-    </motion.div>
-  )
-}
 
-export default function Home() {
-  // Initialize Lenis scroll integration
-  useScrollIntegration()
+      {/* Scrollable Content Sections */}
+      <div className="relative">
+        {/* Top spacer to ensure perfect layout at scrollY = 0 */}
+        <div style={{ height: '100px' }}></div>
 
-  const heroRef = useRef(null)
-  const heroInView = useInView(heroRef, { once: true, amount: 0.2 })
-
-  const { scrollYProgress } = useScroll()
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, 100])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.3], [1, 0])
-
-  const smoothHeroY = useSpring(heroY, { stiffness: 100, damping: 30 })
-
-  return (
-    <main className="relative overflow-hidden">
-      <UltimateHybrid />
-      <Navigation />
-
-      {/* Premium Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-6 py-24" style={{ zIndex: 10 }}>
+        {/* Scroll Progress Bars - Full Border */}
+        {/* Top */}
         <motion.div
-          style={{ y: smoothHeroY }}
-          className="max-w-7xl mx-auto text-center"
+          className="fixed top-0 left-0 right-0 h-[2px] z-[60] origin-left"
+          style={{
+            background: 'linear-gradient(90deg, #00BFFF 0%, #9370DB 50%, #FF1493 100%)',
+            scaleX: scrollProgress,
+            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+          }}
+          initial={{ opacity: 0 }}
+          animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
+        />
+
+        {/* Right */}
+        <motion.div
+          className="fixed top-0 right-0 bottom-0 w-[2px] z-[60] origin-top"
+          style={{
+            background: 'linear-gradient(180deg, #00BFFF 0%, #9370DB 50%, #FF1493 100%)',
+            scaleY: scrollProgress,
+            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+          }}
+          initial={{ opacity: 0 }}
+          animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
+        />
+
+        {/* Bottom - fills right to left */}
+        <motion.div
+          className="fixed bottom-0 left-0 right-0 h-[2px] z-[60] origin-right"
+          style={{
+            background: 'linear-gradient(90deg, #FF1493 0%, #9370DB 50%, #00BFFF 100%)',
+            scaleX: scrollProgress,
+            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+          }}
+          initial={{ opacity: 0 }}
+          animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
+        />
+
+        {/* Left - fills bottom to top */}
+        <motion.div
+          className="fixed top-0 left-0 bottom-0 w-[2px] z-[60] origin-bottom"
+          style={{
+            background: 'linear-gradient(180deg, #FF1493 0%, #9370DB 50%, #00BFFF 100%)',
+            scaleY: scrollProgress,
+            boxShadow: '0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(255, 20, 147, 0.4)'
+          }}
+          initial={{ opacity: 0 }}
+          animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
+        />
+
+        {/* Top Navigation Bar - FIXED - TEXT ONLY VERSION */}
+        <motion.nav
+          className="fixed top-0 left-0 right-0 z-50 py-6"
+          initial={{ opacity: 0, y: -20 }}
+          animate={isLoadingComplete && showTopNav ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
         >
-          {/* Floating cells in hero */}
-          {[0, 1, 2, 3, 4].map((i) => (
-            <FloatingCell key={i} index={i} delay={i * 0.8} />
-          ))}
-
-          {/* Central hero content - floating over DNA */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto max-w-2xl space-y-8"
-          >
-            {/* Logo with fade on scroll */}
-            <motion.div
-              style={{ opacity: heroOpacity }}
-              className="flex justify-center"
-            >
-              <Image
-                src="/logo.png"
-                alt="iCellaré Logo"
-                width={120}
-                height={120}
-                className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl"
-                style={{
-                  filter: 'drop-shadow(0 0 40px rgba(133, 113, 77, 0.4)) drop-shadow(0 0 80px rgba(133, 113, 77, 0.2))'
-                }}
-              />
-            </motion.div>
-
-            {/* iCellaré title */}
-            <h1
-              className="font-serif text-6xl md:text-7xl lg:text-8xl text-charcoal leading-tight"
-              style={{
-                textShadow: '0 4px 20px rgba(255, 255, 255, 0.8), 0 0 60px rgba(133, 113, 77, 0.3)'
-              }}
-            >
-              iCellaré
-            </h1>
-
-            {/* Lifespan Center subtitle */}
-            <p
-              className="text-3xl md:text-4xl lg:text-5xl text-rose-gold font-serif italic"
-              style={{
-                textShadow: '0 4px 20px rgba(255, 255, 255, 0.9), 0 0 40px rgba(212, 175, 122, 0.4)'
-              }}
-            >
-              Lifespan Center
-            </p>
-          </motion.div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={heroInView ? { opacity: 1 } : {}}
-            transition={{ duration: 1, delay: 1 }}
-            className="absolute bottom-12 left-1/2 transform -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="flex flex-col items-center gap-2 text-charcoal/50"
-            >
-              <span className="text-sm uppercase tracking-wider">Scroll to explore</span>
-              <motion.div
-                className="w-6 h-10 border-2 border-rose-gold/40 rounded-full flex justify-center p-1"
+          <div className="flex items-center justify-center gap-12">
+            {['Team', 'Our Lab', 'Facilities', 'Blog', 'Contact'].map((item, index) => (
+              <motion.a
+                key={item}
+                href={`#${item.toLowerCase().replace(' ', '-')}`}
+                className="text-[13px] font-sans tracking-wider text-white/50 hover:text-white transition-all duration-300 relative group pointer-events-auto"
+                initial={{ opacity: 0, y: -10 }}
+                animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
               >
-                <motion.div
-                  className="w-1 h-3 bg-rose-gold/60 rounded-full"
-                  animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                />
-              </motion.div>
-            </motion.div>
+                <span className="relative z-10">{item}</span>
+                {/* Glow effect on hover */}
+                <span className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/30 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
+                {/* Underline */}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
+              </motion.a>
+            ))}
+          </div>
+        </motion.nav>
+
+        {/* Hero section with logo and heading - SCROLLS WITH PAGE */}
+        <div className="h-screen absolute inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
+          {/* Full logo - original, always present */}
+          <motion.div
+            className="relative z-10 mb-auto cursor-pointer pointer-events-auto group"
+            initial={{ opacity: 0, y: -30 }}
+            animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
+              <Image
+                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+                alt="ICELLARÉ Lifespan Center"
+                fill
+                className="object-contain brightness-0 invert"
+                priority
+              />
+            </div>
           </motion.div>
+
+          {/* Top-right full logo - fade directly with scroll (no delay) */}
+          <motion.div
+            className="fixed top-5 right-5 cursor-pointer pointer-events-auto group z-50"
+            animate={{ opacity: Math.min(1, Math.max(0, (scrollProgress - 0.02) * 10)) }}
+            transition={{ duration: 0 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="relative w-48 h-16 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
+              <Image
+                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+                alt="ICELLARÉ"
+                fill
+                className="object-contain brightness-0 invert"
+                priority
+              />
+            </div>
+          </motion.div>
+
+          {/* Spacer to push DNA and content down */}
+          <div style={{ height: '60px' }}></div>
+
+          {/* TechnicalFrame with navigation - centered for DNA */}
+          <div className="absolute inset-0" style={{ top: '60px' }}>
+            <TechnicalFrame
+              isVisible={showFrame}
+              loadingProgress={loadingProgress}
+              onNavigate={(sectionId) => {
+                document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Heading at bottom - FIXED POSITION, FADES OUT WITH SCROLL (no delay) */}
+        <motion.div
+          className="fixed bottom-5 left-0 right-0 z-30 text-center pointer-events-none"
+          initial={{ opacity: 0, y: 30 }}
+          animate={
+            isLoadingComplete
+              ? {
+                  opacity: Math.max(0, 1 - scrollProgress * 12),
+                  y: 0
+                }
+              : { opacity: 0, y: 30 }
+          }
+          transition={{ duration: 0 }}
+        >
+          <h1 className="text-2xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
+            Regenerative Medicine
+          </h1>
+          <p className="text-xl md:text-2xl font-sans font-light rainbow-text">
+            Lifespan Center
+          </p>
         </motion.div>
-      </section>
 
-      {/* Stats Section with EXTREME Glass */}
-      <section className="relative px-6 py-16" style={{ zIndex: 10 }}>
-        <div className="max-w-7xl mx-auto relative">
-          {/* Floating glass orbs */}
-          {[0, 1, 2].map((i) => (
+        {/* Navigation labels around DNA - SCROLLS */}
+        <div className="h-screen relative pointer-events-none" style={{ marginTop: '-40px' }}>
+          <div className="absolute inset-0">
+            {/* Navigation labels positioned around DNA */}
             <motion.div
-              key={`glass-orb-${i}`}
-              className="absolute w-32 h-32 rounded-full pointer-events-none"
-              style={{
-                left: `${20 + i * 30}%`,
-                top: `${-10 + i * 5}%`,
-                background: 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(212, 175, 122, 0.3))',
-                backdropFilter: 'blur(20px)',
-              }}
-              animate={{
-                y: [0, -20, 0],
-                scale: [1, 1.1, 1],
-                rotate: [0, 180, 360],
-              }}
-              transition={{
-                duration: 8 + i * 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: i * 0.5,
+              className="absolute left-[22%] top-[28%] pointer-events-auto cursor-pointer group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={isLoadingComplete && loadingProgress > 0.7 ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              onClick={() => {
+                document.getElementById('stem-cell-banking')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
             >
-              <motion.div
-                className="absolute inset-0 rounded-full"
-                animate={{
-                  boxShadow: [
-                    '0 0 40px rgba(212, 175, 122, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.5)',
-                    '0 0 80px rgba(212, 175, 122, 0.6), inset 0 0 50px rgba(255, 255, 255, 0.7)',
-                    '0 0 40px rgba(212, 175, 122, 0.4), inset 0 0 30px rgba(255, 255, 255, 0.5)',
-                  ],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }}
-              />
+              <div className="flex items-center gap-2 transition-all duration-300">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-blue-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-blue-500/70 group-hover:shadow-[0_0_30px_rgba(10,32,80,0.9),0_0_60px_rgba(59,130,246,0.6)] group-hover:bg-blue-900/20">
+                  <div className="font-semibold">STEM CELL BANKING</div>
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                    Preservation & Storage
+                  </div>
+                </div>
+                <svg width="60" height="2" className="relative transition-all duration-300">
+                  <line x1="0" y1="1" x2="60" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#3B82F6]" />
+                  <circle cx="60" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#3B82F6]" />
+                </svg>
+              </div>
             </motion.div>
+
+            <motion.div
+              className="absolute left-[20%] top-[46%] pointer-events-auto cursor-pointer group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={isLoadingComplete && loadingProgress > 0.75 ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              onClick={() => {
+                document.getElementById('genetic-testing')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }}
+            >
+              <div className="flex items-center gap-2 transition-all duration-300">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-pink-500/70 group-hover:shadow-[0_0_30px_rgba(100,30,80,0.9),0_0_60px_rgba(236,72,153,0.6)] group-hover:bg-pink-900/20">
+                  <div className="font-semibold">GENETIC TESTING</div>
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                    DNA Analysis
+                  </div>
+                </div>
+                <svg width="110" height="2" className="transition-all duration-300">
+                  <line x1="0" y1="1" x2="110" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#EC4899]" />
+                  <circle cx="110" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#EC4899]" />
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* Left side label 3 */}
+            <motion.div
+              className="absolute left-[19%] bottom-[30%] pointer-events-auto cursor-pointer group"
+              initial={{ opacity: 0, x: -20 }}
+              animate={isLoadingComplete && loadingProgress > 0.8 ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              onClick={() => {
+                document.getElementById('aesthetics')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }}
+            >
+              <div className="flex items-center gap-2 transition-all duration-300">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-purple-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-purple-500/70 group-hover:shadow-[0_0_30px_rgba(90,10,80,0.9),0_0_60px_rgba(168,85,247,0.6)] group-hover:bg-purple-900/20">
+                  <div className="font-semibold">AESTHETICS</div>
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                    Beauty Treatments
+                  </div>
+                </div>
+                <svg width="95" height="2" className="transition-all duration-300">
+                  <line x1="0" y1="1" x2="95" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#A855F7]" />
+                  <circle cx="95" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#A855F7]" />
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* Right side label 1 */}
+            <motion.div
+              className="absolute right-[21%] top-[31%] pointer-events-auto cursor-pointer group"
+              initial={{ opacity: 0, x: 20 }}
+              animate={isLoadingComplete && loadingProgress > 0.7 ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              onClick={() => {
+                document.getElementById('stem-cell-technology')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }}
+            >
+              <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-cyan-200 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-cyan-400/70 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.9),0_0_60px_rgba(34,211,238,0.6)] group-hover:bg-cyan-900/20">
+                  <div className="font-semibold">STEM CELL TECHNOLOGY</div>
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                    Advanced Therapies
+                  </div>
+                </div>
+                <svg width="55" height="2" className="transition-all duration-300">
+                  <line x1="0" y1="1" x2="55" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#22D3EE]" />
+                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#22D3EE]" />
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* Right side label 2 */}
+            <motion.div
+              className="absolute right-[18%] top-[53%] pointer-events-auto cursor-pointer group"
+              initial={{ opacity: 0, x: 20 }}
+              animate={isLoadingComplete && loadingProgress > 0.75 ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.35 }}
+              onClick={() => {
+                document.getElementById('vitamin-iv-therapy')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }}
+            >
+              <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-red-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-red-500/70 group-hover:shadow-[0_0_30px_rgba(138,20,48,0.9),0_0_60px_rgba(239,68,68,0.6)] group-hover:bg-red-900/20">
+                  <div className="font-semibold">VITAMIN IV THERAPY</div>
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                    Infusion Optimization
+                  </div>
+                </div>
+                <svg width="100" height="2" className="transition-all duration-300">
+                  <line x1="0" y1="1" x2="100" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#EF4444]" />
+                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#EF4444]" />
+                </svg>
+              </div>
+            </motion.div>
+
+            {/* Right side label 3 */}
+            <motion.div
+              className="absolute right-[23%] bottom-[24%] pointer-events-auto cursor-pointer group"
+              initial={{ opacity: 0, x: 20 }}
+              animate={isLoadingComplete && loadingProgress > 0.8 ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              onClick={() => {
+                document.getElementById('wellness-spa')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }}
+            >
+              <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
+                <div className="text-[15px] font-mono text-cyan-400/90 text-right transition-all duration-300 group-hover:text-purple-200 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:border-purple-600/70 group-hover:shadow-[0_0_30px_rgba(60,10,90,0.9),0_0_60px_rgba(109,40,217,0.6)] group-hover:bg-purple-950/30">
+                  <div className="font-semibold">WELLNESS & SPA</div>
+                  <div className="text-xs mt-0.5 text-white/90 group-hover:text-white transition-all">
+                    Holistic Care
+                  </div>
+                </div>
+                <svg width="75" height="2" className="transition-all duration-300">
+                  <line x1="0" y1="1" x2="75" y2="1" stroke="#22D3EE" strokeWidth="2" opacity="0.6" strokeDasharray="4,4" className="group-hover:opacity-100 transition-all duration-300 group-hover:[stroke:#6D28D9]" />
+                  <circle cx="0" cy="1" r="3" fill="#22D3EE" opacity="0.6" className="group-hover:opacity-100 transition-all duration-300 group-hover:[fill:#6D28D9]" />
+                </svg>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Content sections that flow around DNA - balanced spacing from center */}
+        <div className="relative">
+          {sections.map((section, index) => (
+            <div
+              key={section.id}
+              id={section.id}
+              className="min-h-screen flex items-center justify-center relative"
+              style={{ scrollSnapAlign: 'center', paddingTop: '80px' }}
+            >
+              {/* Layout: text and image with 10% gap in center for DNA */}
+              <div className="w-full flex items-center justify-between gap-[10%]">
+                {section.side === 'left' ? (
+                  <>
+                    {/* Text on left - 40% width */}
+                    <div className="w-[40%] h-full py-24 px-12 flex flex-col justify-end text-right">
+                      {/* Section number */}
+                      <div className="text-8xl font-serif text-white/10 mb-4 text-right">
+                        0{index + 1}
+                      </div>
+
+                      {/* Content */}
+                      <div className="space-y-6">
+                        <h2 className="text-5xl md:text-6xl font-sans font-light text-white leading-tight tracking-wide drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                          {section.title}
+                        </h2>
+
+                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+                          {section.subtitle}
+                        </p>
+
+                        <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 ml-auto shadow-[0_0_20px_rgba(0,191,255,0.6)]" />
+
+                        <p className="text-lg text-white/80 leading-relaxed max-w-lg ml-auto">
+                          Experience cutting-edge regenerative medicine with personalized treatment protocols
+                          designed for your unique biological profile. Our advanced facilities combine
+                          scientific precision with compassionate care.
+                        </p>
+
+                        <button className="mt-8 px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-mono uppercase tracking-wider
+                          hover:bg-cyan-400 hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(0,191,255,0.5),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)]">
+                          Learn More
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Image on right - 40% width */}
+                    <div className="w-[40%] h-full flex items-center justify-start py-24 px-12">
+                      <div className="relative w-full aspect-[4/3] rounded-xl overflow-visible transition-all duration-500 hover:scale-[1.03] group" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1)' }}>
+                        {/* Glow effect border on hover - behind everything */}
+                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
+                        {/* Image container */}
+                        <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
+                          <Image
+                            src={section.image}
+                            alt={section.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 40vw"
+                          />
+                        </div>
+                        {/* Stat Cards - Small, overhanging the image borders */}
+                        {section.stats && (
+                          <>
+                            {/* First stat card - top left, overhanging - CYAN */}
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
+                                {section.stats[0].value}
+                              </div>
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80">
+                                {section.stats[0].label}
+                              </div>
+                            </div>
+
+                            {/* Second stat card - bottom right, overhanging - PINK */}
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
+                                {section.stats[1].value}
+                              </div>
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80">
+                                {section.stats[1].label}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Image on left - 40% width */}
+                    <div className="w-[40%] h-full flex items-center justify-end py-24 px-12">
+                      <div className="relative w-full aspect-[4/3] rounded-xl overflow-visible transition-all duration-500 hover:scale-[1.03] group" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.1)' }}>
+                        {/* Glow effect border on hover - behind everything */}
+                        <div className="absolute -inset-1 rounded-xl bg-gradient-to-r from-cyan-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 z-0" />
+                        {/* Image container */}
+                        <div className="absolute inset-0 rounded-xl overflow-hidden z-10">
+                          <Image
+                            src={section.image}
+                            alt={section.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 40vw"
+                          />
+                        </div>
+                        {/* Stat Cards - Small, overhanging the image borders */}
+                        {section.stats && (
+                          <>
+                            {/* First stat card - top left, overhanging - CYAN */}
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
+                                {section.stats[0].value}
+                              </div>
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80">
+                                {section.stats[0].label}
+                              </div>
+                            </div>
+
+                            {/* Second stat card - bottom right, overhanging - PINK */}
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-20">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
+                                {section.stats[1].value}
+                              </div>
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80">
+                                {section.stats[1].label}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Text on right - 40% width */}
+                    <div className="w-[40%] h-full py-24 px-12 flex flex-col justify-start text-left">
+                      {/* Section number */}
+                      <div className="text-8xl font-serif text-white/10 mb-4 text-left">
+                        0{index + 1}
+                      </div>
+
+                      {/* Content */}
+                      <div className="space-y-6">
+                        <h2 className="text-5xl md:text-6xl font-sans font-light text-white leading-tight tracking-wide drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                          {section.title}
+                        </h2>
+
+                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500">
+                          {section.subtitle}
+                        </p>
+
+                        <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 shadow-[0_0_20px_rgba(0,191,255,0.6)]" />
+
+                        <p className="text-lg text-white/80 leading-relaxed max-w-lg">
+                          Experience cutting-edge regenerative medicine with personalized treatment protocols
+                          designed for your unique biological profile. Our advanced facilities combine
+                          scientific precision with compassionate care.
+                        </p>
+
+                        <button className="mt-8 px-8 py-4 border-2 border-pink-500 text-pink-500 font-mono uppercase tracking-wider
+                          hover:bg-pink-500 hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(255,20,147,0.5),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)]">
+                          Learn More
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           ))}
+        </div>
 
-          <div className="relative backdrop-blur-3xl bg-white/50 border-2 border-white/80 rounded-[4rem] p-12 overflow-hidden">
-            {/* Multiple glass layers */}
-            <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/70 via-white/50 to-white/60 rounded-[4rem]" />
-            <motion.div
-              className="absolute inset-0 rounded-[4rem]"
-              animate={{
-                boxShadow: [
-                  '0 0 60px rgba(212, 175, 122, 0.4), 0 0 120px rgba(212, 175, 122, 0.2), inset 0 0 80px rgba(255, 255, 255, 0.4)',
-                  '0 0 100px rgba(212, 175, 122, 0.6), 0 0 200px rgba(212, 175, 122, 0.3), inset 0 0 120px rgba(255, 255, 255, 0.6)',
-                  '0 0 60px rgba(212, 175, 122, 0.4), 0 0 120px rgba(212, 175, 122, 0.2), inset 0 0 80px rgba(255, 255, 255, 0.4)',
-                ],
-              }}
-              transition={{
-                duration: 5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
-
-            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
-              <StatCounter end={15} suffix="+" label="Years of Excellence" delay={0} />
-              <StatCounter end={10000} suffix="+" label="Lives Transformed" delay={0.2} />
-              <StatCounter end={98} suffix="%" label="Success Rate" delay={0.4} />
+        {/* Footer - SPACE NEON VERSION */}
+        <footer className="relative py-16 text-center border-t border-cyan-400/30" style={{
+          background: 'linear-gradient(to bottom, #0a0412 0%, #1a0a2e 50%, #0f0624 100%)'
+        }}>
+          <div className="max-w-6xl mx-auto px-8">
+            <div className="flex justify-center items-center gap-8 mb-8">
+              <a href="#team" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Team</a>
+              <a href="#our-lab" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Our Lab</a>
+              <a href="#facilities" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Facilities</a>
+              <a href="#blog" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Blog</a>
+              <a href="#contact" className="text-cyan-400/70 hover:text-cyan-300 transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(0,191,255,0.8)]">Contact</a>
             </div>
+            <p className="text-white/30 text-sm">
+              © 2024 ICELLARÉ Lifespan Center. All rights reserved.
+            </p>
           </div>
-        </div>
-      </section>
-
-      {/* Philosophy Section with Parallax */}
-      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            viewport={{ once: true, amount: 0.3 }}
-            className="flex flex-col lg:flex-row items-center gap-16 lg:gap-24"
-          >
-            {/* Image side with organic frame */}
-            <motion.div
-              initial={{ opacity: 0, x: -60 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true, amount: 0.3 }}
-              className="w-full lg:w-1/2 relative"
-            >
-              {/* Decorative cells around image */}
-              <motion.div
-                className="absolute -top-8 -left-8 w-16 h-16"
-                animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              >
-                <svg viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(212, 175, 122, 0.3)" strokeWidth="2" />
-                  <circle cx="50" cy="50" r="25" fill="rgba(212, 175, 122, 0.1)" />
-                </svg>
-              </motion.div>
-
-              <motion.div
-                className="absolute -bottom-8 -right-8 w-20 h-20"
-                animate={{
-                  rotate: [360, 0],
-                  scale: [1, 1.15, 1],
-                }}
-                transition={{
-                  duration: 25,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              >
-                <svg viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(156, 125, 92, 0.3)" strokeWidth="2" />
-                  <circle cx="50" cy="50" r="30" fill="rgba(156, 125, 92, 0.1)" />
-                </svg>
-              </motion.div>
-
-              <div className="relative w-full h-[500px] rounded-[3rem] overflow-hidden shadow-2xl">
-                <Image
-                  src="/images/lifespan-center.png"
-                  alt="iCellaré Lifespan Center"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/30 to-transparent" />
-              </div>
-            </motion.div>
-
-            {/* Content side */}
-            <motion.div
-              initial={{ opacity: 0, x: 60 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              viewport={{ once: true, amount: 0.3 }}
-              className="w-full lg:w-1/2 space-y-8"
-            >
-              <div className="inline-block">
-                <p className="text-rose-gold uppercase tracking-wider font-semibold text-sm mb-4 flex items-center gap-2">
-                  <motion.div
-                    className="w-12 h-px bg-rose-gold"
-                    initial={{ width: 0 }}
-                    whileInView={{ width: 48 }}
-                    transition={{ duration: 0.8 }}
-                    viewport={{ once: true }}
-                  />
-                  Our Philosophy
-                </p>
-              </div>
-
-              <h2 className="font-serif text-3xl lg:text-4xl text-charcoal leading-tight">
-                We Sell Hope
-              </h2>
-
-              <div className="space-y-4">
-                <p className="text-charcoal/70 text-base leading-relaxed">
-                  Welcome to Icellare Lifespan Center, where we specialize in state-of-the-art autologous stem cell technology, rejuvenation innovation, in-depth genetics testing and personalized care.
-                </p>
-                <p className="text-charcoal/70 text-base leading-relaxed">
-                  We believe in harnessing the power of your own cells, to allow you to become <span className="text-rose-gold font-semibold">Your Best Self</span>—the core of Icellaré or <span className="italic">'cell of I.'</span>
-                </p>
-              </div>
-
-              <motion.button
-                className="bg-gradient-to-r from-rose-gold to-bronze text-white px-8 py-3 rounded-full text-base font-medium shadow-lg"
-                whileHover={{ scale: 1.05, boxShadow: '0 25px 50px rgba(212, 175, 122, 0.4)' }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Learn Our Story
-              </motion.button>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Services Grid with Cell-Inspired Design */}
-      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className="text-center mb-20"
-          >
-            <p className="text-rose-gold uppercase tracking-wider font-semibold text-sm mb-4">
-              Our Services
-            </p>
-            <h2 className="font-serif text-4xl lg:text-5xl text-charcoal mb-4">
-              Cutting-Edge Solutions
-            </h2>
-            <p className="text-base text-charcoal/70 max-w-3xl mx-auto">
-              Regenerative medicine tailored to your unique biology, powered by cellular intelligence
-            </p>
-          </motion.div>
-
-          {/* Connection lines visualization */}
-          <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <ServiceCard
-                title="Stem Cell Banking"
-                description="Secure your regenerative health for the future by exploring MSC Stem Cell Banking. Your cells, preserved at their peak, ready when you need them."
-                image="https://static.wixstatic.com/media/abb1e6_20f08c48277b40c587abca600014fe22~mv2.jpg"
-                index={0}
-                link="/stem-cell-banking"
-              />
-              <ServiceCard
-                title="Stem Cell Technology"
-                description="MSC Stem cells derived from your own body—either Bone Marrow or Adipose tissue—ensure a safe and effective approach to treatment and recovery."
-                image="https://static.wixstatic.com/media/abb1e6_20f08c48277b40c587abca600014fe22~mv2.jpg"
-                index={1}
-                link="/stem-cell-technology"
-              />
-              <ServiceCard
-                title="Genetic Testing"
-                description="Advanced Gene testing and health check-ups pave the way for future prevention with Next Generation Sequencing (NGS) technique."
-                image="https://static.wixstatic.com/media/aa834f_e345df4a6ace4e1faaf9eea60816430a~mv2.jpg"
-                index={2}
-                link="/genetic-testing"
-              />
-              <ServiceCard
-                title="Vitamin IV Therapy"
-                description="Tailored Nutrient Delivery based on genetic testing and blood work to address your specific deficiencies or health goals."
-                image="https://static.wixstatic.com/media/aa834f_138764b1ca23465899fa7c624a8cbc84~mv2.png"
-                index={3}
-                link="/vitamin-therapy"
-              />
-              <ServiceCard
-                title="Aesthetics"
-                description="Non-invasive, painless methods that require no downtime, including personal cellular injectables to enhance your natural beauty."
-                image="https://static.wixstatic.com/media/aa834f_e0f66b6a82c84592b5de1e82b22eb172~mv2.png"
-                index={4}
-                link="/aesthetics"
-              />
-              <ServiceCard
-                title="Wellness & Spa"
-                description="Physiotherapy through physical rehabilitation, injury prevention, and health and fitness to support your recovery journey."
-                image="https://static.wixstatic.com/media/aa834f_c9ce10a5b2f34263a17440f2a23e657a~mv2.png"
-                index={5}
-                link="/wellness-spa"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Quality Assurance with EXTREME Glass Design */}
-      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className="relative backdrop-blur-3xl bg-white/50 border-2 border-white/80 rounded-[4rem] p-16 md:p-24 text-center overflow-hidden"
-          >
-            {/* Multi-layered glass panels */}
-            <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/70 via-white/50 to-white/60 rounded-[4rem]" />
-            <div className="absolute inset-0 backdrop-blur-xl bg-gradient-to-tl from-white/40 via-white/60 to-white/50 rounded-[4rem]" />
-
-            {/* Massive pulsing glow */}
-            <motion.div
-              className="absolute inset-0 rounded-[4rem]"
-              animate={{
-                boxShadow: [
-                  '0 0 80px rgba(212, 175, 122, 0.4), 0 0 160px rgba(212, 175, 122, 0.2), 0 0 240px rgba(212, 175, 122, 0.1), inset 0 0 100px rgba(255, 255, 255, 0.5)',
-                  '0 0 120px rgba(212, 175, 122, 0.6), 0 0 240px rgba(212, 175, 122, 0.4), 0 0 360px rgba(212, 175, 122, 0.2), inset 0 0 150px rgba(255, 255, 255, 0.7)',
-                  '0 0 80px rgba(212, 175, 122, 0.4), 0 0 160px rgba(212, 175, 122, 0.2), 0 0 240px rgba(212, 175, 122, 0.1), inset 0 0 100px rgba(255, 255, 255, 0.5)',
-                ],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
-            {/* Decorative cellular pattern */}
-            <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
-              <svg viewBox="0 0 200 200">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <motion.circle
-                    key={i}
-                    cx="100"
-                    cy="100"
-                    r={30 + i * 20}
-                    fill="none"
-                    stroke="#D4AF7A"
-                    strokeWidth="2"
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      opacity: [0.3, 0.6, 0.3],
-                    }}
-                    transition={{
-                      duration: 3 + i * 0.5,
-                      repeat: Infinity,
-                      delay: i * 0.3,
-                    }}
-                  />
-                ))}
-              </svg>
-            </div>
-
-            <h2 className="font-serif text-3xl md:text-4xl mb-6 text-charcoal relative z-10">
-              Our Quality Assurance
-            </h2>
-            <p className="text-2xl text-rose-gold mb-8 font-serif italic relative z-10">
-              Only the highest standards
-            </p>
-            <p className="text-base text-charcoal/70 leading-relaxed max-w-3xl mx-auto mb-8 relative z-10">
-              We don't just offer hope; we craft a personalized wellness journey to bring out your best self,
-              embracing you from day 0 through your entire lifespan.
-            </p>
-
-            <div className="relative w-full h-auto mt-12 z-10">
-              <Image
-                src="https://static.wixstatic.com/media/aa834f_bafd0de1f6bb4648a0e4dd93297ae2e5~mv2.png"
-                alt="iCellaré Certifications - ISO, PICS/GMP, ISCT Standards"
-                width={1320}
-                height={493}
-                className="w-full h-auto"
-              />
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Contact Section with EXTREME Glass */}
-      <section className="relative px-6 py-20" style={{ zIndex: 10 }}>
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 60 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true, amount: 0.2 }}
-            className="relative backdrop-blur-3xl bg-white/60 border-2 border-white/90 rounded-[4rem] p-12 md:p-20 overflow-hidden"
-          >
-            {/* Triple glass layers */}
-            <div className="absolute inset-0 backdrop-blur-2xl bg-gradient-to-br from-white/80 via-white/60 to-white/70 rounded-[4rem]" />
-            <div className="absolute inset-0 backdrop-blur-xl bg-gradient-to-tl from-white/50 via-white/70 to-white/60 rounded-[4rem]" />
-
-            {/* Intense ambient glow */}
-            <motion.div
-              className="absolute inset-0 rounded-[4rem]"
-              animate={{
-                boxShadow: [
-                  '0 0 60px rgba(212, 175, 122, 0.5), 0 0 120px rgba(212, 175, 122, 0.3), inset 0 0 80px rgba(255, 255, 255, 0.6)',
-                  '0 0 100px rgba(212, 175, 122, 0.7), 0 0 200px rgba(212, 175, 122, 0.5), inset 0 0 120px rgba(255, 255, 255, 0.8)',
-                  '0 0 60px rgba(212, 175, 122, 0.5), 0 0 120px rgba(212, 175, 122, 0.3), inset 0 0 80px rgba(255, 255, 255, 0.6)',
-                ],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
-
-            <div className="relative">
-              <h2 className="font-serif text-3xl md:text-4xl mb-8 text-charcoal text-center">
-                Visit Us in Bangkok
-              </h2>
-            <div className="grid md:grid-cols-2 gap-8 mb-8">
-              <div className="space-y-4">
-                <h3 className="font-semibold text-rose-gold text-xl mb-4 flex items-center gap-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                  Location
-                </h3>
-                <p className="text-base text-charcoal/80">102 Phutthamonthon Sai 1</p>
-                <p className="text-base text-charcoal/80">Bang Bamad, Taling Chan</p>
-                <p className="text-base text-charcoal/80">Bangkok 10170, Thailand</p>
-              </div>
-              <div className="space-y-4">
-                <h3 className="font-semibold text-rose-gold text-xl mb-4 flex items-center gap-2">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                  </svg>
-                  Contact
-                </h3>
-                <p className="text-base text-charcoal/80">Phone: (+66)80-856-5999</p>
-                <p className="text-base text-charcoal/80">Email: info@icellare.com</p>
-              </div>
-            </div>
-            <motion.button
-              className="w-full bg-gradient-to-r from-rose-gold to-bronze text-white px-8 py-4 rounded-full text-base font-semibold shadow-lg"
-              whileHover={{ scale: 1.02, boxShadow: '0 25px 50px rgba(212, 175, 122, 0.4)' }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Schedule Consultation
-            </motion.button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      <Footer />
-    </main>
+        </footer>
+      </div>
+    </>
   )
 }
