@@ -70,6 +70,8 @@ export default function LoadingTest() {
   const [showTopNav, setShowTopNav] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [activeSectionIndex, setActiveSectionIndex] = useState(-1) // -1 means hero, 0-5 are sections
+  const [isDNALocked, setIsDNALocked] = useState(false) // Track if DNA should be locked to last section
+  const [dnaLockPosition, setDnaLockPosition] = useState(0) // Store exact position where DNA locks
 
   useEffect(() => {
     const timeline = [
@@ -113,6 +115,18 @@ export default function LoadingTest() {
         // Calculate section index (0-5)
         const sectionIndex = Math.floor((currentScrollY - heroHeight * 0.5) / viewportHeight)
         setActiveSectionIndex(Math.min(sectionIndex, 5)) // Max 5 (6 sections)
+      }
+
+      // Lock DNA when we reach the last section (section 5 = Wellness & Spa)
+      // Lock like hitting a wall - slightly before center to prevent overshoot
+      const lastSectionCenterScroll = heroHeight + (5.05 * viewportHeight)
+      if (currentScrollY >= lastSectionCenterScroll) {
+        if (!isDNALocked) {
+          setDnaLockPosition(lastSectionCenterScroll)
+        }
+        setIsDNALocked(true)
+      } else {
+        setIsDNALocked(false)
       }
 
       // Calculate velocity
@@ -257,6 +271,22 @@ export default function LoadingTest() {
           background-clip: text;
           -webkit-text-fill-color: transparent;
         }
+        @keyframes scroll-left {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .ticker-track {
+          display: flex;
+          gap: 4rem;
+          animation: scroll-left 30s linear infinite;
+        }
+        .ticker-track:hover {
+          animation-play-state: paused;
+        }
       `}</style>
 
       {/* Loading Screen */}
@@ -289,10 +319,19 @@ export default function LoadingTest() {
         background: 'radial-gradient(ellipse 60% 120% at 50% 50%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
       }} />
 
-      {/* LAYER 2: DNA Canvas - MIDDLE LAYER */}
-      <div className="fixed inset-0 pointer-events-none" style={{
-        zIndex: 10
-      }}>
+      {/* LAYER 2: DNA Canvas - MIDDLE LAYER - Fixed until locked, then absolute */}
+      <div
+        className="pointer-events-none"
+        style={{
+          zIndex: 10,
+          position: isDNALocked ? 'absolute' : 'fixed',
+          top: isDNALocked ? `${dnaLockPosition}px` : 0,
+          left: 0,
+          right: 0,
+          bottom: isDNALocked ? 'auto' : 0,
+          height: '100vh'
+        }}
+      >
         {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS */}
         <div className="absolute inset-0 pointer-events-none">
           <Canvas
@@ -322,14 +361,14 @@ export default function LoadingTest() {
         {/* Top spacer to ensure perfect layout at scrollY = 0 */}
         <div style={{ height: '100px' }}></div>
 
-        {/* Scroll Progress Bars - Full Border */}
+        {/* Scroll Progress Bars - Full Border - Enhanced Visibility */}
         {/* Top */}
         <motion.div
-          className="fixed top-0 left-0 right-0 h-[2px] z-[60] origin-left"
+          className="fixed top-0 left-0 right-0 h-[4px] z-[60] origin-left"
           style={{
             background: 'linear-gradient(90deg, #B8860B 0%, #C9A342 50%, #D4B84E 100%)',
             scaleX: scrollProgress,
-            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
+            boxShadow: '0 0 20px rgba(184, 134, 11, 1), 0 0 40px rgba(184, 134, 11, 0.8), 0 0 60px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -337,11 +376,11 @@ export default function LoadingTest() {
 
         {/* Right */}
         <motion.div
-          className="fixed top-0 right-0 bottom-0 w-[2px] z-[60] origin-top"
+          className="fixed top-0 right-0 bottom-0 w-[4px] z-[60] origin-top"
           style={{
             background: 'linear-gradient(180deg, #B8860B 0%, #C9A342 50%, #D4B84E 100%)',
             scaleY: scrollProgress,
-            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
+            boxShadow: '0 0 20px rgba(184, 134, 11, 1), 0 0 40px rgba(184, 134, 11, 0.8), 0 0 60px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -349,11 +388,11 @@ export default function LoadingTest() {
 
         {/* Bottom - fills right to left */}
         <motion.div
-          className="fixed bottom-0 left-0 right-0 h-[2px] z-[60] origin-right"
+          className="fixed bottom-0 left-0 right-0 h-[4px] z-[60] origin-right"
           style={{
             background: 'linear-gradient(90deg, #D4B84E 0%, #C9A342 50%, #B8860B 100%)',
             scaleX: scrollProgress,
-            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
+            boxShadow: '0 0 20px rgba(184, 134, 11, 1), 0 0 40px rgba(184, 134, 11, 0.8), 0 0 60px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -361,11 +400,11 @@ export default function LoadingTest() {
 
         {/* Left - fills bottom to top */}
         <motion.div
-          className="fixed top-0 left-0 bottom-0 w-[2px] z-[60] origin-bottom"
+          className="fixed top-0 left-0 bottom-0 w-[4px] z-[60] origin-bottom"
           style={{
             background: 'linear-gradient(180deg, #D4B84E 0%, #C9A342 50%, #B8860B 100%)',
             scaleY: scrollProgress,
-            boxShadow: '0 0 10px rgba(184, 134, 11, 0.8), 0 0 20px rgba(184, 134, 11, 0.4)'
+            boxShadow: '0 0 20px rgba(184, 134, 11, 1), 0 0 40px rgba(184, 134, 11, 0.8), 0 0 60px rgba(184, 134, 11, 0.4)'
           }}
           initial={{ opacity: 0 }}
           animate={isLoadingComplete ? { opacity: 1 } : { opacity: 0 }}
@@ -419,9 +458,10 @@ export default function LoadingTest() {
             </div>
           </motion.div>
 
-          {/* Top-right full logo - fade directly with scroll (no delay) */}
+          {/* Top-right full logo - fade directly with scroll (no delay) - aligned with frame */}
           <motion.div
-            className="fixed top-5 right-5 cursor-pointer pointer-events-auto group z-50"
+            className="fixed top-5 cursor-pointer pointer-events-auto group z-50"
+            style={{ right: '54px' }}
             animate={{ opacity: Math.min(1, Math.max(0, (scrollProgress - 0.02) * 10)) }}
             transition={{ duration: 0 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -431,7 +471,7 @@ export default function LoadingTest() {
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ"
                 fill
-                className="object-contain"
+                className="object-contain object-right"
                 priority
               />
             </div>
@@ -841,21 +881,262 @@ export default function LoadingTest() {
           ))}
         </div>
 
-        {/* Footer - SPACE NEON VERSION */}
-        <footer className="relative py-16 text-center border-t border-[#B8860B]/30" style={{
-          background: 'linear-gradient(to bottom, #0a0412 0%, #1a0a2e 50%, #0f0624 100%)'
+        {/* Spacer to allow footer to scroll into view after DNA locks */}
+        <div style={{ height: '5vh' }}></div>
+
+        {/* Logo Ticker - Partners & Affiliations */}
+        <div className="relative overflow-hidden py-3 border-y-2 border-[#B8860B]" style={{
+          background: 'rgba(30, 30, 30, 0.85)',
+          backdropFilter: 'blur(10px)'
         }}>
-          <div className="max-w-6xl mx-auto px-8">
-            <div className="flex justify-center items-center gap-8 mb-8">
-              <a href="#team" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Team</a>
-              <a href="#our-lab" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Our Lab</a>
-              <a href="#facilities" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Facilities</a>
-              <a href="#blog" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Blog</a>
-              <a href="#contact" className="text-[#B8860B]/70 hover:text-[#C9A342] transition-all text-sm font-mono uppercase hover:drop-shadow-[0_0_10px_rgba(184,134,11,0.8)]">Contact</a>
+          <div className="flex">
+            <div className="ticker-track">
+              {/* First set of logos */}
+              <div className="flex items-center gap-20">
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+              </div>
+
+              {/* Duplicate set for seamless loop */}
+              <div className="flex items-center gap-20">
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* UFC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/UFC_Logo.png?v=1762450430"
+                    alt="UFC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+
+                {/* ONE FC Logo */}
+                <div className="flex items-center justify-center px-6">
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/409fc7_c7cc32af653d4427a59d1ae30641d4e2_mv2_1.png?v=1762450429"
+                    alt="ONE FC"
+                    className="h-16 w-auto object-contain brightness-0 invert"
+                  />
+                </div>
+              </div>
             </div>
-            <p className="text-black/30 text-sm">
-              © 2024 ICELLARÉ Lifespan Center. All rights reserved.
-            </p>
+          </div>
+        </div>
+
+        {/* Footer - Refined Design */}
+        <footer className="relative border-t border-[#B8860B]/20" style={{
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(245, 250, 255, 0.9) 100%)',
+          backdropFilter: 'blur(20px)'
+        }}>
+          {/* Main Footer Content */}
+          <div className="max-w-7xl mx-auto px-12 py-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+              {/* Left Column - Logo & Social */}
+              <div className="flex flex-col justify-between">
+                <div>
+                  <div className="relative w-56 h-20 mb-6">
+                    <Image
+                      src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+                      alt="ICELLARÉ"
+                      fill
+                      className="object-contain object-left"
+                    />
+                  </div>
+                  <p className="text-black/60 text-sm font-sans mb-6">
+                    Regenerative Medicine Lifespan Center
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <a
+                    href="https://www.facebook.com/icellare"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center hover:bg-[#B8860B]/20 transition-all duration-300"
+                  >
+                    <svg className="w-5 h-5 text-[#B8860B]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+                  <a
+                    href="https://www.instagram.com/icellare_phuket/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-[#B8860B]/10 flex items-center justify-center hover:bg-[#B8860B]/20 transition-all duration-300"
+                  >
+                    <svg className="w-5 h-5 text-[#B8860B]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              {/* Middle Column - Links */}
+              <div>
+                <h3 className="text-[#B8860B] font-sans font-semibold text-base mb-4 uppercase tracking-wider">Navigate</h3>
+                <div className="flex flex-col gap-3">
+                  <a href="#team" className="text-black/70 hover:text-[#B8860B] transition-colors text-sm font-sans">Team</a>
+                  <a href="#our-lab" className="text-black/70 hover:text-[#B8860B] transition-colors text-sm font-sans">Our Lab</a>
+                  <a href="#facilities" className="text-black/70 hover:text-[#B8860B] transition-colors text-sm font-sans">Facilities</a>
+                  <a href="#blog" className="text-black/70 hover:text-[#B8860B] transition-colors text-sm font-sans">Blog</a>
+                  <a href="#contact" className="text-black/70 hover:text-[#B8860B] transition-colors text-sm font-sans">Contact</a>
+                </div>
+              </div>
+
+              {/* Right Column - Locations */}
+              <div>
+                <h3 className="text-[#B8860B] font-sans font-semibold text-base mb-4 uppercase tracking-wider">Locations</h3>
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-[#B8860B] font-semibold text-xs uppercase tracking-wide mb-2">Bangkok</p>
+                    <p className="text-black/70 text-xs font-sans leading-relaxed">
+                      102 Thanon Phutthamonthon Sai 1<br />
+                      Bang Ramat, Taling Chan<br />
+                      Bangkok 10170, Thailand<br />
+                      <a href="tel:+66808565999" className="hover:text-[#B8860B] transition-colors mt-1 inline-block">+66 80 856 5999</a>
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[#B8860B] font-semibold text-xs uppercase tracking-wide mb-2">Phuket</p>
+                    <p className="text-black/70 text-xs font-sans leading-relaxed">
+                      9 Komarapat Rd, Talat Yai<br />
+                      Mueang Phuket District<br />
+                      Phuket 83000, Thailand<br />
+                      <a href="tel:+66617490434" className="hover:text-[#B8860B] transition-colors mt-1 inline-block">+66 61 749 0434</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-[#B8860B]/20 py-6">
+            <div className="max-w-7xl mx-auto px-12">
+              <p className="text-black/40 text-xs font-sans text-center">
+                © 2024 ICELLARÉ Lifespan Center. All rights reserved.
+              </p>
+            </div>
           </div>
         </footer>
       </div>
