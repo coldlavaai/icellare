@@ -193,7 +193,7 @@ export default function StemCellTechnologyPage() {
 
   return (
     <main className="relative bg-cream overflow-hidden">
-      
+
       <Navigation />
 
       {/* Hero Section */}

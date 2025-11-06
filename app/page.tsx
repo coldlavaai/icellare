@@ -19,7 +19,7 @@ function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: 
       {/* Camera - centered on DNA, slightly elevated */}
       <PerspectiveCamera
         makeDefault
-        position={[0, 1.5, 28]}
+        position={[0, 2.2, 28]}
         fov={50}
         near={0.1}
         far={1000}
@@ -74,6 +74,11 @@ export default function LoadingTest() {
   const [isDNALocked, setIsDNALocked] = useState(false) // Track if DNA should be locked to last section
   const [dnaLockPosition, setDnaLockPosition] = useState(0) // Store exact position where DNA locks
   const [activeModal, setActiveModal] = useState<string | null>(null) // Track which service modal is open
+  const [showServicesHeading, setShowServicesHeading] = useState(false) // Track if DNA has passed services heading
+  const [hasAutoScrolled, setHasAutoScrolled] = useState(false) // Track if auto-scroll to services has been triggered
+  const [isScrolling, setIsScrolling] = useState(false) // Track if user is currently scrolling
+  const [isCenteredOnSection, setIsCenteredOnSection] = useState(false) // Track if centered on a section
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const timeline = [
@@ -98,6 +103,37 @@ export default function LoadingTest() {
     }, 1700)
   }, [])
 
+  // Auto-scroll to services when hero scroll threshold is passed
+  useEffect(() => {
+    if (!isLoadingComplete || hasAutoScrolled) return
+
+    const handleAutoScroll = () => {
+      const currentScrollY = window.scrollY
+      const viewportHeight = window.innerHeight
+      const threshold = viewportHeight * 0.15 // Trigger when scrolled 15% of hero section
+
+      if (currentScrollY > threshold && currentScrollY < viewportHeight * 0.9) {
+        setHasAutoScrolled(true)
+        document.getElementById('our-services')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+
+    window.addEventListener('scroll', handleAutoScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleAutoScroll)
+  }, [isLoadingComplete, hasAutoScrolled])
+
+  // Reset auto-scroll when scrolling back to top
+  useEffect(() => {
+    const handleResetAutoScroll = () => {
+      if (window.scrollY < 50) {
+        setHasAutoScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleResetAutoScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleResetAutoScroll)
+  }, [])
+
   // Track scroll position, velocity, and direction
   useEffect(() => {
     let lastTime = Date.now()
@@ -107,21 +143,47 @@ export default function LoadingTest() {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight
       const progress = maxScroll > 0 ? currentScrollY / maxScroll : 0
 
+      // Mark as scrolling and set timeout to detect when stopped
+      setIsScrolling(true)
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current)
+      }
+      scrollTimeoutRef.current = setTimeout(() => {
+        setIsScrolling(false)
+      }, 50) // Consider stopped after 50ms of no scroll
+
       // Calculate which section is active
       const viewportHeight = window.innerHeight
       const heroHeight = viewportHeight
 
       if (currentScrollY < heroHeight * 0.5) {
         setActiveSectionIndex(-1) // Hero
+        setIsCenteredOnSection(false)
       } else {
-        // Calculate section index (0-5)
+        // Calculate section index (0-6)
         const sectionIndex = Math.floor((currentScrollY - heroHeight * 0.5) / viewportHeight)
-        setActiveSectionIndex(Math.min(sectionIndex, 5)) // Max 5 (6 sections)
+        setActiveSectionIndex(Math.min(sectionIndex, 6)) // Max 6 (7 sections)
+
+        // Check if centered on a section (within 20% of section center)
+        const sectionProgress = ((currentScrollY - heroHeight * 0.5) % viewportHeight) / viewportHeight
+        const distanceFromCenter = Math.abs(sectionProgress - 0.5)
+        setIsCenteredOnSection(distanceFromCenter < 0.2 && sectionIndex >= 0)
       }
 
-      // Lock DNA when we reach the last section (section 5 = Wellness & Spa)
+      // Check if DNA is centered in the services section
+      // Services section is from 100vh to 200vh, center is at 150vh
+      // Show heading when DNA center reaches middle of services section
+      const servicesSectionCenter = 1.5 * viewportHeight
+      const dnaCenterPosition = currentScrollY + (viewportHeight / 2)
+      if (dnaCenterPosition > servicesSectionCenter) {
+        setShowServicesHeading(true)
+      } else {
+        setShowServicesHeading(false)
+      }
+
+      // Lock DNA when we reach the last section (section 6 = Wellness & Spa)
       // Lock like hitting a wall - slightly before center to prevent overshoot
-      const lastSectionCenterScroll = heroHeight + (5.05 * viewportHeight)
+      const lastSectionCenterScroll = heroHeight + (6.05 * viewportHeight)
       if (currentScrollY >= lastSectionCenterScroll) {
         if (!isDNALocked) {
           setDnaLockPosition(lastSectionCenterScroll)
@@ -300,7 +362,7 @@ export default function LoadingTest() {
       {/* Loading Screen */}
       {!isLoadingComplete && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{
-          background: 'radial-gradient(ellipse 60% 120% at 50% 50%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
+          background: 'radial-gradient(ellipse 60% 120% at 50% 62%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
         }}>
           <div className="text-center">
             <div className="relative w-96 h-32 mb-8">
@@ -324,7 +386,7 @@ export default function LoadingTest() {
       {/* LAYER 1: Light Blue Background - darker edges, lighter middle */}
       <div className="fixed inset-0 pointer-events-none" style={{
         zIndex: 0,
-        background: 'radial-gradient(ellipse 60% 120% at 50% 50%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
+        background: 'radial-gradient(ellipse 60% 120% at 50% 62%, rgba(245, 250, 255, 1) 0%, rgba(235, 245, 255, 1) 15%, rgba(200, 220, 242, 1) 35%, rgba(160, 190, 220, 1) 60%, rgba(120, 150, 190, 1) 100%)'
       }} />
 
       {/* LAYER 2: DNA Canvas - MIDDLE LAYER - Fixed until locked, then absolute */}
@@ -425,53 +487,109 @@ export default function LoadingTest() {
           animate={isLoadingComplete && showTopNav ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
-          <div className="flex items-center justify-center gap-12">
-            {['Team', 'Our Lab', 'Facilities', 'Blog', 'Contact'].map((item, index) => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase().replace(' ', '-')}`}
+          <div className="w-full px-6 grid grid-cols-3 items-center">
+            {/* Left side - Team, Our Lab */}
+            <div className="flex items-center gap-12 justify-center">
+              {['Team', 'Our Lab'].map((item, index) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
+                  className="text-[13px] font-sans tracking-wider text-black/50 hover:text-black transition-all duration-300 relative group pointer-events-auto"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                >
+                  <span className="relative z-10">{item}</span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#B8860B]/0 via-[#B8860B]/30 to-[#B8860B]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#8c734d] transition-all duration-300 group-hover:w-full" />
+                </motion.a>
+              ))}
+            </div>
+
+            {/* Center - Services */}
+            <div className="flex justify-center">
+              <motion.button
+                onClick={() => {
+                  document.getElementById('our-services')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }}
                 className="text-[13px] font-sans tracking-wider text-black/50 hover:text-black transition-all duration-300 relative group pointer-events-auto"
                 initial={{ opacity: 0, y: -10 }}
                 animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
+                transition={{ duration: 0.4, delay: 0.6 }}
               >
-                <span className="relative z-10">{item}</span>
-                {/* Glow effect on hover */}
+                <span className="relative z-10">Services</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-[#B8860B]/0 via-[#B8860B]/30 to-[#B8860B]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
-                {/* Underline */}
-                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-400 to-pink-500 transition-all duration-300 group-hover:w-full" />
-              </motion.a>
-            ))}
+                <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#8c734d] transition-all duration-300 group-hover:w-full" />
+              </motion.button>
+            </div>
+
+            {/* Right side - Facilities, Contact */}
+            <div className="flex items-center gap-12 justify-center">
+              {['Facilities', 'Contact'].map((item, index) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
+                  className="text-[13px] font-sans tracking-wider text-black/50 hover:text-black transition-all duration-300 relative group pointer-events-auto"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
+                >
+                  <span className="relative z-10">{item}</span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#B8860B]/0 via-[#B8860B]/30 to-[#B8860B]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg" />
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-[#8c734d] transition-all duration-300 group-hover:w-full" />
+                </motion.a>
+              ))}
+            </div>
           </div>
         </motion.nav>
 
         {/* Hero section with logo and heading - SCROLLS WITH PAGE */}
-        <div className="h-screen absolute inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
-          {/* Full logo - original, always present */}
+        <div className="h-screen absolute inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '70px' }}>
+          {/* Full logo - stacked vertically */}
           <motion.div
-            className="relative z-10 mb-auto cursor-pointer pointer-events-auto group"
+            className="relative z-10 mb-auto cursor-pointer pointer-events-auto group text-center flex flex-col items-center"
             initial={{ opacity: 0, y: -30 }}
             animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.5 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105">
+            {/* Logo mark - gold colored */}
+            <div className="relative w-20 h-20 mb-3 transition-all duration-300 group-hover:scale-105">
               <Image
-                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
-                alt="ICELLARÉ Lifespan Center"
+                src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/Icellare_-Horizontal-Logo-01_1_1.png?v=1762430161"
+                alt="ICELLARÉ Logo"
                 fill
                 className="object-contain"
+                style={{ filter: 'brightness(0) saturate(100%) invert(52%) sepia(14%) saturate(1345%) hue-rotate(8deg) brightness(93%) contrast(86%)' }}
                 priority
               />
             </div>
+
+            {/* ICELLARÉ wordmark - black */}
+            <div className="relative w-[220px] h-16 mb-2 transition-all duration-300 group-hover:scale-105">
+              <Image
+                src="https://cdn.shopify.com/s/files/1/0951/6141/8067/files/Icellare_-Horizonta.png?v=1762430184"
+                alt="ICELLARÉ"
+                fill
+                className="object-contain"
+                style={{ filter: 'brightness(0)' }}
+                priority
+              />
+            </div>
+
+            {/* Lifespan Center text */}
+            <p className="text-sm font-serif text-black/70 tracking-[0.3em] uppercase">
+              Lifespan Center
+            </p>
           </motion.div>
 
-          {/* Top-right full logo - fade directly with scroll (no delay) - aligned with frame */}
+          {/* Bottom-center horizontal logo - shows when centered on all sections */}
           <motion.div
-            className="fixed top-5 cursor-pointer pointer-events-auto group z-50"
-            style={{ right: '54px' }}
-            animate={{ opacity: Math.min(1, Math.max(0, (scrollProgress - 0.02) * 10)) }}
-            transition={{ duration: 0 }}
+            className="fixed bottom-8 left-0 right-0 flex justify-center cursor-pointer pointer-events-auto group z-50"
+            animate={{
+              opacity: (activeSectionIndex >= 0 && activeSectionIndex <= 6 && !isScrolling && isCenteredOnSection) ? 1 : 0
+            }}
+            transition={{ duration: 0.2 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <div className="relative w-48 h-16 transition-all duration-300 group-hover:scale-105">
@@ -479,17 +597,17 @@ export default function LoadingTest() {
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ"
                 fill
-                className="object-contain object-right"
+                className="object-contain"
                 priority
               />
             </div>
           </motion.div>
 
           {/* Spacer to push DNA and content down */}
-          <div style={{ height: '60px' }}></div>
+          <div style={{ height: '200px' }}></div>
 
           {/* TechnicalFrame with navigation - centered for DNA */}
-          <div className="absolute inset-0" style={{ top: '60px' }}>
+          <div className="absolute inset-0" style={{ top: '200px' }}>
             <TechnicalFrame
               isVisible={showFrame}
               loadingProgress={loadingProgress}
@@ -500,9 +618,10 @@ export default function LoadingTest() {
           </div>
         </div>
 
+
         {/* Heading at bottom - FIXED POSITION, FADES OUT WITH SCROLL (no delay) */}
         <motion.div
-          className="fixed bottom-5 left-0 right-0 z-30 text-center pointer-events-none"
+          className="fixed bottom-12 left-0 right-0 z-30 text-center pointer-events-none"
           initial={{ opacity: 0, y: 30 }}
           animate={
             isLoadingComplete
@@ -514,20 +633,47 @@ export default function LoadingTest() {
           }
           transition={{ duration: 0 }}
         >
-          <h1 className="text-2xl font-sans font-light text-black mb-1 tracking-wide">
-            Regenerative Medicine
+          <h1 className="text-sm font-serif font-light text-black tracking-[0.3em] uppercase">
+            Stem Cell Technology - Rejuvenation Innovation - Personalised Care
           </h1>
-          <p className="text-xl md:text-2xl font-sans font-light rainbow-text">
-            Lifespan Center
-          </p>
         </motion.div>
 
-        {/* Navigation labels around DNA - SCROLLS */}
-        <div className="h-screen relative pointer-events-none" style={{ marginTop: '-40px' }}>
-          <div className="absolute inset-0">
+        {/* NEW SERVICES SECTION - SEPARATE FULL SCREEN BELOW HERO */}
+        <div
+          id="our-services"
+          className="h-screen relative pointer-events-none"
+          style={{
+            marginTop: '100vh',
+            scrollSnapAlign: 'center'
+          }}
+        >
+          {/* Services Title - fades in when DNA passes */}
+          <motion.div
+            className="absolute top-28 left-0 right-0 z-30 text-center pointer-events-none"
+            initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+            animate={showServicesHeading ? {
+              opacity: 1,
+              y: 0,
+              filter: 'blur(0px)'
+            } : {
+              opacity: 0,
+              y: 30,
+              filter: 'blur(8px)'
+            }}
+            transition={{
+              duration: 1.2,
+              ease: [0.22, 1, 0.36, 1]
+            }}
+          >
+            <h2 className="text-6xl font-serif text-black tracking-wide mb-4">Our Services</h2>
+            <p className="text-2xl font-serif italic text-[#8c734d]">Comprehensive regenerative healthcare solutions</p>
+          </motion.div>
+
+          {/* Navigation labels around DNA - SCROLLS */}
+          <div className="absolute inset-0 flex items-center justify-center" style={{ marginTop: '250px' }}>
             {/* Navigation labels positioned around DNA */}
             <motion.div
-              className="absolute left-[22%] top-[28%] pointer-events-auto cursor-pointer group"
+              className="absolute left-[22%] top-[20%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
               animate={isLoadingComplete && loadingProgress > 0.7 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -559,7 +705,7 @@ export default function LoadingTest() {
             </motion.div>
 
             <motion.div
-              className="absolute left-[20%] top-[46%] pointer-events-auto cursor-pointer group"
+              className="absolute left-[20%] top-[45%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
               animate={isLoadingComplete && loadingProgress > 0.75 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.3 }}
@@ -592,7 +738,7 @@ export default function LoadingTest() {
 
             {/* Left side label 3 */}
             <motion.div
-              className="absolute left-[19%] bottom-[30%] pointer-events-auto cursor-pointer group"
+              className="absolute left-[23%] top-[70%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
               animate={isLoadingComplete && loadingProgress > 0.8 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -625,7 +771,7 @@ export default function LoadingTest() {
 
             {/* Right side label 1 */}
             <motion.div
-              className="absolute right-[21%] top-[31%] pointer-events-auto cursor-pointer group"
+              className="absolute right-[21%] top-[20%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
               animate={isLoadingComplete && loadingProgress > 0.7 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.25 }}
@@ -658,7 +804,7 @@ export default function LoadingTest() {
 
             {/* Right side label 2 */}
             <motion.div
-              className="absolute right-[18%] top-[53%] pointer-events-auto cursor-pointer group"
+              className="absolute right-[18%] top-[45%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
               animate={isLoadingComplete && loadingProgress > 0.75 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.35 }}
@@ -691,7 +837,7 @@ export default function LoadingTest() {
 
             {/* Right side label 3 */}
             <motion.div
-              className="absolute right-[23%] bottom-[24%] pointer-events-auto cursor-pointer group"
+              className="absolute right-[23%] top-[70%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
               animate={isLoadingComplete && loadingProgress > 0.8 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.45 }}
@@ -746,11 +892,11 @@ export default function LoadingTest() {
 
                       {/* Content */}
                       <div className="space-y-6">
-                        <h2 className="text-5xl md:text-6xl font-sans font-light text-black leading-tight tracking-wide">
+                        <h2 className="text-5xl md:text-6xl font-serif text-black leading-tight tracking-wide">
                           {section.title}
                         </h2>
 
-                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B]">
+                        <p className="text-2xl md:text-3xl font-serif italic text-[#8c734d]">
                           {section.subtitle}
                         </p>
 
@@ -789,7 +935,7 @@ export default function LoadingTest() {
                           <>
                             {/* First stat card - top left, overhanging - CYAN */}
                             <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
+                              <div className="text-2xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[0].value}
                               </div>
                               <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
@@ -799,7 +945,7 @@ export default function LoadingTest() {
 
                             {/* Second stat card - bottom right, overhanging - PINK */}
                             <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
+                              <div className="text-2xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[1].value}
                               </div>
                               <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
@@ -833,7 +979,7 @@ export default function LoadingTest() {
                           <>
                             {/* First stat card - top left, overhanging - CYAN */}
                             <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
+                              <div className="text-2xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[0].value}
                               </div>
                               <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
@@ -843,7 +989,7 @@ export default function LoadingTest() {
 
                             {/* Second stat card - bottom right, overhanging - PINK */}
                             <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-[#B8860B] rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(184,134,11,0.6),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)] transition-all duration-300 group z-20">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
+                              <div className="text-2xl font-serif text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#C9A342] mb-0.5">
                                 {section.stats[1].value}
                               </div>
                               <div className="text-[10px] font-mono uppercase tracking-wider text-[#B8860B]/80">
@@ -864,11 +1010,11 @@ export default function LoadingTest() {
 
                       {/* Content */}
                       <div className="space-y-6">
-                        <h2 className="text-5xl md:text-6xl font-sans font-light text-black leading-tight tracking-wide">
+                        <h2 className="text-5xl md:text-6xl font-serif text-black leading-tight tracking-wide">
                           {section.title}
                         </h2>
 
-                        <p className="text-2xl md:text-3xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] via-[#C9A342] to-[#B8860B]">
+                        <p className="text-2xl md:text-3xl font-serif italic text-[#8c734d]">
                           {section.subtitle}
                         </p>
 
@@ -1179,9 +1325,19 @@ export default function LoadingTest() {
                 x: sections.find(s => s.id === activeModal)?.side === 'left' ? '100%' : '-100%'
               }}
               transition={{ type: 'spring', damping: 30, stiffness: 200 }}
-              className="relative w-full h-full bg-gradient-to-br from-[rgba(245,250,255,0.98)] to-[rgba(235,245,255,0.98)] overflow-y-auto"
+              className="relative w-full h-full overflow-y-auto"
+              style={{
+                background: 'linear-gradient(135deg, rgba(10, 25, 47, 0.98) 0%, rgba(26, 42, 78, 0.98) 50%, rgba(10, 25, 47, 0.98) 100%)',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 100px rgba(184, 134, 11, 0.1), inset 0 0 100px rgba(184, 134, 11, 0.03)',
+                border: '1px solid rgba(184, 134, 11, 0.2)'
+              }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Subtle texture overlay */}
+              <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
+                backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.15) 1px, transparent 0)',
+                backgroundSize: '32px 32px'
+              }} />
               {/* Close Button */}
               <button
                 onClick={() => setActiveModal(null)}
