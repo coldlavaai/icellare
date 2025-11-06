@@ -274,18 +274,14 @@ export default function LoadingTest() {
         </div>
       )}
 
-      {/* Fixed DNA Canvas Background - PRODUCTION SPACE VERSION - Stops at last section */}
-      <div
-        className="inset-0 pointer-events-none"
-        style={{
-          position: scrollProgress > 0.85 ? 'absolute' : 'fixed',
-          top: scrollProgress > 0.85 ? `${sections.length * 100}vh` : '0',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(ellipse at 50% 20%, #1a0a2e 0%, #0f0624 25%, #0a0412 50%, #050208 75%, #000000 100%)'
-        }}
-      >
+      {/* Fixed DNA Canvas Background - CYBERPUNK SPACE VERSION */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        background: `
+          radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
+          radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+          radial-gradient(ellipse at 50% 20%, #1a0a2e 0%, #0f0624 25%, #0a0412 50%, #050208 75%, #000000 100%)
+        `
+      }}>
         {/* 3D Canvas - transparent to show radial gradient */}
         <div className="absolute inset-0">
           <Canvas
@@ -388,17 +384,8 @@ export default function LoadingTest() {
           </div>
         </motion.nav>
 
-        {/* Hero section with logo and heading - FIXED until last section */}
-        <div
-          className="h-screen z-30 flex flex-col items-center justify-start pointer-events-none"
-          style={{
-            paddingTop: '75px',
-            position: scrollProgress > 0.85 ? 'absolute' : 'fixed',
-            top: scrollProgress > 0.85 ? `${sections.length * 100}vh` : '0',
-            left: 0,
-            right: 0,
-          }}
-        >
+        {/* Hero section with logo and heading - FIXED */}
+        <div className="h-screen fixed inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
           {/* Logo at top with lots of space - DARK VERSION */}
           <motion.div
             className="relative z-10 mb-auto cursor-pointer pointer-events-auto group"
@@ -594,25 +581,16 @@ export default function LoadingTest() {
           </div>
         </div>
 
-        {/* Smooth scroll-based color overlay - Section-specific colors - Stops at last section */}
+        {/* Smooth scroll-based color overlay - behind DNA - CYBERPUNK */}
         <div
-          className="inset-0 pointer-events-none transition-all duration-1000 ease-out"
+          className="fixed inset-0 pointer-events-none transition-colors duration-1000 ease-out"
           style={{
-            position: scrollProgress > 0.85 ? 'absolute' : 'fixed',
-            top: scrollProgress > 0.85 ? `${sections.length * 100}vh` : '0',
-            left: 0,
-            right: 0,
-            bottom: 0,
             zIndex: 5,
-            background: `
-              radial-gradient(circle 800px at 50% 50%,
-                rgba(${0 + scrollProgress * 40}, ${20 + scrollProgress * 40}, ${60 + scrollProgress * 100}, ${0.15 + scrollProgress * 0.1}) 0%,
-                transparent 70%),
-              linear-gradient(to bottom,
-                rgba(10, 4, 18, ${Math.max(0, 0.3 - scrollProgress * 0.15)}) 0%,
-                rgba(${15 + scrollProgress * 50}, ${10 + scrollProgress * 30}, ${30 + scrollProgress * 60}, ${scrollProgress * 0.2}) 30%,
-                rgba(${20 + scrollProgress * 80}, ${15 + scrollProgress * 40}, ${40 + scrollProgress * 80}, ${scrollProgress * 0.25}) 60%,
-                rgba(${10 + scrollProgress * 60}, ${5 + scrollProgress * 20}, ${20 + scrollProgress * 50}, ${scrollProgress * 0.3}) 100%)`
+            background: `linear-gradient(to bottom,
+              rgba(26, 10, 46, ${Math.max(0, 0.2 - scrollProgress * 0.2)}) 0%,
+              rgba(6, 182, 212, ${scrollProgress * 0.05}) 30%,
+              rgba(236, 72, 153, ${scrollProgress * 0.03}) 70%,
+              rgba(0, 0, 0, ${scrollProgress * 0.2}) 100%)`
           }}
         />
 
