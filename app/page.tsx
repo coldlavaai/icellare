@@ -285,37 +285,31 @@ export default function LoadingTest() {
         }
       `}</style>
 
-      {/* Loading overlay - shows centered logo during load, fades out */}
-      {!isLoadingComplete && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center pointer-events-none">
-          <motion.div
-            className="relative w-[450px] h-36"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Image
-              src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
-              alt="ICELLARÉ"
-              fill
-              className="object-contain brightness-0 invert"
-              priority
-            />
-          </motion.div>
-
-          {/* Loading dots */}
-          <motion.div
-            className="flex items-center justify-center gap-2 mt-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
-            <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
-            <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
-          </motion.div>
+      {/* Loading screen with logo - visible immediately */}
+      <motion.div
+        className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isLoadingComplete ? 0 : 1 }}
+        transition={{ duration: 0.6, delay: isLoadingComplete ? 0.3 : 0 }}
+        style={{ pointerEvents: 'none' }}
+      >
+        <div className="relative w-[450px] h-36">
+          <Image
+            src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+            alt="ICELLARÉ"
+            fill
+            className="object-contain brightness-0 invert"
+            priority
+          />
         </div>
-      )}
+
+        {/* Loading dots */}
+        <div className="flex items-center justify-center gap-2 mt-8">
+          <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
+        </div>
+      </motion.div>
 
       {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
       <div className="fixed inset-0 pointer-events-none" style={{
@@ -618,10 +612,9 @@ export default function LoadingTest() {
           </div>
         </div>
 
-        {/* Heading at bottom - FIXED POSITION, FADES IN THEN OUT WITH SCROLL */}
+        {/* Heading at bottom - FIXED POSITION, FADES OUT WITH SCROLL (instant response) */}
         <motion.div
           className="fixed bottom-5 left-0 right-0 z-30 text-center pointer-events-none"
-          style={{ willChange: 'opacity, transform' }}
           initial={{ opacity: 0, y: 30 }}
           animate={
             isLoadingComplete
@@ -631,7 +624,7 @@ export default function LoadingTest() {
                 }
               : { opacity: 0, y: 30 }
           }
-          transition={{ duration: 1, delay: 1.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0 }}
         >
           <h1 className="text-2xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
             Regenerative Medicine
