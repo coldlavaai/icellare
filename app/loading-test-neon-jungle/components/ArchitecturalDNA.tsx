@@ -10,7 +10,6 @@ interface ArchitecturalDNAProps {
   scrollProgress?: number
 }
 
-// STEP 1: Generate helix path
 function generateHelixPath(config: {
   radius: number
   pitch: number
@@ -40,9 +39,7 @@ export function ArchitecturalDNA({
   const groupRef = useRef<THREE.Group>(null)
   const baseRotation = useRef(0)
 
-  // Generate DNA geometry
   const dnaGeometry = useMemo(() => {
-    // STEP 1: Create helix paths (using old dimensions for same size)
     const strand1Path = generateHelixPath({
       radius: 2.7,
       pitch: 6.4,
@@ -50,27 +47,25 @@ export function ArchitecturalDNA({
       segmentsPerTurn: 80,
     })
 
-    // Strand 2 (opposite side)
     const strand2Path = strand1Path.map(
       (p) => new THREE.Vector3(-p.x, p.y, -p.z)
     )
 
-    // STEP 2: Create backbone tubes
     const curve1 = new THREE.CatmullRomCurve3(strand1Path)
     const tube1Geo = new THREE.TubeGeometry(curve1, strand1Path.length, 0.1, 20, false)
 
     const curve2 = new THREE.CatmullRomCurve3(strand2Path)
     const tube2Geo = new THREE.TubeGeometry(curve2, strand2Path.length, 0.1, 20, false)
 
-    // STEP 3: Create base pairs - CORAL & TURQUOISE
+    // Neon Jungle - 4 distinct colors
     const basePairColors = {
-      A: 0xFF7F50, // Coral
-      T: 0x06B6D4, // Turquoise
-      G: 0xFF6B6B, // Salmon
-      C: 0x14B8A6, // Teal
+      A: 0xA855F7,
+      T: 0xF97316,
+      G: 0x06B6D4,
+      C: 0xFF0080,
     }
 
-    const basePairTypes = ['A', 'G'] as const // Only need to pick A or G, complement is determined
+    const basePairTypes = ['A', 'T', 'G', 'C'] as const
     const basePairs: Array<{
       point1: THREE.Vector3
       point2: THREE.Vector3
@@ -80,17 +75,15 @@ export function ArchitecturalDNA({
       type2: string
     }> = []
 
-    // Create more base pairs with accurate Watson-Crick pairing
     const totalPoints = strand1Path.length
     for (let i = 0; i < totalPoints; i += 4) {
       const point1 = strand1Path[i]
       const point2 = strand2Path[i]
-
-      // Pick a random base for strand 1
-      const type1 = basePairTypes[Math.floor(Math.random() * 2)]
-
-      // Determine complement for strand 2 (A pairs with T, G pairs with C)
-      const type2 = type1 === 'A' ? 'T' : 'C'
+      const type1 = basePairTypes[Math.floor(Math.random() * 4)]
+      let type2: typeof basePairTypes[number]
+      do {
+        type2 = basePairTypes[Math.floor(Math.random() * 4)]
+      } while (type2 === type1)
 
       const color1 = basePairColors[type1]
       const color2 = basePairColors[type2]
@@ -112,64 +105,45 @@ export function ArchitecturalDNA({
     }
   }, [])
 
-  // Backbone material - CORAL glow
   const backboneMaterial = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
-        color: 0xFF7F50,
+        color: 0xA855F7,
         transmission: 0.2,
         thickness: 0.8,
         roughness: 0.2,
         metalness: 0.5,
         clearcoat: 0.7,
         ior: 1.5,
-        emissive: 0xFF7F50,
+        emissive: 0xA855F7,
         emissiveIntensity: 0.5,
         flatShading: false,
       }),
     []
   )
 
-  // Animation
   useFrame((state, delta) => {
     if (!groupRef.current) return
 
     if (enableGrowth) {
-      // During growth animation - very slow idle rotation
       baseRotation.current += delta * 0.02
       groupRef.current.rotation.y = baseRotation.current
-
-      // DNA builds from bottom to top
       groupRef.current.scale.y = growthProgress
-      // Adjust position so it grows upward from center
       groupRef.current.position.y = -(1 - growthProgress) * 8
     } else {
-      // After growth completes - slow idle rotation that tracks with scroll
-
-      // Idle rotation (0.1 rad/sec)
       baseRotation.current += delta * 0.1
-
-      // Scroll-based rotation
       const scrollRotation = scrollProgress * Math.PI * 2
-
-      // Combine idle rotation with scroll-based rotation
       groupRef.current.rotation.y = baseRotation.current + scrollRotation
-
-      // Stay centered vertically
       groupRef.current.position.y = 0
-
-      // No scale changes
       groupRef.current.scale.set(1, 1, 1)
     }
   })
 
   return (
     <group ref={groupRef} position={[0, 0, 0]} scale={0.55}>
-      {/* STEP 2: Backbone strands */}
       <mesh geometry={dnaGeometry.tube1Geo} material={backboneMaterial} castShadow />
       <mesh geometry={dnaGeometry.tube2Geo} material={backboneMaterial} castShadow />
 
-      {/* STEP 3: Base pairs */}
       {dnaGeometry.basePairs.map((pair, i) => {
         const direction = new THREE.Vector3().subVectors(
           pair.point2,
@@ -186,7 +160,6 @@ export function ArchitecturalDNA({
           direction.normalize()
         )
 
-        // Material for sphere 1 - NEON glow
         const material1 = new THREE.MeshPhysicalMaterial({
           color: pair.color1,
           transmission: 0.1,
@@ -200,7 +173,6 @@ export function ArchitecturalDNA({
           flatShading: false,
         })
 
-        // Material for sphere 2 - NEON glow
         const material2 = new THREE.MeshPhysicalMaterial({
           color: pair.color2,
           transmission: 0.1,
@@ -214,7 +186,6 @@ export function ArchitecturalDNA({
           flatShading: false,
         })
 
-        // Cylinder material (blend of both colors) - NEON glow
         const blendedColor = new THREE.Color(pair.color1).lerp(
           new THREE.Color(pair.color2),
           0.5
@@ -234,17 +205,12 @@ export function ArchitecturalDNA({
 
         return (
           <group key={i}>
-            {/* Sphere 1 - First base - high detail for smooth rendering */}
             <mesh position={pair.point1} material={material1} castShadow>
               <sphereGeometry args={[0.22, 32, 32]} />
             </mesh>
-
-            {/* Sphere 2 - Complementary base - high detail for smooth rendering */}
             <mesh position={pair.point2} material={material2} castShadow>
               <sphereGeometry args={[0.22, 32, 32]} />
             </mesh>
-
-            {/* Connecting cylinder - blended color - high detail for smooth rendering */}
             <mesh
               position={midpoint}
               quaternion={quaternion}

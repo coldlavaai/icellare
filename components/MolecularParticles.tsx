@@ -342,20 +342,21 @@ export function MolecularParticles() {
   const scrollProgress = useScrollStore((state) => state.scrollProgress)
 
   const particles = useMemo(() => {
-    const count = 80
+    const count = 25  // Reduced from 80 for cleaner, more premium look
     const particleData: MolecularParticle[] = []
 
+    // More biologically recognizable variety, less logo icons
     const types: MolecularParticle['type'][] = [
-      'peptide', 'peptide', 'peptide',
+      'stem-cell', 'stem-cell', 'stem-cell',  // Prominent stem cells
       'platelet', 'platelet',
       'antibody', 'antibody',
-      'collagen', 'collagen',
-      'growth-factor', 'growth-factor',
+      'collagen',
+      'growth-factor',
       'hormone',
-      'vitamin', 'vitamin',
-      'stem-cell', 'stem-cell', 'stem-cell',
+      'vitamin',
+      'peptide', 'peptide',
       'sperm', 'egg',
-      'logo-icon', 'logo-icon', 'logo-icon', 'logo-icon', 'logo-icon'
+      'logo-icon'  // Just one logo icon for branding
     ]
 
     for (let i = 0; i < count; i++) {
@@ -477,10 +478,8 @@ export function MolecularParticles() {
 
       const material = new THREE.MeshStandardMaterial({
         color: particle.color,
-        emissive: particle.color,
-        emissiveIntensity: 0.25,
-        metalness: 0.7,
-        roughness: 0.25,
+        metalness: 0.2,
+        roughness: 0.6,
         transparent: true,
         opacity: 0.85
       })
