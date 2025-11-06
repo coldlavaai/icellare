@@ -285,42 +285,61 @@ export default function LoadingTest() {
         }
       `}</style>
 
-      {/* Loading overlay - fades out after loading */}
-      {!isLoadingComplete && (
+      {/* Smooth loading transition - logo moves from center to top and becomes hero logo */}
+      <motion.div
+        className="fixed inset-0 z-[90] flex flex-col items-center"
+        initial={{ justifyContent: 'center' }}
+        animate={isLoadingComplete ? { justifyContent: 'flex-start' } : { justifyContent: 'center' }}
+        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: isLoadingComplete ? 0.2 : 0 }}
+        style={{ paddingTop: isLoadingComplete ? '100px' : '0px' }}
+      >
         <motion.div
-          className="fixed inset-0 z-[90] flex items-center justify-center pointer-events-none"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 0 }}
-          transition={{ duration: 0.8, delay: 1.5 }}
+          className="relative w-[450px] h-36 group cursor-pointer"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: 1
+          }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          onClick={() => isLoadingComplete && window.scrollTo({ top: 0, behavior: 'smooth' })}
+          style={{ pointerEvents: isLoadingComplete ? 'auto' : 'none' }}
         >
-          <div className="text-center">
-            <motion.div
-              className="relative w-96 h-32 mb-8"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-            >
-              <Image
-                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
-                alt="ICELLARÉ"
-                fill
-                className="object-contain brightness-0 invert"
-                priority
-              />
-            </motion.div>
-            <motion.div
-              className="flex items-center justify-center gap-2"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.3 }}
-            >
-              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
-            </motion.div>
-          </div>
+          <motion.div
+            animate={isLoadingComplete ? {
+              filter: [
+                'drop-shadow(0 0 0px rgba(0,191,255,0))',
+                'drop-shadow(0 0 40px rgba(0,191,255,1)) drop-shadow(0 0 80px rgba(0,191,255,0.8))'
+              ]
+            } : {}}
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="relative w-full h-full transition-all duration-300 group-hover:scale-105"
+          >
+            <Image
+              src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+              alt="ICELLARÉ"
+              fill
+              className="object-contain brightness-0 invert"
+              priority
+            />
+          </motion.div>
         </motion.div>
-      )}
+
+        {/* Loading dots - fade out when complete */}
+        <motion.div
+          className="flex items-center justify-center gap-2 mt-8"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: isLoadingComplete ? 0 : 1,
+            y: isLoadingComplete ? -20 : 0
+          }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
+        </motion.div>
+      </motion.div>
 
       {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
       <div className="fixed inset-0 pointer-events-none" style={{
@@ -443,38 +462,47 @@ export default function LoadingTest() {
         })()
       }} />
 
-      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER - Always visible */}
-      <div className="fixed inset-0 pointer-events-none" style={{
-        zIndex: 10,
-        background: `
-          radial-gradient(ellipse 1000px 800px at 50% 45%, rgba(255, 255, 255, 0.03) 0%, rgba(100, 150, 200, 0.02) 30%, transparent 60%),
-          radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-          radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 50%)
-        `
-      }}>
-        {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS - DNA visible from start */}
-        <div className="absolute inset-0 pointer-events-none">
-          <Canvas
-            shadows
-            dpr={[1, 2]}
-            gl={{
-              antialias: true,
-              alpha: true,
-              powerPreference: 'high-performance'
-            }}
-            style={{ background: 'transparent', pointerEvents: 'none' }}
-          >
-            <Suspense fallback={null}>
-              <Scene
-                growthProgress={1}
-                enableGrowth={false}
-                showParticles={isLoadingComplete}
-                scrollProgress={scrollProgress}
-              />
-            </Suspense>
-          </Canvas>
+      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER - Fades in smoothly */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none"
+        style={{ zIndex: 10 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoadingComplete ? 1 : 0 }}
+        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div style={{
+          background: `
+            radial-gradient(ellipse 1000px 800px at 50% 45%, rgba(255, 255, 255, 0.03) 0%, rgba(100, 150, 200, 0.02) 30%, transparent 60%),
+            radial-gradient(ellipse 800px 600px at 20% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 50%)
+          `,
+          width: '100%',
+          height: '100%'
+        }}>
+          {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS */}
+          <div className="absolute inset-0 pointer-events-none">
+            <Canvas
+              shadows
+              dpr={[1, 2]}
+              gl={{
+                antialias: true,
+                alpha: true,
+                powerPreference: 'high-performance'
+              }}
+              style={{ background: 'transparent', pointerEvents: 'none' }}
+            >
+              <Suspense fallback={null}>
+                <Scene
+                  growthProgress={1}
+                  enableGrowth={false}
+                  showParticles={isLoadingComplete}
+                  scrollProgress={scrollProgress}
+                />
+              </Suspense>
+            </Canvas>
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Scrollable Content Sections */}
       <div className="relative">
@@ -559,24 +587,8 @@ export default function LoadingTest() {
 
         {/* Hero section with logo and heading - SCROLLS WITH PAGE */}
         <div className="h-screen absolute inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
-          {/* Full logo - original, always present */}
-          <motion.div
-            className="relative z-10 mb-auto cursor-pointer pointer-events-auto group"
-            initial={{ opacity: 0, y: -30 }}
-            animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          >
-            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
-              <Image
-                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
-                alt="ICELLARÉ Lifespan Center"
-                fill
-                className="object-contain brightness-0 invert"
-                priority
-              />
-            </div>
-          </motion.div>
+          {/* Hidden placeholder - the loading logo becomes the hero logo */}
+          <div className="relative z-10 mb-auto" style={{ height: '144px', width: '450px' }} />
 
           {/* Top-right full logo - fade directly with scroll (no delay) */}
           <motion.div
@@ -611,7 +623,7 @@ export default function LoadingTest() {
           </div>
         </div>
 
-        {/* Heading at bottom - FIXED POSITION, FADES OUT WITH SCROLL (no delay) */}
+        {/* Heading at bottom - FIXED POSITION, FADES IN THEN OUT WITH SCROLL */}
         <motion.div
           className="fixed bottom-5 left-0 right-0 z-30 text-center pointer-events-none"
           initial={{ opacity: 0, y: 30 }}
@@ -623,7 +635,7 @@ export default function LoadingTest() {
                 }
               : { opacity: 0, y: 30 }
           }
-          transition={{ duration: 0 }}
+          transition={{ duration: 0.8, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
           <h1 className="text-2xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
             Regenerative Medicine
@@ -640,8 +652,8 @@ export default function LoadingTest() {
             <motion.div
               className="absolute left-[22%] top-[28%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
-              animate={isLoadingComplete && loadingProgress > 0.7 ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              animate={isLoadingComplete ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.4 }}
               onClick={() => {
                 document.getElementById('stem-cell-banking')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
@@ -663,8 +675,8 @@ export default function LoadingTest() {
             <motion.div
               className="absolute left-[20%] top-[46%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
-              animate={isLoadingComplete && loadingProgress > 0.75 ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              animate={isLoadingComplete ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.5 }}
               onClick={() => {
                 document.getElementById('genetic-testing')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
@@ -687,8 +699,8 @@ export default function LoadingTest() {
             <motion.div
               className="absolute left-[19%] bottom-[30%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: -20 }}
-              animate={isLoadingComplete && loadingProgress > 0.8 ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              animate={isLoadingComplete ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.6 }}
               onClick={() => {
                 document.getElementById('aesthetics')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
@@ -711,8 +723,8 @@ export default function LoadingTest() {
             <motion.div
               className="absolute right-[21%] top-[31%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
-              animate={isLoadingComplete && loadingProgress > 0.7 ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.25 }}
+              animate={isLoadingComplete ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.45 }}
               onClick={() => {
                 document.getElementById('stem-cell-technology')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
@@ -735,8 +747,8 @@ export default function LoadingTest() {
             <motion.div
               className="absolute right-[18%] top-[53%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
-              animate={isLoadingComplete && loadingProgress > 0.75 ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.35 }}
+              animate={isLoadingComplete ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.55 }}
               onClick={() => {
                 document.getElementById('vitamin-iv-therapy')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
@@ -759,8 +771,8 @@ export default function LoadingTest() {
             <motion.div
               className="absolute right-[23%] bottom-[24%] pointer-events-auto cursor-pointer group"
               initial={{ opacity: 0, x: 20 }}
-              animate={isLoadingComplete && loadingProgress > 0.8 ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.45 }}
+              animate={isLoadingComplete ? { opacity: 1, x: 0 } : {}}
+              transition={{ duration: 0.6, delay: 1.65 }}
               onClick={() => {
                 document.getElementById('wellness-spa')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
               }}
