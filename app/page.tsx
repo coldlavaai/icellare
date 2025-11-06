@@ -285,43 +285,14 @@ export default function LoadingTest() {
         }
       `}</style>
 
-      {/* Smooth loading transition - logo moves from center to top */}
-      <motion.div
-        className="fixed left-0 right-0 z-[90] flex flex-col items-center"
-        style={{
-          willChange: 'transform',
-          top: '50%',
-          y: '-50%'
-        }}
-        animate={isLoadingComplete ? {
-          y: 'calc(-50% + 100px + 72px)' // Move to top position (100px padding + 72px half logo height)
-        } : {
-          y: '-50%'
-        }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-      >
-        <motion.div
-          className="relative w-[450px] h-36 group cursor-pointer"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{
-            opacity: 1,
-            scale: 1
-          }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          onClick={() => isLoadingComplete && window.scrollTo({ top: 0, behavior: 'smooth' })}
-          style={{
-            pointerEvents: isLoadingComplete ? 'auto' : 'none',
-            willChange: 'transform, filter'
-          }}
-        >
+      {/* Loading overlay - shows centered logo during load, fades out */}
+      {!isLoadingComplete && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center pointer-events-none">
           <motion.div
-            animate={isLoadingComplete ? {
-              filter: 'drop-shadow(0 0 40px rgba(0,191,255,1)) drop-shadow(0 0 80px rgba(0,191,255,0.8))'
-            } : {
-              filter: 'drop-shadow(0 0 0px rgba(0,191,255,0))'
-            }}
-            transition={{ duration: 1, delay: 1.6 }}
-            className="relative w-full h-full transition-transform duration-300 group-hover:scale-105"
+            className="relative w-[450px] h-36"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <Image
               src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
@@ -331,23 +302,20 @@ export default function LoadingTest() {
               priority
             />
           </motion.div>
-        </motion.div>
 
-        {/* Loading dots - fade out when complete */}
-        <motion.div
-          className="flex items-center justify-center gap-2 mt-8"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: isLoadingComplete ? 0 : 1
-          }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          style={{ willChange: 'opacity' }}
-        >
-          <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
-          <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
-          <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
-        </motion.div>
-      </motion.div>
+          {/* Loading dots */}
+          <motion.div
+            className="flex items-center justify-center gap-2 mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
+            <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
+            <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
+          </motion.div>
+        </div>
+      )}
 
       {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
       <div className="fixed inset-0 pointer-events-none" style={{
@@ -598,8 +566,24 @@ export default function LoadingTest() {
 
         {/* Hero section with logo and heading - SCROLLS WITH PAGE */}
         <div className="h-screen absolute inset-0 z-30 flex flex-col items-center justify-start pointer-events-none" style={{ paddingTop: '100px' }}>
-          {/* Hidden placeholder - the loading logo becomes the hero logo */}
-          <div className="relative z-10 mb-auto" style={{ height: '144px', width: '450px' }} />
+          {/* Full logo - scrolls with page */}
+          <motion.div
+            className="relative z-10 mb-auto cursor-pointer pointer-events-auto group"
+            initial={{ opacity: 0, y: -30 }}
+            animate={isLoadingComplete ? { opacity: 1, y: 0 } : { opacity: 0, y: -30 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <div className="relative w-[450px] h-36 transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_40px_rgba(0,191,255,1)_0_0_80px_rgba(0,191,255,0.8)_0_0_120px_rgba(0,191,255,0.6)]">
+              <Image
+                src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
+                alt="ICELLARÉ Lifespan Center"
+                fill
+                className="object-contain brightness-0 invert"
+                priority
+              />
+            </div>
+          </motion.div>
 
           {/* Top-right full logo - fade directly with scroll (no delay) */}
           <motion.div
