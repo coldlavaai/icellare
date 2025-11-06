@@ -108,11 +108,10 @@ export default function LoadingTest() {
   useEffect(() => {
     const timeline = [
       { delay: 0, progress: 0 },      // Start
-      { delay: 150, progress: 0.2 },  // Frame appears
-      { delay: 400, progress: 0.5 },  // DNA starts growing
-      { delay: 900, progress: 0.7 },  // DNA fully grown
-      { delay: 1100, progress: 0.8 }, // Labels appear
-      { delay: 1400, progress: 1 },   // Branding appears
+      { delay: 300, progress: 0.4 },  // Initial fade
+      { delay: 800, progress: 0.7 },  // UI preparing
+      { delay: 1200, progress: 0.9 }, // Almost ready
+      { delay: 1500, progress: 1 },   // Complete
     ]
 
     timeline.forEach(({ delay, progress }) => {
@@ -121,11 +120,10 @@ export default function LoadingTest() {
       }, delay)
     })
 
-    // Mark loading as complete but keep frame visible
+    // Mark loading as complete - UI elements will fade in
     setTimeout(() => {
       setIsLoadingComplete(true)
-      // Don't hide frame - it stays until user scrolls
-    }, 1700)
+    }, 1600)
   }, [])
 
   // Track scroll position, velocity, and direction
@@ -287,13 +285,21 @@ export default function LoadingTest() {
         }
       `}</style>
 
-      {/* Loading Screen - NORTHERN LIGHTS VERSION */}
+      {/* Loading overlay - fades out after loading */}
       {!isLoadingComplete && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{
-          background: 'radial-gradient(ellipse at 50% 50%, rgb(10, 15, 35) 0%, rgb(5, 8, 20) 70%)'
-        }}>
+        <motion.div
+          className="fixed inset-0 z-[90] flex items-center justify-center pointer-events-none"
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 0 }}
+          transition={{ duration: 0.8, delay: 1.5 }}
+        >
           <div className="text-center">
-            <div className="relative w-96 h-32 mb-8">
+            <motion.div
+              className="relative w-96 h-32 mb-8"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+            >
               <Image
                 src="https://static.wixstatic.com/media/abb1e6_84c39a4abeea4e66ab7ad3a3d52ef0ca~mv2.png/v1/crop/x_0,y_0,w_4395,h_1596/fill/w_800,h_300,al_c,q_95,usm_0.66_1.00_0.01,enc_auto/Icellare_-Horizontal-Logo-01.png"
                 alt="ICELLARÉ"
@@ -301,14 +307,19 @@ export default function LoadingTest() {
                 className="object-contain brightness-0 invert"
                 priority
               />
-            </div>
-            <div className="flex items-center justify-center gap-2">
+            </motion.div>
+            <motion.div
+              className="flex items-center justify-center gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
               <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
               <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
               <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* LAYER 1: Dynamic Color Background - BOTTOM LAYER - SPACE GRADIENT */}
@@ -432,7 +443,7 @@ export default function LoadingTest() {
         })()
       }} />
 
-      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER */}
+      {/* LAYER 2: DNA Canvas with Accent Gradients - MIDDLE LAYER - Always visible */}
       <div className="fixed inset-0 pointer-events-none" style={{
         zIndex: 10,
         background: `
@@ -441,7 +452,7 @@ export default function LoadingTest() {
           radial-gradient(ellipse 600px 800px at 80% 70%, rgba(236, 72, 153, 0.05) 0%, transparent 50%)
         `
       }}>
-        {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS */}
+        {/* 3D Canvas - transparent to show layers below - MUST NOT BLOCK POINTER EVENTS - DNA visible from start */}
         <div className="absolute inset-0 pointer-events-none">
           <Canvas
             shadows
@@ -455,8 +466,8 @@ export default function LoadingTest() {
           >
             <Suspense fallback={null}>
               <Scene
-                growthProgress={dnaGrowthProgress}
-                enableGrowth={!isLoadingComplete}
+                growthProgress={1}
+                enableGrowth={false}
                 showParticles={isLoadingComplete}
                 scrollProgress={scrollProgress}
               />
