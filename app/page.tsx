@@ -10,7 +10,8 @@ import { TechnicalFrame } from '@/components/TechnicalFrame'
 import { SimpleParticles } from '@/components/SimpleParticles'
 import * as THREE from 'three'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 
 function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: { growthProgress: number; enableGrowth: boolean; showParticles: boolean; scrollProgress: number }) {
   return (
@@ -72,6 +73,7 @@ export default function LoadingTest() {
   const [activeSectionIndex, setActiveSectionIndex] = useState(-1) // -1 means hero, 0-5 are sections
   const [isDNALocked, setIsDNALocked] = useState(false) // Track if DNA should be locked to last section
   const [dnaLockPosition, setDnaLockPosition] = useState(0) // Store exact position where DNA locks
+  const [activeModal, setActiveModal] = useState<string | null>(null) // Track which service modal is open
 
   useEffect(() => {
     const timeline = [
@@ -167,6 +169,7 @@ export default function LoadingTest() {
       title: 'Stem Cell Banking',
       subtitle: 'Preservation & Storage',
       side: 'left',
+      route: '/stem-cell-banking',
       image: 'https://static.wixstatic.com/media/aa834f_275473098f5246c88c3b49755c7acf67~mv2.jpg/v1/fill/w_1280,h_998,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_275473098f5246c88c3b49755c7acf67~mv2.jpg',
       description: 'At Icellaré Lifespan Center, we are dedicated to unlocking the full potential of your well-being through the transformative power of MSC Stem Cell Banking. Secure your regenerative health for the future by exploring MSC Stem Cell Banking today.',
       stats: [
@@ -179,6 +182,7 @@ export default function LoadingTest() {
       title: 'Stem Cell Technology',
       subtitle: 'Advanced Therapies',
       side: 'right',
+      route: '/stem-cell-technology',
       image: 'https://static.wixstatic.com/media/aa834f_2745f14ccb304791931b50aed31e023a~mv2.jpg/v1/fill/w_1280,h_1002,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_2745f14ccb304791931b50aed31e023a~mv2.jpg',
       description: 'MSC Stem cells, derived from either Bone Marrow or Adipose tissue, ensure a safe and effective approach to treatment and recovery, minimizing the risk of immune system resistance and infection.',
       stats: [
@@ -191,6 +195,7 @@ export default function LoadingTest() {
       title: 'Genetic Testing',
       subtitle: 'DNA Analysis',
       side: 'left',
+      route: '/genetic-testing',
       image: 'https://static.wixstatic.com/media/aa834f_4e07f9c203794fc4857a4a8df8715c2b~mv2.jpg/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_4e07f9c203794fc4857a4a8df8715c2b~mv2.jpg',
       description: 'Begin proactive health and well-being at Icellaré Lifespan Center, where advanced Gene testing and health check-ups pave the way for future prevention. DNA tests related to diagnosis Genetic diseases with Next Generation Sequencing (NGS) technique',
       stats: [
@@ -203,6 +208,7 @@ export default function LoadingTest() {
       title: 'Vitamin IV Therapy',
       subtitle: 'Infusion Optimization',
       side: 'right',
+      route: '/vitamin-therapy',
       image: 'https://static.wixstatic.com/media/abb1e6_2f56dd9c05f847bb97a307636ebe160a~mv2.jpg/v1/fill/w_1280,h_1002,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/abb1e6_2f56dd9c05f847bb97a307636ebe160a~mv2.jpg',
       description: 'At Icellaré we don\'t believe in one size fits all. Tailored Nutrient Delivery based on our genetic testing and blood work allows us to cater to our individual\'s nutritional needs, addressing specific deficiencies or health goals.',
       stats: [
@@ -215,6 +221,7 @@ export default function LoadingTest() {
       title: 'Aesthetics',
       subtitle: 'Beauty Treatments',
       side: 'left',
+      route: '/aesthetics',
       image: 'https://static.wixstatic.com/media/11062b_622da063db8f46d28924c887166916b4~mv2.jpg/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_622da063db8f46d28924c887166916b4~mv2.jpg',
       description: 'Enhancing your natural beauty involves methods that are non-invasive, painless, and require no downtime. These methods come in many forms, including personal cellular injectables.',
       stats: [
@@ -227,6 +234,7 @@ export default function LoadingTest() {
       title: 'Wellness & Spa',
       subtitle: 'Holistic Care',
       side: 'right',
+      route: '/wellness-spa',
       image: 'https://static.wixstatic.com/media/aa834f_8add081e2af5447d80d53370cb4b7c81~mv2.png/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_8add081e2af5447d80d53370cb4b7c81~mv2.png',
       description: 'Physiotherapy helps through physical rehabilitation, injury prevention, and health and fitness. Physiotherapists get you involved in your own recovery.',
       stats: [
@@ -752,8 +760,10 @@ export default function LoadingTest() {
                           {section.description}
                         </p>
 
-                        <button className="mt-8 px-8 py-4 border-2 border-[#B8860B] text-[#B8860B] font-mono uppercase tracking-wider
-                          hover:bg-[#B8860B] hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(184,134,11,0.5),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)]">
+                        <button
+                          onClick={() => setActiveModal(section.id)}
+                          className="mt-8 px-8 py-4 border-2 border-[#B8860B] text-[#B8860B] font-mono uppercase tracking-wider
+                            hover:bg-[#B8860B] hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(184,134,11,0.5),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)]">
                           Learn More
                         </button>
                       </div>
@@ -868,8 +878,10 @@ export default function LoadingTest() {
                           {section.description}
                         </p>
 
-                        <button className="mt-8 px-8 py-4 border-2 border-[#B8860B] text-[#B8860B] font-mono uppercase tracking-wider
-                          hover:bg-[#B8860B] hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(184,134,11,0.5),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)]">
+                        <button
+                          onClick={() => setActiveModal(section.id)}
+                          className="mt-8 px-8 py-4 border-2 border-[#B8860B] text-[#B8860B] font-mono uppercase tracking-wider
+                            hover:bg-[#B8860B] hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(184,134,11,0.5),0_0_50px_rgba(184,134,11,0.3)] hover:shadow-[0_0_35px_rgba(184,134,11,0.8),0_0_70px_rgba(184,134,11,0.5)]">
                           Learn More
                         </button>
                       </div>
@@ -1140,6 +1152,64 @@ export default function LoadingTest() {
           </div>
         </footer>
       </div>
+
+      {/* Service Detail Modal Overlays */}
+      <AnimatePresence>
+        {activeModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center"
+            onClick={() => setActiveModal(null)}
+          >
+            {/* Backdrop - dark with subtle gold tint */}
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" style={{
+              background: 'radial-gradient(ellipse at center, rgba(184, 134, 11, 0.15) 0%, rgba(0, 0, 0, 0.85) 100%)'
+            }} />
+
+            {/* Modal Content */}
+            <motion.div
+              initial={{
+                x: sections.find(s => s.id === activeModal)?.side === 'left' ? '100%' : '-100%'
+              }}
+              animate={{ x: 0 }}
+              exit={{
+                x: sections.find(s => s.id === activeModal)?.side === 'left' ? '100%' : '-100%'
+              }}
+              transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+              className="relative w-full h-full bg-gradient-to-br from-[rgba(245,250,255,0.98)] to-[rgba(235,245,255,0.98)] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setActiveModal(null)}
+                className="fixed top-8 right-8 z-[10000] w-14 h-14 rounded-full bg-black/20 hover:bg-black/40 backdrop-blur-md flex items-center justify-center transition-all duration-300 group"
+              >
+                <svg
+                  className="w-6 h-6 text-white group-hover:rotate-90 transition-transform duration-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Modal Content Container - Scrollable */}
+              <div className="min-h-full p-8 md:p-16 pt-24">
+                <iframe
+                  src={sections.find(s => s.id === activeModal)?.route}
+                  className="w-full min-h-screen border-none rounded-lg"
+                  title={sections.find(s => s.id === activeModal)?.title}
+                  style={{ height: 'calc(100vh - 8rem)' }}
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
