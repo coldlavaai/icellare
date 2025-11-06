@@ -287,10 +287,10 @@ export default function LoadingTest() {
         }
       `}</style>
 
-      {/* Loading Screen - CYBERPUNK SPACE VERSION */}
+      {/* Loading Screen - NORTHERN LIGHTS VERSION */}
       {!isLoadingComplete && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{
-          background: 'radial-gradient(ellipse at 50% 20%, #1a0a2e 0%, #0f0624 25%, #0a0412 50%, #050208 75%, #000000 100%)'
+          background: 'radial-gradient(ellipse at 50% 50%, rgb(10, 15, 35) 0%, rgb(5, 8, 20) 70%)'
         }}>
           <div className="text-center">
             <div className="relative w-96 h-32 mb-8">
