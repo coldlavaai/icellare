@@ -188,6 +188,7 @@ export default function LoadingTest() {
       subtitle: 'Preservation & Storage',
       side: 'left',
       image: 'https://static.wixstatic.com/media/aa834f_275473098f5246c88c3b49755c7acf67~mv2.jpg/v1/fill/w_1280,h_998,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_275473098f5246c88c3b49755c7acf67~mv2.jpg',
+      description: 'At Icellaré Lifespan Center, we are dedicated to unlocking the full potential of your well-being through the transformative power of MSC Stem Cell Banking. Secure your regenerative health for the future by exploring MSC Stem Cell Banking today.',
       stats: [
         { value: '25+ Years', label: 'Storage Guarantee' },
         { value: '99.9%', label: 'Viability Rate' }
@@ -199,6 +200,7 @@ export default function LoadingTest() {
       subtitle: 'Advanced Therapies',
       side: 'right',
       image: 'https://static.wixstatic.com/media/aa834f_2745f14ccb304791931b50aed31e023a~mv2.jpg/v1/fill/w_1280,h_1002,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_2745f14ccb304791931b50aed31e023a~mv2.jpg',
+      description: 'MSC Stem cells, derived from either Bone Marrow or Adipose tissue, ensure a safe and effective approach to treatment and recovery, minimizing the risk of immune system resistance and infection.',
       stats: [
         { value: '10K+', label: 'Treatments' },
         { value: '95%', label: 'Success Rate' }
@@ -210,6 +212,7 @@ export default function LoadingTest() {
       subtitle: 'DNA Analysis',
       side: 'left',
       image: 'https://static.wixstatic.com/media/aa834f_4e07f9c203794fc4857a4a8df8715c2b~mv2.jpg/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_4e07f9c203794fc4857a4a8df8715c2b~mv2.jpg',
+      description: 'Begin proactive health and well-being at Icellaré Lifespan Center, where advanced Gene testing and health check-ups pave the way for future prevention. DNA tests related to diagnosis Genetic diseases with Next Generation Sequencing (NGS) technique',
       stats: [
         { value: '500+', label: 'Genetic Markers' },
         { value: '48hrs', label: 'Results Time' }
@@ -221,6 +224,7 @@ export default function LoadingTest() {
       subtitle: 'Infusion Optimization',
       side: 'right',
       image: 'https://static.wixstatic.com/media/abb1e6_2f56dd9c05f847bb97a307636ebe160a~mv2.jpg/v1/fill/w_1280,h_1002,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/abb1e6_2f56dd9c05f847bb97a307636ebe160a~mv2.jpg',
+      description: 'At Icellaré we don\'t believe in one size fits all. Tailored Nutrient Delivery based on our genetic testing and blood work allows us to cater to our individual\'s nutritional needs, addressing specific deficiencies or health goals.',
       stats: [
         { value: '20+', label: 'Custom Formulas' },
         { value: '100%', label: 'Absorption' }
@@ -232,6 +236,7 @@ export default function LoadingTest() {
       subtitle: 'Beauty Treatments',
       side: 'left',
       image: 'https://static.wixstatic.com/media/11062b_622da063db8f46d28924c887166916b4~mv2.jpg/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/11062b_622da063db8f46d28924c887166916b4~mv2.jpg',
+      description: 'Enhancing your natural beauty involves methods that are non-invasive, painless, and require no downtime. These methods come in many forms, including personal cellular injectables.',
       stats: [
         { value: '15+ Years', label: 'Experience' },
         { value: '5000+', label: 'Happy Clients' }
@@ -243,6 +248,7 @@ export default function LoadingTest() {
       subtitle: 'Holistic Care',
       side: 'right',
       image: 'https://static.wixstatic.com/media/aa834f_8add081e2af5447d80d53370cb4b7c81~mv2.png/v1/fill/w_1280,h_1000,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/aa834f_8add081e2af5447d80d53370cb4b7c81~mv2.png',
+      description: 'Physiotherapy helps through physical rehabilitation, injury prevention, and health and fitness. Physiotherapists get you involved in your own recovery.',
       stats: [
         { value: '30+', label: 'Treatments' },
         { value: '98%', label: 'Satisfaction' }
@@ -803,9 +809,7 @@ export default function LoadingTest() {
                         <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 ml-auto shadow-[0_0_20px_rgba(0,191,255,0.6)]" />
 
                         <p className="text-lg text-white/80 leading-relaxed max-w-lg ml-auto">
-                          Experience cutting-edge regenerative medicine with personalized treatment protocols
-                          designed for your unique biological profile. Our advanced facilities combine
-                          scientific precision with compassionate care.
+                          {section.description}
                         </p>
 
                         <button className="mt-8 px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-mono uppercase tracking-wider
@@ -921,9 +925,7 @@ export default function LoadingTest() {
                         <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 shadow-[0_0_20px_rgba(0,191,255,0.6)]" />
 
                         <p className="text-lg text-white/80 leading-relaxed max-w-lg">
-                          Experience cutting-edge regenerative medicine with personalized treatment protocols
-                          designed for your unique biological profile. Our advanced facilities combine
-                          scientific precision with compassionate care.
+                          {section.description}
                         </p>
 
                         <button className="mt-8 px-8 py-4 border-2 border-pink-500 text-pink-500 font-mono uppercase tracking-wider
