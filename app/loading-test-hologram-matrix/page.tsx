@@ -7,7 +7,6 @@ import { EffectComposer, Bloom, Vignette, DepthOfField } from '@react-three/post
 import { BlendFunction } from 'postprocessing'
 import { ArchitecturalDNA } from '@/components/ArchitecturalDNA'
 import { TechnicalFrame } from '@/components/TechnicalFrame'
-import { BiologicalStructures } from '@/components/BiologicalStructures'
 import { SimpleParticles } from '@/components/SimpleParticles'
 import * as THREE from 'three'
 import Image from 'next/image'
