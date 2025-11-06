@@ -62,12 +62,12 @@ export function ArchitecturalDNA({
     const curve2 = new THREE.CatmullRomCurve3(strand2Path)
     const tube2Geo = new THREE.TubeGeometry(curve2, strand2Path.length, 0.1, 20, false)
 
-    // STEP 3: Create base pairs - CORAL & TURQUOISE
+    // STEP 3: Create base pairs - SPACE THEME (Cyan & Pink/Purple)
     const basePairColors = {
-      A: 0xFF7F50, // Coral
-      T: 0x06B6D4, // Turquoise
-      G: 0xFF6B6B, // Salmon
-      C: 0x14B8A6, // Teal
+      A: 0x00BFFF, // Deep Sky Blue / Cyan
+      T: 0xFF1493, // Deep Pink
+      G: 0x9370DB, // Medium Purple
+      C: 0x00CED1, // Dark Turquoise / Cyan
     }
 
     const basePairTypes = ['A', 'G'] as const // Only need to pick A or G, complement is determined
@@ -112,18 +112,18 @@ export function ArchitecturalDNA({
     }
   }, [])
 
-  // Backbone material - CORAL glow
+  // Backbone material - NEON CYAN glow
   const backboneMaterial = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
-        color: 0xFF7F50,
+        color: 0x00BFFF,
         transmission: 0.2,
         thickness: 0.8,
         roughness: 0.2,
         metalness: 0.5,
         clearcoat: 0.7,
         ior: 1.5,
-        emissive: 0xFF7F50,
+        emissive: 0x00BFFF,
         emissiveIntensity: 0.5,
         flatShading: false,
       }),

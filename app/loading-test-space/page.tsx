@@ -255,9 +255,9 @@ export default function LoadingTest() {
               />
             </div>
             <div className="flex items-center justify-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shadow-[0_0_20px_rgba(20,184,166,1),0_0_40px_rgba(20,184,166,0.5)]" style={{ animationDelay: '0ms' }} />
-              <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse shadow-[0_0_20px_rgba(249,115,22,1),0_0_40px_rgba(249,115,22,0.5)]" style={{ animationDelay: '150ms' }} />
-              <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_20px_rgba(245,158,11,1),0_0_40px_rgba(245,158,11,0.5)]" style={{ animationDelay: '300ms' }} />
+              <div className="w-2 h-2 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_20px_rgba(0,191,255,1),0_0_40px_rgba(0,191,255,0.5)]" style={{ animationDelay: '0ms' }} />
+              <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_rgba(147,112,219,1),0_0_40px_rgba(147,112,219,0.5)]" style={{ animationDelay: '150ms' }} />
+              <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_20px_rgba(255,20,147,1),0_0_40px_rgba(255,20,147,0.5)]" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         </div>
@@ -297,13 +297,13 @@ export default function LoadingTest() {
 
       {/* Scrollable Content Sections */}
       <div className="relative">
-        {/* Top Navigation Bar - FIXED - ULTRA NEON VERSION */}
+        {/* Top Navigation Bar - FIXED - SPACE NEON VERSION */}
         <motion.nav
           className="fixed top-0 z-50 w-full px-16 pt-4 pb-4"
           style={{
             background: 'rgba(0, 0, 0, 0.8)',
             backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 50px rgba(20, 184, 166, 0.6), 0 2px 80px rgba(20, 184, 166, 0.4)'
+            boxShadow: '0 4px 50px rgba(0, 191, 255, 0.6), 0 2px 80px rgba(0, 191, 255, 0.4)'
           }}
           initial={{ opacity: 0, y: -20 }}
           animate={isLoadingComplete && showTopNav ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 }}
@@ -314,13 +314,13 @@ export default function LoadingTest() {
               <motion.a
                 key={item}
                 href={`#${item.toLowerCase().replace(' ', '-')}`}
-                className="text-sm font-mono text-teal-400/80 hover:text-teal-300 transition-colors duration-300 relative group pointer-events-auto"
+                className="text-sm font-mono text-cyan-400/80 hover:text-cyan-300 transition-colors duration-300 relative group pointer-events-auto"
                 initial={{ opacity: 0, y: -10 }}
                 animate={isLoadingComplete ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.4, delay: 0.4 + index * 0.1 }}
               >
                 {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-gradient-to-r from-teal-400 via-orange-500 to-amber-500 transition-all duration-300 group-hover:w-full shadow-[0_0_15px_rgba(20,184,166,0.8)]" />
+                <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 transition-all duration-300 group-hover:w-full shadow-[0_0_15px_rgba(0,191,255,0.8)]" />
               </motion.a>
             ))}
           </div>
@@ -369,7 +369,7 @@ export default function LoadingTest() {
             <h1 className="text-3xl font-sans font-light text-white mb-1 tracking-wide drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
               Regenerative Medicine
             </h1>
-            <p className="text-lg font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-orange-500 to-amber-500 drop-shadow-[0_0_20px_rgba(20,184,166,0.8)]">
+            <p className="text-lg font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 drop-shadow-[0_0_20px_rgba(0,191,255,0.8)]">
               Lifespan Center
             </p>
           </motion.div>
@@ -389,7 +389,7 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-sm font-mono text-teal-400/90 text-left transition-all duration-300 group-hover:text-teal-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-teal-400/30 group-hover:shadow-[0_0_30px_rgba(20,184,166,0.8),0_0_60px_rgba(20,184,166,0.4)]">
+                <div className="text-sm font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-cyan-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:shadow-[0_0_30px_rgba(0,191,255,0.8),0_0_60px_rgba(0,191,255,0.4)]">
                   <div className="font-semibold">STEM CELL BANKING</div>
                   <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
                     Preservation & Storage
@@ -412,7 +412,7 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-sm font-mono text-teal-400/90 text-left transition-all duration-300 group-hover:text-teal-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-teal-400/30 group-hover:shadow-[0_0_30px_rgba(20,184,166,0.8),0_0_60px_rgba(20,184,166,0.4)]">
+                <div className="text-sm font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-cyan-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:shadow-[0_0_30px_rgba(0,191,255,0.8),0_0_60px_rgba(0,191,255,0.4)]">
                   <div className="font-semibold">GENETIC TESTING</div>
                   <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
                     DNA Analysis
@@ -436,7 +436,7 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 transition-all duration-300">
-                <div className="text-sm font-mono text-teal-400/90 text-left transition-all duration-300 group-hover:text-teal-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-teal-400/30 group-hover:shadow-[0_0_30px_rgba(20,184,166,0.8),0_0_60px_rgba(20,184,166,0.4)]">
+                <div className="text-sm font-mono text-cyan-400/90 text-left transition-all duration-300 group-hover:text-cyan-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-cyan-400/30 group-hover:shadow-[0_0_30px_rgba(0,191,255,0.8),0_0_60px_rgba(0,191,255,0.4)]">
                   <div className="font-semibold">AESTHETICS</div>
                   <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
                     Beauty Treatments
@@ -459,7 +459,7 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-sm font-mono text-teal-400/90 text-right transition-all duration-300 group-hover:text-teal-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-orange-500/30 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.8),0_0_60px_rgba(249,115,22,0.4)]">
+                <div className="text-sm font-mono text-pink-400/90 text-right transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-pink-500/30 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
                   <div className="font-semibold">STEM CELL TECHNOLOGY</div>
                   <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
                     Advanced Therapies
@@ -482,7 +482,7 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-sm font-mono text-teal-400/90 text-right transition-all duration-300 group-hover:text-teal-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-orange-500/30 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.8),0_0_60px_rgba(249,115,22,0.4)]">
+                <div className="text-sm font-mono text-purple-400/90 text-right transition-all duration-300 group-hover:text-purple-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-purple-500/30 group-hover:shadow-[0_0_30px_rgba(147,112,219,0.8),0_0_60px_rgba(147,112,219,0.4)]">
                   <div className="font-semibold">VITAMIN IV THERAPY</div>
                   <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
                     Infusion Optimization
@@ -505,7 +505,7 @@ export default function LoadingTest() {
               }}
             >
               <div className="flex items-center gap-2 flex-row-reverse transition-all duration-300">
-                <div className="text-sm font-mono text-teal-400/90 text-right transition-all duration-300 group-hover:text-teal-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-orange-500/30 group-hover:shadow-[0_0_30px_rgba(249,115,22,0.8),0_0_60px_rgba(249,115,22,0.4)]">
+                <div className="text-sm font-mono text-pink-400/90 text-right transition-all duration-300 group-hover:text-pink-300 px-3 py-2 rounded-lg backdrop-blur-md bg-black/50 border border-pink-500/30 group-hover:shadow-[0_0_30px_rgba(255,20,147,0.8),0_0_60px_rgba(255,20,147,0.4)]">
                   <div className="font-semibold">WELLNESS & SPA</div>
                   <div className="text-xs mt-0.5 opacity-60 group-hover:opacity-80 transition-opacity">
                     Holistic Care
@@ -571,8 +571,8 @@ export default function LoadingTest() {
                           scientific precision with compassionate care.
                         </p>
 
-                        <button className="mt-8 px-8 py-4 border-2 border-teal-400 text-teal-400 font-mono uppercase tracking-wider
-                          hover:bg-teal-400 hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(20,184,166,0.5),0_0_50px_rgba(20,184,166,0.3)] hover:shadow-[0_0_35px_rgba(20,184,166,0.8),0_0_70px_rgba(20,184,166,0.5)]">
+                        <button className="mt-8 px-8 py-4 border-2 border-cyan-400 text-cyan-400 font-mono uppercase tracking-wider
+                          hover:bg-cyan-400 hover:text-black transition-all duration-300 ml-auto block shadow-[0_0_25px_rgba(0,191,255,0.5),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)]">
                           Learn More
                         </button>
                       </div>
@@ -593,22 +593,22 @@ export default function LoadingTest() {
                         {/* Stat Cards - Small, overhanging the image borders */}
                         {section.stats && (
                           <>
-                            {/* First stat card - top left, overhanging - TEAL */}
-                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-teal-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(20,184,166,0.6),0_0_50px_rgba(20,184,166,0.3)] hover:shadow-[0_0_35px_rgba(20,184,166,0.8),0_0_70px_rgba(20,184,166,0.5)] transition-all duration-300 group z-10">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300 mb-0.5">
+                            {/* First stat card - top left, overhanging - CYAN */}
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-10">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
                                 {section.stats[0].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-teal-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80">
                                 {section.stats[0].label}
                               </div>
                             </div>
 
-                            {/* Second stat card - bottom right, overhanging - ORANGE */}
-                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-orange-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(249,115,22,0.6),0_0_50px_rgba(249,115,22,0.3)] hover:shadow-[0_0_35px_rgba(249,115,22,0.8),0_0_70px_rgba(249,115,22,0.5)] transition-all duration-300 group z-10">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500 mb-0.5">
+                            {/* Second stat card - bottom right, overhanging - PINK */}
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-10">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
                                 {section.stats[1].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-orange-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80">
                                 {section.stats[1].label}
                               </div>
                             </div>
@@ -634,22 +634,22 @@ export default function LoadingTest() {
                         {/* Stat Cards - Small, overhanging the image borders */}
                         {section.stats && (
                           <>
-                            {/* First stat card - top left, overhanging - TEAL */}
-                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-teal-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(20,184,166,0.6),0_0_50px_rgba(20,184,166,0.3)] hover:shadow-[0_0_35px_rgba(20,184,166,0.8),0_0_70px_rgba(20,184,166,0.5)] transition-all duration-300 group z-10">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-teal-300 mb-0.5">
+                            {/* First stat card - top left, overhanging - CYAN */}
+                            <div className="absolute -top-6 -left-6 backdrop-blur-xl bg-black/70 border-2 border-cyan-400 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(0,191,255,0.6),0_0_50px_rgba(0,191,255,0.3)] hover:shadow-[0_0_35px_rgba(0,191,255,0.8),0_0_70px_rgba(0,191,255,0.5)] transition-all duration-300 group z-10">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 mb-0.5">
                                 {section.stats[0].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-teal-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-cyan-400/80">
                                 {section.stats[0].label}
                               </div>
                             </div>
 
-                            {/* Second stat card - bottom right, overhanging - ORANGE */}
-                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-orange-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(249,115,22,0.6),0_0_50px_rgba(249,115,22,0.3)] hover:shadow-[0_0_35px_rgba(249,115,22,0.8),0_0_70px_rgba(249,115,22,0.5)] transition-all duration-300 group z-10">
-                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500 mb-0.5">
+                            {/* Second stat card - bottom right, overhanging - PINK */}
+                            <div className="absolute -bottom-6 -right-6 backdrop-blur-xl bg-black/70 border-2 border-pink-500 rounded-xl px-4 py-3 shadow-[0_0_25px_rgba(255,20,147,0.6),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)] transition-all duration-300 group z-10">
+                              <div className="text-2xl font-sans font-light text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-400 mb-0.5">
                                 {section.stats[1].value}
                               </div>
-                              <div className="text-[10px] font-mono uppercase tracking-wider text-orange-400/80">
+                              <div className="text-[10px] font-mono uppercase tracking-wider text-pink-400/80">
                                 {section.stats[1].label}
                               </div>
                             </div>
@@ -683,8 +683,8 @@ export default function LoadingTest() {
                           scientific precision with compassionate care.
                         </p>
 
-                        <button className="mt-8 px-8 py-4 border-2 border-orange-500 text-orange-500 font-mono uppercase tracking-wider
-                          hover:bg-orange-500 hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(249,115,22,0.5),0_0_50px_rgba(249,115,22,0.3)] hover:shadow-[0_0_35px_rgba(249,115,22,0.8),0_0_70px_rgba(249,115,22,0.5)]">
+                        <button className="mt-8 px-8 py-4 border-2 border-pink-500 text-pink-500 font-mono uppercase tracking-wider
+                          hover:bg-pink-500 hover:text-black transition-all duration-300 shadow-[0_0_25px_rgba(255,20,147,0.5),0_0_50px_rgba(255,20,147,0.3)] hover:shadow-[0_0_35px_rgba(255,20,147,0.8),0_0_70px_rgba(255,20,147,0.5)]">
                           Learn More
                         </button>
                       </div>
@@ -696,8 +696,8 @@ export default function LoadingTest() {
           ))}
         </div>
 
-        {/* Footer - TEAL & ORANGE VERSION */}
-        <footer className="relative py-16 text-center border-t border-teal-400/30" style={{
+        {/* Footer - SPACE NEON VERSION */}
+        <footer className="relative py-16 text-center border-t border-cyan-400/30" style={{
           background: 'linear-gradient(to bottom, #0a0412 0%, #1a0a2e 50%, #0f0624 100%)'
         }}>
           <div className="max-w-6xl mx-auto px-8">
