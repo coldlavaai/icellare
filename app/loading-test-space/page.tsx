@@ -11,7 +11,6 @@ import { SimpleParticles } from '@/components/SimpleParticles'
 import * as THREE from 'three'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { ColorSchemeNav } from "@/components/ColorSchemeNav"
 
 function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: { growthProgress: number; enableGrowth: boolean; showParticles: boolean; scrollProgress: number }) {
   return (
@@ -92,9 +91,6 @@ function Scene({ growthProgress, enableGrowth, showParticles, scrollProgress }: 
           blendFunction={BlendFunction.NORMAL}
         />
       </EffectComposer>
-
-      {/* Color Scheme Navigation */}
-      <ColorSchemeNav />
     </>
   )
 }
@@ -718,9 +714,6 @@ export default function LoadingTest() {
           </div>
         </footer>
       </div>
-
-      {/* Color Scheme Navigation */}
-      <ColorSchemeNav />
     </>
   )
 }
