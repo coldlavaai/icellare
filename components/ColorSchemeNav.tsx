@@ -8,21 +8,18 @@ export function ColorSchemeNav() {
   const pathname = usePathname()
 
   const schemes = [
-    { name: 'Cyber Magenta', path: '/loading-test-cyber-magenta' },
-    { name: 'Aurora Borealis', path: '/loading-test-aurora-borealis' },
-    { name: 'Toxic Neon', path: '/loading-test-toxic-neon' },
-    { name: 'Royal Sunset', path: '/loading-test-royal-sunset' },
-    { name: 'Electric Ocean', path: '/loading-test-electric-ocean' },
-    { name: 'Volcanic Fire', path: '/loading-test-volcanic-fire' },
-    { name: 'Cosmic Rave', path: '/loading-test-cosmic-rave' },
-    { name: 'Neon Tokyo', path: '/loading-test-neon-tokyo' },
-    { name: 'Plasma Storm', path: '/loading-test-plasma-storm' },
-    { name: 'Galaxy Core', path: '/loading-test-galaxy-core' },
-    { name: 'Digital Dream', path: '/loading-test-digital-dream' },
-    { name: 'Acid Fusion', path: '/loading-test-acid-fusion' },
-    { name: 'Infrared Pulse', path: '/loading-test-infrared-pulse' },
-    { name: 'Hologram Matrix', path: '/loading-test-hologram-matrix' },
-    { name: 'Neon Jungle', path: '/loading-test-neon-jungle' },
+    { name: 'Cosmic Ocean', path: '/loading-test-cosmic-ocean' },
+    { name: 'Deep Space', path: '/loading-test-deep-space' },
+    { name: 'Nebula Purple', path: '/loading-test-nebula-purple' },
+    { name: 'Midnight Blue', path: '/loading-test-midnight-blue' },
+    { name: 'Electric Violet', path: '/loading-test-electric-violet' },
+    { name: 'Sapphire Nights', path: '/loading-test-sapphire-nights' },
+    { name: 'Aurora Magenta', path: '/loading-test-aurora-magenta' },
+    { name: 'Indigo Fusion', path: '/loading-test-indigo-fusion' },
+    { name: 'Cyber Blue', path: '/loading-test-cyber-blue' },
+    { name: 'Plum Twilight', path: '/loading-test-plum-twilight' },
+    { name: 'Stellar Pink', path: '/loading-test-stellar-pink' },
+    { name: 'Periwinkle Dream', path: '/loading-test-periwinkle-dream' },
   ]
 
   const currentIndex = schemes.findIndex((s) => s.path === pathname)
